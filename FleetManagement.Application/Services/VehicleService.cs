@@ -48,7 +48,8 @@ public class VehicleService : IVehicleService
 		{
 			Plate = dto.Plate,
 			Brand = dto.Brand,
-			Model = dto.Model
+			Model = dto.Model,
+			CreatedAt = DateTime.UtcNow
 		};
 
 		await _repository.AddAsync(vehicle);

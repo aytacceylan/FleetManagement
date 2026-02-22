@@ -1,11 +1,7 @@
-﻿using FleetManagement.Domain.Entities;
-using FleetManagement.Infrastructure;
-using FleetManagement.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using FleetManagement.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Threading.Tasks;
 using System.Windows;
+using FleetManagement.Application;
 
 namespace FleetManagement.Desktop
 {
@@ -21,10 +17,13 @@ namespace FleetManagement.Desktop
 			var connectionString = "Host=::1;Port=5432;Database=FleetDb;Username=postgres;Password=1234";
 
 			var services = new ServiceCollection();
-			services.AddInfrastructure(connectionString);
+
+			services.AddApplication();       // Service katmanı
+			services.AddInfrastructure(connectionString); // Db + repo
+
 			Services = services.BuildServiceProvider();
 
-			
+
 		}
 
 
