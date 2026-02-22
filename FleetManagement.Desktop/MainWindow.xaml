@@ -1,15 +1,48 @@
 ﻿<Window x:Class="FleetManagement.Desktop.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Fleet Management" Height="450" Width="800">
+        Title="Fleet Management" Height="550" Width="950">
     <Grid Margin="20">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="300">
-            <TextBlock Text="ÇALIŞIYOR" FontSize="24" HorizontalAlignment="Center" Margin="0,0,0,20"/>
-            <Button Content="TEST INSERT"
-                    Height="40"
-                    Click="Button_Click"/>
-        </StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Araç Ekle + Listele" FontSize="22" Margin="0,0,0,10"/>
+
+        <!-- Form -->
+        <Grid Grid.Row="1" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox x:Name="PlateBox" Margin="0,0,10,0" Height="32" VerticalContentAlignment="Center"
+                     ToolTip="Plaka" />
+            <TextBox x:Name="BrandBox" Grid.Column="1" Margin="0,0,10,0" Height="32" VerticalContentAlignment="Center"
+                     ToolTip="Marka" />
+            <TextBox x:Name="ModelBox" Grid.Column="2" Margin="0,0,10,0" Height="32" VerticalContentAlignment="Center"
+                     ToolTip="Model" />
+
+
+            <Button Grid.Column="3" Content="KAYDET" Height="32" Width="120" Margin="0,0,10,0" Click="Save_Click"/>
+            <Button Grid.Column="4" Content="SİL" Height="32" Width="120" Margin="0,0,10,0" Click="Delete_Click"/>
+            <Button Grid.Column="5" Content="YENİ" Height="32" Width="120" Click="New_Click"/>
+
+        </Grid>
+
+        <!-- List -->
+        <DataGrid Grid.Row="2"
+                  x:Name="VehiclesGrid"
+                  AutoGenerateColumns="True"
+                  IsReadOnly="True"
+                  SelectionChanged="VehiclesGrid_SelectionChanged"
+        />
+
     </Grid>
 </Window>
-
-
