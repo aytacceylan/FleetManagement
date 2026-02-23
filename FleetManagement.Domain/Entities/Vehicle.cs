@@ -9,7 +9,10 @@
 
 		public string Model { get; set; } = string.Empty;  // ✅ Model eklendi
 
+		public bool IsDeleted { get; set; } = false;
+
 		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
 	}
 }
 

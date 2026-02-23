@@ -1,199 +1,154 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Linq;
-using System.Windows;
-using FleetManagement.Domain.Entities;
+﻿using FleetManagement.Domain.Entities;
 using FleetManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
-
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace FleetManagement.Desktop
 {
 	public partial class MainWindow : Window
 	{
-		private readonly DbContextOptions<AppDbContext> _dbOptions;
+		private readonly DbContextOptions<AppDbContext> _dbOptions =
+			new DbContextOptionsBuilder<AppDbContext>()
+				.UseNpgsql("Host=127.0.0.1;Port=5432;Database=FleetDb;Username=postgres;Password=1234")
+				.Options;
 
 		public MainWindow()
 		{
 			InitializeComponent();
-
-			_dbOptions = new DbContextOptionsBuilder<AppDbContext>()
-				.UseNpgsql("Host=127.0.0.1;Port=5432;Database=FleetDb;Username=postgres;Password=1234")
-				.Options;
-
 			Loaded += MainWindow_Loaded;
 		}
 
 		private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
 		{
-			await LoadVehiclesAsync();
+			await LoadLookupsAsync();
+			await LoadMovementsAsync();
 		}
 
-        private async Task LoadVehiclesAsync()
-        {
-            using var db = new AppDbContext(_dbOptions);
-
-            var q = (SearchBox.Text ?? "").Trim();
-
-            IQueryable<Vehicle> query = db.Vehicles.AsNoTracking();
-
-            if (!string.IsNullOrWhiteSpace(q))
-            {
-                var qLower = q.ToLower();
-
-                query = query.Where(v =>
-                    (v.Plate ?? "").ToLower().Contains(qLower) ||
-                    (v.Brand ?? "").ToLower().Contains(qLower) ||
-                    (v.Model ?? "").ToLower().Contains(qLower));
-            }
-
-            var vehicles = await query
-                .OrderByDescending(v => v.Id)
-                .ToListAsync();
-
-            VehiclesGrid.ItemsSource = vehicles;
-        }
-        private async void SearchBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-            await LoadVehiclesAsync();
-        }
-
-        private async void Button_Click(object sender, RoutedEventArgs e)
+		private async Task LoadLookupsAsync()
 		{
 			using var db = new AppDbContext(_dbOptions);
 
-			var vehicle = new Vehicle
+			VehicleCombo.ItemsSource = await db.Vehicles.AsNoTracking()
+				.OrderByDescending(x => x.Id).ToListAsync();
+
+			DriverCombo.ItemsSource = await db.Set<Driver>().AsNoTracking()
+				.OrderBy(x => x.FullName).ToListAsync();
+
+			CommanderCombo.ItemsSource = await db.Set<VehicleCommander>().AsNoTracking()
+				.OrderBy(x => x.FullName).ToListAsync();
+
+			ExitDate.SelectedDate = DateTime.Today;
+		}
+
+		private async Task LoadMovementsAsync()
+		{
+			using var db = new AppDbContext(_dbOptions);
+
+			var rows = await db.Set<VehicleMovement>()
+				.AsNoTracking()
+				.OrderByDescending(x => x.Id)
+				.Select(x => new VehicleMovementRow
+				{
+					Id = x.Id,
+					VehiclePlate = x.Vehicle.Plate,
+					DriverName = x.Driver.FullName,
+					CommanderName = x.VehicleCommander.FullName,
+					ExitDateTime = x.ExitDateTime,
+					ReturnDateTime = x.ReturnDateTime,
+					Route = x.Route,
+					Purpose = x.Purpose,
+					KmInfo = x.EndKm == null ? $"{x.StartKm} → ?" : $"{x.StartKm} → {x.EndKm}"
+				})
+				.ToListAsync();
+
+			MovementsGrid.ItemsSource = rows;
+		}
+
+		private async void RefreshMovements_Click(object sender, RoutedEventArgs e)
+		{
+			await LoadMovementsAsync();
+		}
+
+		private async void SaveMovement_Click(object sender, RoutedEventArgs e)
+		{
+			if (VehicleCombo.SelectedValue is not int vehicleId)
 			{
-				Plate = "34FAST001",
-				Brand = "Toyota",
-				Model = "Corolla",
-				CreatedAt = DateTime.UtcNow
+				MessageBox.Show("Araç seçmelisin.");
+				return;
+			}
+			if (DriverCombo.SelectedValue is not int driverId)
+			{
+				MessageBox.Show("Sürücü seçmelisin.");
+				return;
+			}
+			if (CommanderCombo.SelectedValue is not int commanderId)
+			{
+				MessageBox.Show("Araç komutanı seçmelisin.");
+				return;
+			}
+
+			if (string.IsNullOrWhiteSpace(RouteBox.Text) || string.IsNullOrWhiteSpace(PurposeBox.Text))
+			{
+				MessageBox.Show("Güzergah ve amaç zorunlu.");
+				return;
+			}
+
+			if (!int.TryParse(StartKmBox.Text, out var startKm))
+			{
+				MessageBox.Show("Başlangıç KM sayı olmalı.");
+				return;
+			}
+
+			int? endKm = null;
+			if (!string.IsNullOrWhiteSpace(EndKmBox.Text))
+			{
+				if (int.TryParse(EndKmBox.Text, out var parsed))
+					endKm = parsed;
+				else
+				{
+					MessageBox.Show("Bitiş KM sayı olmalı.");
+					return;
+				}
+			}
+
+			var exitDate = ExitDate.SelectedDate ?? DateTime.Today;
+			var returnDate = ReturnDate.SelectedDate;
+
+			using var db = new AppDbContext(_dbOptions);
+
+			var movement = new VehicleMovement
+			{
+				VehicleId = vehicleId,
+				DriverId = driverId,
+				VehicleCommanderId = commanderId,
+				ExitDateTime = DateTime.SpecifyKind(exitDate, DateTimeKind.Utc),
+				ReturnDateTime = returnDate == null ? null : DateTime.SpecifyKind(returnDate.Value, DateTimeKind.Utc),
+				Route = RouteBox.Text.Trim(),
+				Purpose = PurposeBox.Text.Trim(),
+				Description = string.IsNullOrWhiteSpace(DescBox.Text) ? null : DescBox.Text.Trim(),
+				StartKm = startKm,
+				EndKm = endKm,
+				CreatedAt = DateTime.UtcNow,
+				IsDeleted = false
 			};
 
-			db.Vehicles.Add(vehicle);
+			db.Set<VehicleMovement>().Add(movement);
 			await db.SaveChangesAsync();
 
-			MessageBox.Show("Kayıt eklendi. ID: " + vehicle.Id);
+			MessageBox.Show("Hareket kaydedildi. ID: " + movement.Id);
 
-			await LoadVehiclesAsync(); // ✅ ekledikten sonra listeyi yenile
-		}
-		private async void Save_Click(object sender, RoutedEventArgs e)
-		{
-			var plate = PlateBox.Text?.Trim();
-			var brand = BrandBox.Text?.Trim();
-			var model = ModelBox.Text?.Trim();
+			// temizle + yenile
+			RouteBox.Text = "";
+			PurposeBox.Text = "";
+			DescBox.Text = "";
+			StartKmBox.Text = "";
+			EndKmBox.Text = "";
+			ReturnDate.SelectedDate = null;
 
-			if (string.IsNullOrWhiteSpace(plate) ||
-				string.IsNullOrWhiteSpace(brand) ||
-				string.IsNullOrWhiteSpace(model))
-			{
-				MessageBox.Show("Plaka / Marka / Model boş olamaz.");
-				return;
-			}
-
-			using var db = new AppDbContext(_dbOptions);
-
-			if (_selectedVehicleId is null)
-			{
-				// INSERT
-				var vehicle = new Vehicle
-				{
-					Plate = plate,
-					Brand = brand,
-					Model = model,
-					CreatedAt = DateTime.UtcNow
-				};
-
-				db.Vehicles.Add(vehicle);
-				try
-				{
-					await db.SaveChangesAsync();
-				}
-				catch (DbUpdateException ex) when (ex.InnerException is PostgresException pg && pg.SqlState == "23505")
-				{
-					MessageBox.Show("Bu plaka zaten kayıtlı. Lütfen farklı bir plaka gir.");
-					return;
-				}
-			}
-			else
-			{
-				// UPDATE
-				var vehicle = await db.Vehicles.FirstOrDefaultAsync(v => v.Id == _selectedVehicleId.Value);
-				if (vehicle == null)
-				{
-					MessageBox.Show("Güncellenecek kayıt bulunamadı (silinmiş olabilir).");
-					await LoadVehiclesAsync();
-					New_Click(sender, e);
-					return;
-				}
-
-				vehicle.Plate = plate;
-				vehicle.Brand = brand;
-				vehicle.Model = model;
-
-				try
-				{
-					await db.SaveChangesAsync();
-				}
-				catch (DbUpdateException ex) when (ex.InnerException is PostgresException pg && pg.SqlState == "23505")
-				{
-					MessageBox.Show("Bu plaka zaten kayıtlı. Lütfen farklı bir plaka gir.");
-					return;
-				}
-			}
-
-			await LoadVehiclesAsync();
-			New_Click(sender, e); // kaydettikten sonra formu temizle
-		}
-		private async void Delete_Click(object sender, RoutedEventArgs e)
-		{
-			if (VehiclesGrid.SelectedItem is not Vehicle selected)
-			{
-				MessageBox.Show("Lütfen listeden silinecek aracı seç.");
-				return;
-			}
-
-			var confirm = MessageBox.Show(
-				$"Silinsin mi?\nPlaka: {selected.Plate}",
-				"Silme Onayı",
-				MessageBoxButton.YesNo,
-				MessageBoxImage.Warning);
-
-			if (confirm != MessageBoxResult.Yes)
-				return;
-
-			using var db = new AppDbContext(_dbOptions);
-
-			// Id ile sil (tracking gerektirmez)
-			db.Vehicles.Remove(new Vehicle { Id = selected.Id });
-
-			await db.SaveChangesAsync();
-			await LoadVehiclesAsync();
-		}
-
-		private int? _selectedVehicleId = null;
-		private void VehiclesGrid_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-		{
-			if (VehiclesGrid.SelectedItem is not Vehicle selected)
-				return;
-
-			_selectedVehicleId = selected.Id;
-
-			PlateBox.Text = selected.Plate;
-			BrandBox.Text = selected.Brand;
-			ModelBox.Text = selected.Model;
-		}
-		private void New_Click(object sender, RoutedEventArgs e)
-		{
-			_selectedVehicleId = null;
-			VehiclesGrid.SelectedItem = null;
-
-			PlateBox.Clear();
-			BrandBox.Clear();
-			ModelBox.Clear();
-
-			PlateBox.Focus();
+			await LoadMovementsAsync();
 		}
 	}
 }
