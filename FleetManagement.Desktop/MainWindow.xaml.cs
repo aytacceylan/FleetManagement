@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Linq;
 using System.Windows;
 using FleetManagement.Domain.Entities;
 using FleetManagement.Infrastructure.Data;
@@ -18,7 +19,7 @@ namespace FleetManagement.Desktop
 			InitializeComponent();
 
 			_dbOptions = new DbContextOptionsBuilder<AppDbContext>()
-				.UseNpgsql("Host=localhost;Port=5432;Database=FleetDb;Username=postgres;Password=1234")
+				.UseNpgsql("Host=127.0.0.1;Port=5432;Database=FleetDb;Username=postgres;Password=1234")
 				.Options;
 
 			Loaded += MainWindow_Loaded;
@@ -29,19 +30,36 @@ namespace FleetManagement.Desktop
 			await LoadVehiclesAsync();
 		}
 
-		private async Task LoadVehiclesAsync()
-		{
-			using var db = new AppDbContext(_dbOptions);
+        private async Task LoadVehiclesAsync()
+        {
+            using var db = new AppDbContext(_dbOptions);
 
-			var vehicles = await db.Vehicles
-				.AsNoTracking()
-				.OrderByDescending(v => v.Id)
-				.ToListAsync();
+            var q = (SearchBox.Text ?? "").Trim();
 
-			VehiclesGrid.ItemsSource = vehicles;
-		}
+            IQueryable<Vehicle> query = db.Vehicles.AsNoTracking();
 
-		private async void Button_Click(object sender, RoutedEventArgs e)
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                var qLower = q.ToLower();
+
+                query = query.Where(v =>
+                    (v.Plate ?? "").ToLower().Contains(qLower) ||
+                    (v.Brand ?? "").ToLower().Contains(qLower) ||
+                    (v.Model ?? "").ToLower().Contains(qLower));
+            }
+
+            var vehicles = await query
+                .OrderByDescending(v => v.Id)
+                .ToListAsync();
+
+            VehiclesGrid.ItemsSource = vehicles;
+        }
+        private async void SearchBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            await LoadVehiclesAsync();
+        }
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
 		{
 			using var db = new AppDbContext(_dbOptions);
 

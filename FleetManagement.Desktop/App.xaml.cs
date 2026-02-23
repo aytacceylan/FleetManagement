@@ -14,7 +14,7 @@ namespace FleetManagement.Desktop
 			base.OnStartup(e);
 
 	
-			var connectionString = "Host=::1;Port=5432;Database=FleetDb;Username=postgres;Password=1234";
+			var connectionString = "Host=127.0.0.1;Port=5432;Database=FleetDb;Username=postgres;Password=1234";
 
 			var services = new ServiceCollection();
 

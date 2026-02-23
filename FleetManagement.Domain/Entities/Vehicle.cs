@@ -1,7 +1,7 @@
 ﻿namespace FleetManagement.Domain.Entities
 {
-	public class Vehicle
-	{
+    public class Vehicle : BaseEntity
+    {
 		public int Id { get; set; }           // ✅ int
 
 		public string Plate { get; set; } = string.Empty;
