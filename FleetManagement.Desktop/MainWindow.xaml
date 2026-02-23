@@ -1,89 +1,31 @@
 ﻿<Window x:Class="FleetManagement.Desktop.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Fleet Management" Height="650" Width="1050">
-    <Grid Margin="12">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        Title="FleetManage" Height="720" Width="1200"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-        <!-- FORM -->
-        <GroupBox Header="Araç Hareketi / Sevk" Padding="10">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="170"/>
-                    <ColumnDefinition Width="280"/>
-                    <ColumnDefinition Width="170"/>
-                    <ColumnDefinition Width="280"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+        <!-- SOL MENÜ -->
+        <Border Grid.Column="0" Background="#1E1E1E">
+            <StackPanel Margin="12">
+                <TextBlock Text="FleetManage" Foreground="White" FontSize="20" Margin="4 8 4 16"/>
 
-                <TextBlock Text="Araç" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
-                <ComboBox x:Name="VehicleCombo" Grid.Row="0" Grid.Column="1" Height="28"
-                          DisplayMemberPath="Plate" SelectedValuePath="Id"/>
+                <Button Content="Dashboard" Margin="0 0 0 8"
+                        Command="{Binding ShowDashboardCommand}"/>
+                <Button Content="Sürücüler" Margin="0 0 0 8"
+                        Command="{Binding ShowDriversCommand}"/>
+                <Button Content="Araç Hareketi" Margin="0 0 0 8"
+                        Command="{Binding ShowMovementsCommand}"/>
+            </StackPanel>
+        </Border>
 
-                <TextBlock Text="Sürücü" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center"/>
-                <ComboBox x:Name="DriverCombo" Grid.Row="0" Grid.Column="3" Height="28"
-                          DisplayMemberPath="FullName" SelectedValuePath="Id"/>
-
-                <TextBlock Text="Araç Komutanı" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"/>
-                <ComboBox x:Name="CommanderCombo" Grid.Row="1" Grid.Column="1" Height="28"
-                          DisplayMemberPath="FullName" SelectedValuePath="Id"/>
-
-                <TextBlock Text="Çıkış" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"/>
-                <DatePicker x:Name="ExitDate" Grid.Row="1" Grid.Column="3" Height="28"/>
-
-                <TextBlock Text="Dönüş" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center"/>
-                <DatePicker x:Name="ReturnDate" Grid.Row="2" Grid.Column="3" Height="28"/>
-
-                <TextBlock Text="Güzergah" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"/>
-                <TextBox x:Name="RouteBox" Grid.Row="2" Grid.Column="1" Height="28"/>
-
-                <TextBlock Text="Amaç" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center"/>
-                <TextBox x:Name="PurposeBox" Grid.Row="3" Grid.Column="1" Height="28"/>
-
-                <TextBlock Text="Başlangıç KM" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center"/>
-                <TextBox x:Name="StartKmBox" Grid.Row="3" Grid.Column="3" Height="28"/>
-
-                <TextBlock Text="Bitiş KM" Grid.Row="4" Grid.Column="2" VerticalAlignment="Center"/>
-                <TextBox x:Name="EndKmBox" Grid.Row="4" Grid.Column="3" Height="28"/>
-
-                <TextBlock Text="Açıklama" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center"/>
-                <TextBox x:Name="DescBox" Grid.Row="4" Grid.Column="1" Height="28"/>
-
-                <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Orientation="Horizontal"
-                            Margin="0,10,0,0" HorizontalAlignment="Right">
-                    <Button Content="Kaydet" Width="120" Height="32" Margin="0,0,8,0"
-                            Click="SaveMovement_Click"/>
-                    <Button Content="Yenile" Width="120" Height="32"
-                            Click="RefreshMovements_Click"/>
-                </StackPanel>
-            </Grid>
-        </GroupBox>
-
-        <!-- LIST -->
-        <GroupBox Grid.Row="2" Header="Hareketler" Padding="10" Margin="0,10,0,0">
-            <DataGrid x:Name="MovementsGrid" AutoGenerateColumns="False" IsReadOnly="True">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="60"/>
-                    <DataGridTextColumn Header="Araç" Binding="{Binding VehiclePlate}" Width="120"/>
-                    <DataGridTextColumn Header="Sürücü" Binding="{Binding DriverName}" Width="180"/>
-                    <DataGridTextColumn Header="Komutan" Binding="{Binding CommanderName}" Width="180"/>
-                    <DataGridTextColumn Header="Çıkış" Binding="{Binding ExitDateTime}" Width="160"/>
-                    <DataGridTextColumn Header="Dönüş" Binding="{Binding ReturnDateTime}" Width="160"/>
-                    <DataGridTextColumn Header="Güzergah" Binding="{Binding Route}" Width="200"/>
-                    <DataGridTextColumn Header="Amaç" Binding="{Binding Purpose}" Width="200"/>
-                    <DataGridTextColumn Header="KM" Binding="{Binding KmInfo}" Width="120"/>
-                </DataGrid.Columns>
-            </DataGrid>
-        </GroupBox>
+        <!-- İÇERİK -->
+        <Border Grid.Column="1" Background="#F5F5F5" Padding="16">
+            <ContentControl Content="{Binding CurrentView}"/>
+        </Border>
     </Grid>
 </Window>
