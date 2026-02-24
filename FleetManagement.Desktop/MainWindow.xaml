@@ -1,31 +1,116 @@
 ﻿<Window x:Class="FleetManagement.Desktop.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="FleetManage" Height="720" Width="1200"
-        WindowStartupLocation="CenterScreen">
+        Title="FleetManage" Height="800" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource AppBackgroundBrush}">
+
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="240"/>
+            <ColumnDefinition Width="260"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="64"/>
+            <!-- Header -->
+            <RowDefinition Height="*"/>
+            <!-- Content -->
+            <RowDefinition Height="36"/>
+            <!-- Footer -->
+        </Grid.RowDefinitions>
 
-        <!-- SOL MENÜ -->
-        <Border Grid.Column="0" Background="#1E1E1E">
-            <StackPanel Margin="12">
-                <TextBlock Text="FleetManage" Foreground="White" FontSize="20" Margin="4 8 4 16"/>
+        <!-- SIDEBAR -->
+        <Border Grid.RowSpan="3" Grid.Column="0"
+                Background="{StaticResource BrushNavy800}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="0,0,1,0">
+            <DockPanel LastChildFill="True">
 
-                <Button Content="Dashboard" Margin="0 0 0 8"
-                        Command="{Binding ShowDashboardCommand}"/>
-                <Button Content="Sürücüler" Margin="0 0 0 8"
-                        Command="{Binding ShowDriversCommand}"/>
-                <Button Content="Araç Hareketi" Margin="0 0 0 8"
-                        Command="{Binding ShowMovementsCommand}"/>
-            </StackPanel>
+                <!-- Logo/Title -->
+                <StackPanel DockPanel.Dock="Top" Margin="16,16,16,12">
+                    <TextBlock Text="FleetManage" FontSize="20" FontWeight="SemiBold"/>
+                    <TextBlock Text="Operasyon Paneli" Margin="0,4,0,0"
+                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                </StackPanel>
+
+                <!-- Menu -->
+                <StackPanel Margin="12,0,12,12">
+                    <TextBlock Text="İŞLEMLER" Margin="8,8,0,8"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               FontWeight="SemiBold"/>
+
+                    <Button Content="Araçlar" Click="NavVehicles_Click" Style="{StaticResource SidebarButtonStyle}"/>
+                    <Button Content="Sürücüler" Click="NavDrivers_Click" Style="{StaticResource SidebarButtonStyle}"/>
+                    <Button Content="Araç Komutanı" Click="NavCommanders_Click" Style="{StaticResource SidebarButtonStyle}"/>
+                    <Button Content="Araç Hareketi" Click="NavMovements_Click" Style="{StaticResource SidebarButtonStyle}"/>
+
+                    <Separator Margin="8,14"/>
+
+                    <Button Content="Ayarlar" Click="NavSettings_Click" Style="{StaticResource SidebarButtonStyle}"/>
+                </StackPanel>
+
+                <!-- Sidebar Footer -->
+                <StackPanel DockPanel.Dock="Bottom" Margin="16,0,16,16">
+                    <TextBlock Text="Durum: Bağlı" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBlock Text="DB: FleetDb" Foreground="{StaticResource TextSecondaryBrush}"/>
+                </StackPanel>
+            </DockPanel>
         </Border>
 
-        <!-- İÇERİK -->
-        <Border Grid.Column="1" Background="#F5F5F5" Padding="16">
-            <ContentControl Content="{Binding CurrentView}"/>
+        <!-- HEADER -->
+        <Border Grid.Column="1" Grid.Row="0"
+                Background="{StaticResource BrushNavy900}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="0,0,0,1">
+            <Grid Margin="16,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                    <TextBlock x:Name="HeaderTitleText" Text="Dashboard" FontSize="18" FontWeight="SemiBold"/>
+                    <TextBlock x:Name="HeaderSubtitleText" Text="Hoş geldin" Foreground="{StaticResource TextSecondaryBrush}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="Yenile" Click="Refresh_Click" Margin="0,0,8,0"
+                            Background="{StaticResource SurfaceBrush}" Foreground="{StaticResource TextPrimaryBrush}"
+                            BorderBrush="{StaticResource BorderBrush}" Padding="12,6"/>
+                    <Button Content="Çıkış" Click="Logout_Click"
+                            Background="{StaticResource BrushDanger}" Foreground="White"
+                            BorderThickness="0" Padding="12,6"/>
+                </StackPanel>
+            </Grid>
         </Border>
+
+        <!-- CONTENT -->
+        <Border Grid.Column="1" Grid.Row="1" Background="{StaticResource AppBackgroundBrush}">
+            <Frame x:Name="MainFrame"
+                   NavigationUIVisibility="Hidden"
+                   Margin="16"/>
+        </Border>
+
+        <!-- FOOTER -->
+        <Border Grid.Column="1" Grid.Row="2"
+                Background="{StaticResource BrushNavy900}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="0,1,0,0">
+            <Grid Margin="16,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock VerticalAlignment="Center"
+                           Text="© FleetManage - Tüm hakları saklıdır."
+                           Foreground="{StaticResource TextSecondaryBrush}"/>
+
+                <TextBlock Grid.Column="1" VerticalAlignment="Center"
+                           Text="v0.1 • 24.02.2026"
+                           Foreground="{StaticResource TextSecondaryBrush}"/>
+            </Grid>
+        </Border>
+
     </Grid>
 </Window>
