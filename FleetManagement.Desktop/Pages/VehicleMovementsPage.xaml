@@ -3,12 +3,129 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Background="Transparent">
 
-    <Border Style="{StaticResource CardBorder}">
-        <StackPanel>
-            <TextBlock Text="VehicleMovements" FontSize="18" FontWeight="SemiBold"/>
-            <TextBlock Text="Seçtiğin menüye göre içerik burada değişecek."
-                       Margin="0,8,0,0"
-                       Foreground="{StaticResource TextSecondaryBrush}"/>
-        </StackPanel>
-    </Border>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="420"/>
+            <ColumnDefinition Width="12"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- FORM -->
+        <Border Style="{StaticResource CardBorder}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <TextBlock Text="Araç Hareketi" Style="{StaticResource PageTitleStyle}"/>
+                    <TextBlock Text="Araç / Sürücü / Komutan seç veya yaz • Çıkış zamanı kayıtta otomatik"
+                               Margin="0,6,0,14"
+                               Style="{StaticResource PageSubtitleStyle}"/>
+
+                    <TextBlock Text="Araç (Plaka)"/>
+                    <ComboBox x:Name="VehicleCombo"
+                              IsEditable="True"
+                              IsTextSearchEnabled="True"
+                              DisplayMemberPath="Plate"
+                              SelectedValuePath="Id"
+                              Margin="0,6,0,10"/>
+
+                    <TextBlock Text="Sürücü"/>
+                    <ComboBox x:Name="DriverCombo"
+                              IsEditable="True"
+                              IsTextSearchEnabled="True"
+                              DisplayMemberPath="FullName"
+                              SelectedValuePath="Id"
+                              Margin="0,6,0,10"/>
+
+                    <TextBlock Text="Araç Komutanı"/>
+                    <ComboBox x:Name="CommanderCombo"
+                              IsEditable="True"
+                              IsTextSearchEnabled="True"
+                              DisplayMemberPath="FullName"
+                              SelectedValuePath="Id"
+                              Margin="0,6,0,10"/>
+
+                    <TextBlock Text="Dönüş Tarihi (opsiyonel)"/>
+                    <DatePicker x:Name="ReturnDatePicker" Margin="0,6,0,10"/>
+
+                    <TextBlock Text="Dönüş Saati (HH:mm, opsiyonel)"/>
+                    <TextBox x:Name="ReturnTimeBox" Margin="0,6,0,14"/>
+
+                    <TextBlock Text="Güzergah (opsiyonel)"/>
+                    <TextBox x:Name="RouteBox" Margin="0,6,0,10"/>
+
+                    <TextBlock Text="Amaç (opsiyonel)"/>
+                    <TextBox x:Name="PurposeBox" Margin="0,6,0,10"/>
+
+                    <TextBlock Text="Açıklama (opsiyonel)"/>
+                    <TextBox x:Name="DescriptionBox" Margin="0,6,0,10" AcceptsReturn="True" Height="70"/>
+
+                    <TextBlock Text="Yük / Yolcu Bilgisi (opsiyonel)"/>
+                    <TextBox x:Name="LoadInfoBox" Margin="0,6,0,10"/>
+
+                    <TextBlock Text="Başlangıç KM (opsiyonel)"/>
+                    <TextBox x:Name="StartKmBox" Margin="0,6,0,10"/>
+
+                    <TextBlock Text="Bitiş KM (opsiyonel)"/>
+                    <TextBox x:Name="EndKmBox" Margin="0,6,0,14"/>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Yeni" Width="90" Click="New_Click"
+                                Background="{StaticResource SurfaceBrush}"
+                                BorderBrush="{StaticResource BorderBrush}"/>
+
+                        <Button Content="Kaydet" Width="90" Margin="8,0,0,0"
+                                Click="Save_Click"
+                                Background="{StaticResource BrushAccent}"
+                                Foreground="White" BorderThickness="0"/>
+
+                        <Button Content="Sil" Width="90" Margin="8,0,0,0"
+                                Click="Delete_Click"
+                                Background="{StaticResource BrushDanger}"
+                                Foreground="White" BorderThickness="0"/>
+                    </StackPanel>
+
+                    <TextBlock x:Name="FormInfo" Margin="0,12,0,0"
+                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- LIST -->
+        <Border Grid.Column="2" Style="{StaticResource CardBorder}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <DockPanel>
+                    <TextBlock Text="Hareket Listesi"
+                               Style="{StaticResource SectionTitleStyle}"
+                               DockPanel.Dock="Left"/>
+
+                    <TextBox x:Name="SearchBox"
+                             Width="260"
+                             Margin="12,0,0,0"
+                             DockPanel.Dock="Right"
+                             TextChanged="SearchBox_TextChanged"/>
+                </DockPanel>
+
+                <DataGrid x:Name="GridMovements" Grid.Row="1" Margin="0,12,0,0"
+                          AutoGenerateColumns="False" IsReadOnly="True"
+                          SelectionMode="Single" SelectionChanged="GridMovements_SelectionChanged">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
+                        <DataGridTextColumn Header="Plaka" Binding="{Binding VehicleDisplay}" Width="*"/>
+                        <DataGridTextColumn Header="Sürücü" Binding="{Binding DriverDisplay}" Width="*"/>
+                        <DataGridTextColumn Header="Komutan" Binding="{Binding CommanderDisplay}" Width="*"/>
+                        <DataGridTextColumn Header="Çıkış" Binding="{Binding ExitDateTime}" Width="170"/>
+                        <DataGridTextColumn Header="Dönüş" Binding="{Binding ReturnDateTime}" Width="170"/>
+                        <DataGridTextColumn Header="Güzergah" Binding="{Binding Route}" Width="*"/>
+                        <DataGridTextColumn Header="Amaç" Binding="{Binding Purpose}" Width="*"/>
+                        <DataGridTextColumn Header="Baş.KM" Binding="{Binding StartKm}" Width="90"/>
+                        <DataGridTextColumn Header="Bit.KM" Binding="{Binding EndKm}" Width="90"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+    </Grid>
 </Page>
