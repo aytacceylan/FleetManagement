@@ -35,7 +35,7 @@ namespace FleetManagement.Desktop.Views
 			VehicleCombo.ItemsSource = await db.Vehicles.AsNoTracking()
 				.OrderByDescending(x => x.Id).ToListAsync();
 
-			DriverCombo.ItemsSource = await db.Set<Driver>().AsNoTracking()
+            DriverCombo.ItemsSource = await db.Set<Driver>().AsNoTracking()
 				.OrderBy(x => x.FullName).ToListAsync();
 
 			CommanderCombo.ItemsSource = await db.Set<VehicleCommander>().AsNoTracking()
