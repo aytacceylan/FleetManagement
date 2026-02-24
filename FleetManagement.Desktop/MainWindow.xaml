@@ -39,14 +39,15 @@
                                Foreground="{StaticResource TextSecondaryBrush}"
                                FontWeight="SemiBold"/>
 
-                    <Button Content="Araçlar" Click="NavVehicles_Click" Style="{StaticResource SidebarButtonStyle}"/>
-                    <Button Content="Sürücüler" Click="NavDrivers_Click" Style="{StaticResource SidebarButtonStyle}"/>
-                    <Button Content="Araç Komutanı" Click="NavCommanders_Click" Style="{StaticResource SidebarButtonStyle}"/>
-                    <Button Content="Araç Hareketi" Click="NavMovements_Click" Style="{StaticResource SidebarButtonStyle}"/>
+                    <Button x:Name="BtnDashboard" Content="Dashboard" Tag="Dashboard" Click="SidebarNav_Click" Style="{StaticResource SidebarButtonStyle}"/>
+                    <Button x:Name="BtnVehicles" Content="Araçlar" Tag="Vehicles" Click="SidebarNav_Click" Style="{StaticResource SidebarButtonStyle}"/>
+                    <Button x:Name="BtnDrivers" Content="Sürücüler" Tag="Drivers" Click="SidebarNav_Click" Style="{StaticResource SidebarButtonStyle}"/>
+                    <Button x:Name="BtnCommanders" Content="Araç Komutanı" Tag="Commanders" Click="SidebarNav_Click" Style="{StaticResource SidebarButtonStyle}"/>
+                    <Button x:Name="BtnMovements" Content="Araç Hareketi" Tag="Movements" Click="SidebarNav_Click" Style="{StaticResource SidebarButtonStyle}"/>
 
                     <Separator Margin="8,14"/>
 
-                    <Button Content="Ayarlar" Click="NavSettings_Click" Style="{StaticResource SidebarButtonStyle}"/>
+                    <Button x:Name="BtnSettings" Content="Ayarlar" Tag="Settings" Click="SidebarNav_Click" Style="{StaticResource SidebarButtonStyle}"/>
                 </StackPanel>
 
                 <!-- Sidebar Footer -->

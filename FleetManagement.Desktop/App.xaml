@@ -70,6 +70,7 @@
                 <Setter Property="Background" Value="{StaticResource AppBackgroundBrush}"/>
             </Style>
 
+            <!-- Sidebar: normal -->
             <Style x:Key="SidebarButtonStyle" TargetType="Button">
                 <Setter Property="Margin" Value="0,6"/>
                 <Setter Property="Padding" Value="12,10"/>
@@ -82,18 +83,31 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="10">
-                                <ContentPresenter Margin="{TemplateBinding Padding}"/>
-                            </Border>
+                            <Grid>
+                                <!-- Sol accent çizgi (normalde görünmez) -->
+                                <Border x:Name="Accent"
+                            Width="4"
+                            HorizontalAlignment="Left"
+                            CornerRadius="2"
+                            Background="{StaticResource BrushAccent}"
+                            Opacity="0"/>
+
+                                <Border x:Name="Root"
+                            Margin="0"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="10">
+                                    <ContentPresenter Margin="{TemplateBinding Padding}"/>
+                                </Border>
+                            </Grid>
+
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="{StaticResource BrushNavy700}"/>
+                                    <Setter TargetName="Root" Property="Background" Value="{StaticResource BrushNavy700}"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter Property="Background" Value="{StaticResource BrushNavy600}"/>
+                                    <Setter TargetName="Root" Property="Background" Value="{StaticResource BrushNavy600}"/>
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False">
                                     <Setter Property="Opacity" Value="0.55"/>
@@ -102,6 +116,13 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
+            </Style>
+
+            <!-- Sidebar: aktif -->
+            <Style x:Key="SidebarButtonActiveStyle" TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
+                <Setter Property="Background" Value="{StaticResource BrushNavy700}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource BrushAccent}"/>
+                <Setter Property="BorderThickness" Value="1"/>
             </Style>
 
         </ResourceDictionary>
