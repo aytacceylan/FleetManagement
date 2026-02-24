@@ -28,7 +28,7 @@ namespace FleetManagement.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));//
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
