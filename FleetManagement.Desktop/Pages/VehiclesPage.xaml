@@ -13,9 +13,11 @@
         <!-- Form -->
         <Border Style="{StaticResource CardBorder}">
             <StackPanel>
-                <TextBlock Text="Araç" FontSize="18" FontWeight="SemiBold"/>
-                <TextBlock Text="Yeni / Güncelle / Sil" Margin="0,6,0,14"
-                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                <TextBlock Text="Araç"
+                            Style="{StaticResource PageTitleStyle}"/>
+
+                <TextBlock Text="Yeni / Güncelle / Sil"
+                            Style="{StaticResource PageSubtitleStyle}"/>
 
                 <TextBlock Text="Plaka"/>
                 <TextBox x:Name="PlateBox" Margin="0,6,0,10"/>
@@ -49,7 +51,8 @@
                 </Grid.RowDefinitions>
 
                 <DockPanel>
-                    <TextBlock Text="Araç Listesi" FontSize="18" FontWeight="SemiBold" DockPanel.Dock="Left"/>
+                    <TextBlock Text="Araç Listesi"
+                                Style="{StaticResource SectionTitleStyle}"/>
                     <TextBox x:Name="SearchBox" Width="260" Margin="12,0,0,0"
                              DockPanel.Dock="Right" TextChanged="SearchBox_TextChanged"
                              VerticalAlignment="Center"/>

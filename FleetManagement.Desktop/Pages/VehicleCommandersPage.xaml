@@ -3,12 +3,98 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Background="Transparent">
 
-    <Border Style="{StaticResource CardBorder}">
-        <StackPanel>
-            <TextBlock Text="VehicleCommander" FontSize="18" FontWeight="SemiBold"/>
-            <TextBlock Text="Seçtiğin menüye göre içerik burada değişecek."
-                       Margin="0,8,0,0"
-                       Foreground="{StaticResource TextSecondaryBrush}"/>
-        </StackPanel>
-    </Border>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="360"/>
+            <ColumnDefinition Width="12"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- FORM -->
+        <Border Style="{StaticResource CardBorder}">
+            <StackPanel>
+                <TextBlock Text="Araç Komutanı"
+                           Style="{StaticResource PageTitleStyle}"/>
+
+                <TextBlock Text="Yeni / Güncelle / Sil"
+                           Margin="0,6,0,14"
+                           Style="{StaticResource PageSubtitleStyle}"/>
+
+                <TextBlock Text="Komutan No"/>
+                <TextBox x:Name="CommanderNumberBox" Margin="0,6,0,10"/>
+
+                <TextBlock Text="Ad Soyad"/>
+                <TextBox x:Name="FullNameBox" Margin="0,6,0,10"/>
+
+                <TextBlock Text="Telefon"/>
+                <TextBox x:Name="PhoneBox" Margin="0,6,0,10"/>
+
+                <TextBlock Text="Birlik / Birim"/>
+                <TextBox x:Name="UnitBox" Margin="0,6,0,14"/>
+
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="Yeni" Width="90"
+                            Click="New_Click"
+                            Background="{StaticResource SurfaceBrush}"
+                            BorderBrush="{StaticResource BorderBrush}"/>
+
+                    <Button Content="Kaydet" Width="90"
+                            Margin="8,0,0,0"
+                            Click="Save_Click"
+                            Background="{StaticResource BrushAccent}"
+                            Foreground="White" BorderThickness="0"/>
+
+                    <Button Content="Sil" Width="90"
+                            Margin="8,0,0,0"
+                            Click="Delete_Click"
+                            Background="{StaticResource BrushDanger}"
+                            Foreground="White" BorderThickness="0"/>
+                </StackPanel>
+
+                <TextBlock x:Name="FormInfo"
+                           Margin="0,12,0,0"
+                           Foreground="{StaticResource TextSecondaryBrush}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- LIST -->
+        <Border Grid.Column="2" Style="{StaticResource CardBorder}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <DockPanel>
+                    <TextBlock Text="Komutan Listesi"
+                               Style="{StaticResource SectionTitleStyle}"
+                               DockPanel.Dock="Left"/>
+
+                    <TextBox x:Name="SearchBox"
+                             Width="260"
+                             Margin="12,0,0,0"
+                             DockPanel.Dock="Right"
+                             TextChanged="SearchBox_TextChanged"/>
+                </DockPanel>
+
+                <DataGrid x:Name="GridCommanders"
+                          Grid.Row="1"
+                          Margin="0,12,0,0"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          SelectionMode="Single"
+                          SelectionChanged="Grid_SelectionChanged">
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
+                        <DataGridTextColumn Header="Komutan No" Binding="{Binding CommanderNumber}" Width="*"/>
+                        <DataGridTextColumn Header="Ad Soyad" Binding="{Binding FullName}" Width="*"/>
+                        <DataGridTextColumn Header="Telefon" Binding="{Binding PhoneNumber}" Width="*"/>
+                        <DataGridTextColumn Header="Birim" Binding="{Binding UnitName}" Width="*"/>
+                        <DataGridTextColumn Header="Oluşturma" Binding="{Binding CreatedAt}" Width="180"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+    </Grid>
 </Page>
