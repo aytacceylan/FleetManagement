@@ -2,7 +2,6 @@
 {
     public class Vehicle : BaseEntity
     {
-		public int Id { get; set; }           // ✅ int
 
 		public string Plate { get; set; } = string.Empty;
 		public string Brand { get; set; } = string.Empty;
@@ -13,6 +12,12 @@
 
 		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-	}
+
+
+        public override string ToString() => Plate;
+
+    }
+
+
 }
 

@@ -6,5 +6,7 @@
 		public string FullName { get; set; } = null!;
 		public string PhoneNumber { get; set; } = null!;
 		public string UnitName { get; set; } = null!;          // Bağlı olduğu birlik/birim
-	}
+
+        public override string ToString() => FullName;
+    }
 }

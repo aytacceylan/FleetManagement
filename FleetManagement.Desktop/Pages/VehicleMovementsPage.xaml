@@ -3,6 +3,44 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Background="Transparent">
 
+    <!-- SAYFA İÇİ TEK VE NET: ComboBox dropdown item stili -->
+    <Page.Resources>
+        <Style x:Key="MovementComboItemStyle" TargetType="ComboBoxItem">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#0B1B3A"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="8">
+                            <ContentPresenter />
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <!-- Hover -->
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#163A78"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+
+                            <!-- Selected -->
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#2456B3"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="420"/>
@@ -25,7 +63,8 @@
                               IsTextSearchEnabled="True"
                               DisplayMemberPath="Plate"
                               SelectedValuePath="Id"
-                              Margin="0,6,0,10"/>
+                              Margin="0,6,0,10"
+                              ItemContainerStyle="{StaticResource MovementComboItemStyle}" Foreground="{DynamicResource BrushDanger}" Background="#FF163764" FontWeight="Bold"/>
 
                     <TextBlock Text="Sürücü"/>
                     <ComboBox x:Name="DriverCombo"
@@ -33,7 +72,8 @@
                               IsTextSearchEnabled="True"
                               DisplayMemberPath="FullName"
                               SelectedValuePath="Id"
-                              Margin="0,6,0,10"/>
+                              Margin="0,6,0,10"
+                              ItemContainerStyle="{StaticResource MovementComboItemStyle}" Foreground="{DynamicResource BrushDanger}" FontWeight="Bold"/>
 
                     <TextBlock Text="Araç Komutanı"/>
                     <ComboBox x:Name="CommanderCombo"
@@ -41,7 +81,8 @@
                               IsTextSearchEnabled="True"
                               DisplayMemberPath="FullName"
                               SelectedValuePath="Id"
-                              Margin="0,6,0,10"/>
+                              Margin="0,6,0,10"
+                              ItemContainerStyle="{StaticResource MovementComboItemStyle}" Foreground="{DynamicResource BrushDanger}" FontWeight="Bold"/>
 
                     <TextBlock Text="Dönüş Tarihi (opsiyonel)"/>
                     <DatePicker x:Name="ReturnDatePicker" Margin="0,6,0,10"/>

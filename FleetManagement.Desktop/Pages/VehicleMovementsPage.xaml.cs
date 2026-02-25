@@ -34,12 +34,34 @@ namespace FleetManagement.Desktop.Pages
 		public VehicleMovementsPage()
 		{
 			InitializeComponent();
-			Loaded += async (_, __) =>
+
+            // ✅ ComboBox seçimi olunca editable Text alanına da yaz
+            VehicleCombo.SelectionChanged += (_, __) =>
+            {
+                if (VehicleCombo.SelectedItem is Vehicle v)
+                    VehicleCombo.Text = v.Plate;
+            };
+
+            DriverCombo.SelectionChanged += (_, __) =>
+            {
+                if (DriverCombo.SelectedItem is Driver d)
+                    DriverCombo.Text = d.FullName;
+            };
+
+            CommanderCombo.SelectionChanged += (_, __) =>
+            {
+                if (CommanderCombo.SelectedItem is VehicleCommander c)
+                    CommanderCombo.Text = c.FullName;
+            };
+
+            Loaded += async (_, __) =>
 			{
 				await LoadCombosAsync();
 				await LoadGridAsync();
 			};
 		}
+
+
 
 		private async Task LoadCombosAsync()
 		{
@@ -133,7 +155,7 @@ namespace FleetManagement.Desktop.Pages
 			{
 				entity = new VehicleMovement
 				{
-					ExitDateTime = DateTime.Now,   // ✅ kayıt anı
+                    ExitDateTime = DateTime.UtcNow,   // ✅ kayıt anı
 					CreatedAt = DateTime.UtcNow
 				};
 				db.VehicleMovements.Add(entity);
@@ -184,11 +206,11 @@ namespace FleetManagement.Desktop.Pages
 				entity.CommanderText = string.IsNullOrWhiteSpace(text) ? null : text;
 			}
 
-			// ✅ ReturnDateTime: DatePicker + opsiyonel saat
-			entity.ReturnDateTime = BuildReturnDateTime(ReturnDatePicker.SelectedDate, ReturnTimeBox.Text);
+            // ✅ ReturnDateTime: DatePicker + opsiyonel saat
+            entity.ReturnDateTime = BuildReturnDateTimeUtc(ReturnDatePicker.SelectedDate, ReturnTimeBox.Text);
 
-			// Opsiyonel alanlar
-			entity.Route = NullIfWhite(RouteBox.Text);
+            // Opsiyonel alanlar
+            entity.Route = NullIfWhite(RouteBox.Text);
 			entity.Purpose = NullIfWhite(PurposeBox.Text);
 			entity.Description = NullIfWhite(DescriptionBox.Text);
 			entity.LoadOrPassengerInfo = NullIfWhite(LoadInfoBox.Text);
@@ -295,26 +317,26 @@ namespace FleetManagement.Desktop.Pages
 			FormInfo.Text = $"Seçili Id: {_selectedId} • Çıkış: {entity.ExitDateTime:dd.MM.yyyy HH:mm}";
 		}
 
-		private static DateTime? BuildReturnDateTime(DateTime? date, string? timeText)
-		{
-			if (date is null) return null;
+        private static DateTime? BuildReturnDateTimeUtc(DateTime? date, string? timeText)
+        {
+            if (date is null) return null;
 
-			var t = (timeText ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(t))
-				return date.Value.Date;
+            var ts = TimeSpan.Zero;
 
-			// HH:mm parse
-			if (TimeSpan.TryParseExact(t, @"hh\:mm", CultureInfo.InvariantCulture, out var ts) ||
-				TimeSpan.TryParse(t, out ts))
-			{
-				return date.Value.Date + ts;
-			}
+            var t = (timeText ?? "").Trim();
+            if (!string.IsNullOrWhiteSpace(t))
+            {
+                // HH:mm bekliyoruz; değilse 00:00 kabul
+                if (!TimeSpan.TryParse(t, out ts))
+                    ts = TimeSpan.Zero;
+            }
 
-			// Saat formatı yanlışsa sadece tarihi al
-			return date.Value.Date;
-		}
+            // DatePicker -> Unspecified gelir, biz local kabul ediyoruz
+            var local = DateTime.SpecifyKind(date.Value.Date + ts, DateTimeKind.Local);
+            return local.ToUniversalTime(); // ✅ timestamptz için UTC
+        }
 
-		private static string? NullIfWhite(string? s)
+        private static string? NullIfWhite(string? s)
 		{
 			var t = (s ?? "").Trim();
 			return string.IsNullOrWhiteSpace(t) ? null : t;

@@ -41,8 +41,7 @@ namespace FleetManagement.Infrastructure.Data
                     .HasForeignKey(x => x.VehicleCommanderId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                e.Property(x => x.Route).IsRequired();
-                e.Property(x => x.Purpose).IsRequired();
+          
             });
 
             // Unique indexler (DB'de de var, EF modelinde de dursun)
