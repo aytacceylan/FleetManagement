@@ -16,8 +16,6 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="10"/>
-                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
@@ -27,60 +25,91 @@
                                Foreground="{StaticResource BrushMuted}"/>
                 </StackPanel>
 
-                <Button Grid.Column="1"
-                        Content="Yenile"
-                        MinWidth="120"
-                        Click="Refresh_Click"/>
-
-                <Button Grid.Column="3"
-                        Content="Yeni Komutan"
-                        MinWidth="160"
-                        Click="New_Click"/>
+                <Button Grid.Column="1" Content="Yenile" MinWidth="120" Click="Refresh_Click"/>
             </Grid>
         </Border>
 
-        <!-- LIST -->
-        <Border Grid.Row="2" Style="{StaticResource FmCard}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="12"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+        <!-- CONTENT -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="420"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-                <Grid Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="320"/>
-                        <ColumnDefinition Width="12"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+            <!-- FORM -->
+            <Border Grid.Column="0" Style="{StaticResource FmCard}">
+                <StackPanel>
 
-                    <TextBox x:Name="SearchBox"
-                             Grid.Column="0"
-                             TextChanged="SearchBox_TextChanged"/>
+                    <TextBlock Text="Komutan Formu" FontSize="16" FontWeight="SemiBold"/>
+                    <TextBlock Text="Yeni / Güncelle / Sil"
+                               Margin="0,6,0,16"
+                               Foreground="{StaticResource BrushMuted}"/>
 
-                    <TextBlock Grid.Column="2"
-                               VerticalAlignment="Center"
-                               Foreground="{StaticResource BrushMuted}"
-                               Text="İpucu: Arama kutusuna ad/telefon yazınca filtreleyeceğiz."/>
+                    <TextBlock Text="Komutan No" Foreground="{StaticResource BrushMuted}"/>
+                    <TextBox x:Name="CommanderNumberBox" Margin="0,6,0,12"/>
+
+                    <TextBlock Text="Ad Soyad" Foreground="{StaticResource BrushMuted}"/>
+                    <TextBox x:Name="FullNameBox" Margin="0,6,0,12"/>
+
+                    <TextBlock Text="Telefon" Foreground="{StaticResource BrushMuted}"/>
+                    <TextBox x:Name="PhoneBox" Margin="0,6,0,16"/>
+
+                    <WrapPanel>
+                        <Button Content="Kaydet" Width="110" Margin="0,0,10,10" Click="Save_Click"/>
+                        <Button Content="Sil" Width="110" Margin="0,0,10,10" Click="Delete_Click"/>
+                        <Button Content="Temizle" Width="110" Margin="0,0,10,10" Click="Clear_Click"/>
+                    </WrapPanel>
+
+                    <TextBlock x:Name="FormInfo"
+                               Margin="0,8,0,0"
+                               Foreground="{StaticResource BrushMuted}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- LIST -->
+            <Border Grid.Column="2" Style="{StaticResource FmCard}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="12"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="280"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Komutan Listesi"
+                                   FontSize="16"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"/>
+
+                        <TextBox x:Name="SearchBox"
+                                 Grid.Column="1"
+                                 TextChanged="SearchBox_TextChanged"/>
+                    </Grid>
+
+                    <DataGrid x:Name="CommandersGrid"
+                              Grid.Row="2"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              CanUserAddRows="False"
+                              SelectionMode="Single"
+                              SelectionChanged="CommandersGrid_SelectionChanged">
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
+                            <DataGridTextColumn Header="Komutan No" Binding="{Binding CommanderNumber}" Width="*"/>
+                            <DataGridTextColumn Header="Ad Soyad" Binding="{Binding FullName}" Width="*"/>
+                            <DataGridTextColumn Header="Telefon" Binding="{Binding PhoneNumber}" Width="*"/>
+                            <DataGridTextColumn Header="Oluşturma" Binding="{Binding CreatedAt}" Width="180"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
                 </Grid>
-
-                <DataGrid x:Name="CommandersGrid"
-                          Grid.Row="2"
-                          AutoGenerateColumns="False"
-                          IsReadOnly="True"
-                          CanUserAddRows="False"
-                          SelectionMode="Single">
-
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
-                        <DataGridTextColumn Header="Komutan No" Binding="{Binding CommanderNumber}" Width="*"/>
-                        <DataGridTextColumn Header="Ad Soyad" Binding="{Binding FullName}" Width="*"/>
-                        <DataGridTextColumn Header="Telefon" Binding="{Binding PhoneNumber}" Width="*"/>
-                        <DataGridTextColumn Header="Oluşturma" Binding="{Binding CreatedAt}" Width="180"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Grid>
-        </Border>
+            </Border>
+        </Grid>
     </Grid>
 </Page>

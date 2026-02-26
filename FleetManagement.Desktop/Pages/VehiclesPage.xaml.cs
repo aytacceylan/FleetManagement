@@ -1,37 +1,55 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace FleetManagement.Desktop.Pages
 {
-	public partial class VehiclesPage 
+	public partial class VehiclesPage : Page
 	{
 		public VehiclesPage()
 		{
 			InitializeComponent();
 
-			// Sunum modu: örnek boş liste
 			VehiclesGrid.ItemsSource = Array.Empty<object>();
+			VehicleTypeCombo.ItemsSource = Array.Empty<object>();
+			CategoryCombo.ItemsSource = Array.Empty<object>();
+			ModelCombo.ItemsSource = Array.Empty<object>();
 		}
 
 		private void Refresh_Click(object sender, RoutedEventArgs e)
 		{
-			// TODO: DB'den yeniden çek
+			FormInfo.Text = "Yenilendi (yakında DB bağlanacak).";
 		}
 
-		private void New_Click(object sender, RoutedEventArgs e)
+		private void Save_Click(object sender, RoutedEventArgs e)
 		{
-			// TODO: Yeni araç formu/dialog
-			MessageBox.Show("Yeni Araç (yakında)", "Bilgi");
+			FormInfo.Text = "Kaydet (yakında).";
 		}
 
-		private void SearchPlateBox_TextChanged(object sender, TextChangedEventArgs e)
+		private void Delete_Click(object sender, RoutedEventArgs e)
+		{
+			FormInfo.Text = "Sil (yakında).";
+		}
+
+		private void Clear_Click(object sender, RoutedEventArgs e)
+		{
+			PlateBox.Text = string.Empty;
+			StatusCombo.SelectedIndex = 0;
+			VehicleTypeCombo.SelectedIndex = -1;
+			CategoryCombo.SelectedIndex = -1;
+			ModelCombo.SelectedIndex = -1;
+
+			FormInfo.Text = "Form temizlendi.";
+		}
+
+		private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			// TODO: filtre
 		}
 
-		private void StatusCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		private void VehiclesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			// TODO: filtre
+			// TODO: seçilen satırı forma doldur
 		}
 	}
 }
