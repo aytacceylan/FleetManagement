@@ -1,4 +1,4 @@
-﻿<Page x:Class="FleetManagement.Desktop.Views.PlaceholderView"
+﻿<Page x:Class="FleetManagement.Desktop.Pages.PlaceholderView"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Title="PlaceholderView"

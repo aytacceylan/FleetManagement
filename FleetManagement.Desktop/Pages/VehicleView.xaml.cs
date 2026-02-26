@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace FleetManagement.Desktop.Views
+namespace FleetManagement.Desktop.Pages
 {
 	/// <summary>
-	/// Interaction logic for CommanderView.xaml
+	/// Interaction logic for VehicleView.xaml
 	/// </summary>
-	public partial class CommanderView : UserControl
+	public partial class VehicleView : UserControl
 	{
-		public CommanderView()
+		public VehicleView()
 		{
 			InitializeComponent();
 		}

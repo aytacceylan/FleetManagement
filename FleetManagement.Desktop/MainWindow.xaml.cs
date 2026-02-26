@@ -21,30 +21,36 @@ namespace FleetManagement.Desktop
 		{
 			ContentFrame.Content = tag switch
 			{
+				// ===== DASHBOARD =====
 				"DashboardPage" => new Pages.DashboardPage(),
 
-				"VehiclesPage" => new Pages.VehiclesPage(),
-				"DriversPage" => new Pages.DriversPage(),
-				"CommandersPage" => new Pages.VehicleCommandersPage(),
+				// ===== TANIMLAMALAR =====
+				"VehiclesPage" => new Pages.VehicleView(),
+				"DriversPage" => new Pages.DriverView(),
+				"CommandersPage" => new Pages.CommanderView(),
 
-				"VehicleMovementsPage" => new Views.VehicleMovementView(),
+				"RoutesPage" => new Pages.PlaceholderView("Tanımlamalar > Route"),
+				"VehicleTypesPage" => new Pages.PlaceholderView("Tanımlamalar > Araç Tipi"),
+				"CategoriesPage" => new Pages.PlaceholderView("Tanımlamalar > Kategori"),
+				"ModelsPage" => new Pages.PlaceholderView("Tanımlamalar > Model"),
+				"UnitsPage" => new Pages.PlaceholderView("Tanımlamalar > Birlik/Bölük-Kısım"),
 
-				// henüz yoksa dashboard'a düş
-				"RoutesPage" => new Views.PlaceholderView("Tanımlamalar > Route"),
-				"VehicleTypesPage" => new Views.PlaceholderView("Tanımlamalar > Araç Tipi"),
-				"CategoriesPage" => new Views.PlaceholderView("Tanımlamalar > Kategori"),
-				"ModelsPage" => new Views.PlaceholderView("Tanımlamalar > Model"),
-				"UnitsPage" => new Views.PlaceholderView("Tanımlamalar > Birlik/Bölük-Kısım"),
+				// ===== İŞLEMLER =====
+				"VehicleMovementsPage" => new Pages.VehicleMovementView(),
+				"VehicleMaintenancesPage" => new Pages.PlaceholderView("İşlemler/Faaliyet > Araç Bakım/Yağlama"),
 
-				"VehicleMaintenancesPage" => new Views.PlaceholderView("İşlemler/Faaliyet > Araç Bakım/Yağlama"),
+				// ===== RAPORLAR =====
+				"QueriesPage" => new Pages.PlaceholderView("Sorgulama/Raporlar > Sorgulamalar"),
+				"ReportsPage" => new Pages.PlaceholderView("Sorgulama/Raporlar > Raporlar"),
 
-				"QueriesPage" => new Views.PlaceholderView("Sorgulama/Raporlar > Sorgulamalar"),
-				"ReportsPage" => new Views.PlaceholderView("Sorgulama/Raporlar > Raporlar"),
+				// ===== AYARLAR =====
+				"AuthorizationPage" => new Pages.PlaceholderView("Ayarlar > Yetkilendirme"),
 
-				"AuthorizationPage" => new Views.PlaceholderView("Ayarlar > Yetkilendirme"),
-				"HelpPage" => new Views.PlaceholderView("Yardım"),
+				// ===== YARDIM =====
+				"HelpPage" => new Pages.PlaceholderView("Yardım"),
 
-				_ => new Views.DashboardView()
+				// ===== DEFAULT =====
+				_ => new Pages.DashboardPage()
 			};
 		}
 	}

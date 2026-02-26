@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace FleetManagement.Desktop.Views
+namespace FleetManagement.Desktop.Pages
 {
 	public partial class VehicleMovementView : UserControl
 	{
