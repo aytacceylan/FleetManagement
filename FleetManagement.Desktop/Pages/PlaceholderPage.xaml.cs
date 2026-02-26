@@ -2,9 +2,9 @@
 
 namespace FleetManagement.Desktop.Pages
 {
-	public partial class PlaceholderView : Page
+	public partial class PlaceholderPage : Page
 	{
-		public PlaceholderView(string title)
+		public PlaceholderPage(string title)
 		{
 			InitializeComponent();
 			TitleText.Text = title;

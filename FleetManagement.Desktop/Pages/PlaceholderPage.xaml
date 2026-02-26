@@ -1,0 +1,27 @@
+﻿<Page x:Class="FleetManagement.Desktop.Pages.PlaceholderPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="{StaticResource BrushBg}">
+
+    <Grid Margin="16">
+        <Border Style="{StaticResource FmCard}">
+            <StackPanel>
+
+                <!-- Başlık -->
+                <TextBlock x:Name="TitleText"
+                           FontSize="22"
+                           FontWeight="SemiBold"/>
+
+                <!-- Açıklama -->
+                <TextBlock Margin="0,8,0,0"
+                           Foreground="{StaticResource BrushMuted}"
+                           Text="Bu ekran henüz geliştirme aşamasındadır."/>
+
+                <TextBlock Margin="0,4,0,0"
+                           Foreground="{StaticResource BrushMuted}"
+                           Text="Sunum sonrası bu bölüm aktif hale getirilecektir."/>
+
+            </StackPanel>
+        </Border>
+    </Grid>
+</Page>
