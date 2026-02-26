@@ -1,100 +1,48 @@
-﻿using System.Linq;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace FleetManagement.Desktop
 {
-    public partial class MainWindow : Window
-    {
-        public MainWindow()
-        {
-            InitializeComponent();
+	public partial class MainWindow : Window
+	{
+		public MainWindow()
+		{
+			InitializeComponent();
+			NavigateTo("DashboardPage");
+		}
 
-            // açılış
-            SetActiveSidebarButton(BtnDashboard);
-            Navigate("Dashboard");
-        }
+		private void Menu_Click(object sender, RoutedEventArgs e)
+		{
+			if (sender is Button btn && btn.Tag is string tag)
+				NavigateTo(tag);
+		}
 
-        private void SidebarNav_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is not Button btn) return;
+		private void NavigateTo(string tag)
+		{
+			ContentFrame.Content = tag switch
+			{
+				"DashboardPage" => new Views.DashboardView(),
 
-            SetActiveSidebarButton(btn);
+				"VehiclesPage" => new Views.VehicleView(),
+				"DriversPage" => new Views.DriverView(),
+				"CommandersPage" => new Views.CommanderView(),
 
-            var key = btn.Tag?.ToString() ?? "Dashboard";
-            Navigate(key);
-        }
+				"VehicleMovementsPage" => new Views.VehicleMovementView(),
 
-        private void SetActiveSidebarButton(Button active)
-        {
-            // Sidebar içindeki tüm butonları bul
-            var buttons = FindVisualChildren<Button>(this)
-                .Where(b => b.Tag is not null); // sadece menü butonlarını hedefle
+				// henüz yoksa dashboard'a düş
+				"RoutesPage" => new Views.DashboardView(),
+				"VehicleTypesPage" => new Views.DashboardView(),
+				"CategoriesPage" => new Views.DashboardView(),
+				"ModelsPage" => new Views.DashboardView(),
+				"UnitsPage" => new Views.DashboardView(),
+				"VehicleMaintenancesPage" => new Views.DashboardView(),
+				"QueriesPage" => new Views.DashboardView(),
+				"ReportsPage" => new Views.DashboardView(),
+				"AuthorizationPage" => new Views.DashboardView(),
+				"HelpPage" => new Views.DashboardView(),
 
-            foreach (var b in buttons)
-            {
-                b.Style = (Style)FindResource("SidebarButtonStyle");
-            }
-
-            active.Style = (Style)FindResource("SidebarButtonActiveStyle");
-        }
-
-        private void Navigate(string key)
-        {
-            switch (key)
-            {
-                case "Dashboard":
-                    HeaderTitleText.Text = "Dashboard";
-                    HeaderSubtitleText.Text = "Genel görünüm";
-                    MainFrame.Navigate(new Pages.DashboardPage());
-                    break;
-
-                case "Vehicles":
-                    HeaderTitleText.Text = "Araçlar";
-                    HeaderSubtitleText.Text = "Araç tanımları ve liste";
-                    MainFrame.Navigate(new Pages.VehiclesPage());
-                    break;
-
-                case "Drivers":
-                    HeaderTitleText.Text = "Sürücüler";
-                    HeaderSubtitleText.Text = "Sürücü tanımları ve liste";
-                    MainFrame.Navigate(new Pages.DriversPage());
-                    break;
-
-                case "Commanders":
-                    HeaderTitleText.Text = "Araç Komutanı";
-                    HeaderSubtitleText.Text = "Araç-komutan atama";
-                    MainFrame.Navigate(new Pages.VehicleCommandersPage());
-                    break;
-
-                case "Movements":
-                    HeaderTitleText.Text = "Araç Hareketi";
-                    HeaderSubtitleText.Text = "Giriş/çıkış ve hareket kayıtları";
-                    MainFrame.Navigate(new Pages.VehicleMovementsPage());
-                    break;
-
-                case "Settings":
-                    HeaderTitleText.Text = "Ayarlar";
-                    HeaderSubtitleText.Text = "Uygulama ayarları";
-                    MainFrame.Navigate(new Pages.SettingsPage());
-                    break;
-            }
-        }
-
-        // Visual tree helper
-        private static System.Collections.Generic.IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
-        {
-            if (depObj == null) yield break;
-
-            for (int i = 0; i < System.Windows.Media.VisualTreeHelper.GetChildrenCount(depObj); i++)
-            {
-                var child = System.Windows.Media.VisualTreeHelper.GetChild(depObj, i);
-
-                if (child is T t) yield return t;
-
-                foreach (var childOfChild in FindVisualChildren<T>(child))
-                    yield return childOfChild;
-            }
-        }
-    }
+				_ => new Views.DashboardView()
+			};
+		}
+	}
 }
