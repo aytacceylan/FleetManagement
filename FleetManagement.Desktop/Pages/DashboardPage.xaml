@@ -1,14 +1,96 @@
 ﻿<Page x:Class="FleetManagement.Desktop.Pages.DashboardPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Background="Transparent">
+      Background="{StaticResource BrushBg}">
 
-    <Border Style="{StaticResource CardBorder}">
-        <StackPanel>
-            <TextBlock Text="Dashboard" FontSize="18" FontWeight="SemiBold"/>
-            <TextBlock Text="Seçtiğin menüye göre içerik burada değişecek."
-                       Margin="0,8,0,0"
-                       Foreground="{StaticResource TextSecondaryBrush}"/>
-        </StackPanel>
-    </Border>
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Style="{StaticResource FmCard}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Text="Dashboard"
+                               FontSize="22"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource BrushText}"/>
+                    <TextBlock Text="Özet görünüm • Menüden seçim yaparak ekranlar arasında geçiş yapabilirsiniz."
+                               Margin="0,6,0,0"
+                               Foreground="{StaticResource BrushMuted}"/>
+                </StackPanel>
+
+                <!-- Lacivert rozet -->
+                <Border Grid.Column="1"
+                        Background="{StaticResource BrushNavy800}"
+                        CornerRadius="10"
+                        Padding="12,8"
+                        VerticalAlignment="Top">
+                    <TextBlock Text="FleetManage"
+                               Foreground="White"
+                               FontWeight="SemiBold"/>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Stat Cards -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource FmCard}">
+                <StackPanel>
+                    <TextBlock Text="Toplam Araç" Foreground="{StaticResource BrushMuted}"/>
+                    <TextBlock Text="—" FontSize="28" FontWeight="SemiBold" Margin="0,6,0,0"/>
+                    <TextBlock Text="Kayıtlı araç sayısı" Foreground="{StaticResource BrushMuted}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="2" Style="{StaticResource FmCard}">
+                <StackPanel>
+                    <TextBlock Text="Aktif Sürücü" Foreground="{StaticResource BrushMuted}"/>
+                    <TextBlock Text="—" FontSize="28" FontWeight="SemiBold" Margin="0,6,0,0"/>
+                    <TextBlock Text="Görevde / uygun sürücüler" Foreground="{StaticResource BrushMuted}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="4" Style="{StaticResource FmCard}">
+                <StackPanel>
+                    <TextBlock Text="Bugün Hareket" Foreground="{StaticResource BrushMuted}"/>
+                    <TextBlock Text="—" FontSize="28" FontWeight="SemiBold" Margin="0,6,0,0"/>
+                    <TextBlock Text="Bugün oluşturulan hareketler" Foreground="{StaticResource BrushMuted}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Quick actions -->
+        <Border Grid.Row="3" Style="{StaticResource FmCard}" Margin="0,16,0,0">
+            <StackPanel>
+                <TextBlock Text="Hızlı İşlemler" FontSize="16" FontWeight="SemiBold"/>
+                <TextBlock Text="Araç / Sürücü / Hareket ekranlarından işlemlere devam edebilirsiniz."
+                           Margin="0,6,0,12"
+                           Foreground="{StaticResource BrushMuted}"/>
+
+                <WrapPanel>
+                    <Button Content="Araçlar" Width="140" Margin="0,0,10,10"/>
+                    <Button Content="Sürücüler" Width="140" Margin="0,0,10,10"/>
+                    <Button Content="Araç Hareket" Width="140" Margin="0,0,10,10"/>
+                </WrapPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
 </Page>

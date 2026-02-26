@@ -21,25 +21,28 @@ namespace FleetManagement.Desktop
 		{
 			ContentFrame.Content = tag switch
 			{
-				"DashboardPage" => new Views.DashboardView(),
+				"DashboardPage" => new Pages.DashboardPage(),
 
-				"VehiclesPage" => new Views.VehicleView(),
-				"DriversPage" => new Views.DriverView(),
-				"CommandersPage" => new Views.CommanderView(),
+				"VehiclesPage" => new Pages.VehiclesPage(),
+				"DriversPage" => new Pages.DriversPage(),
+				"CommandersPage" => new Pages.VehicleCommandersPage(),
 
 				"VehicleMovementsPage" => new Views.VehicleMovementView(),
 
 				// henüz yoksa dashboard'a düş
-				"RoutesPage" => new Views.DashboardView(),
-				"VehicleTypesPage" => new Views.DashboardView(),
-				"CategoriesPage" => new Views.DashboardView(),
-				"ModelsPage" => new Views.DashboardView(),
-				"UnitsPage" => new Views.DashboardView(),
-				"VehicleMaintenancesPage" => new Views.DashboardView(),
-				"QueriesPage" => new Views.DashboardView(),
-				"ReportsPage" => new Views.DashboardView(),
-				"AuthorizationPage" => new Views.DashboardView(),
-				"HelpPage" => new Views.DashboardView(),
+				"RoutesPage" => new Views.PlaceholderView("Tanımlamalar > Route"),
+				"VehicleTypesPage" => new Views.PlaceholderView("Tanımlamalar > Araç Tipi"),
+				"CategoriesPage" => new Views.PlaceholderView("Tanımlamalar > Kategori"),
+				"ModelsPage" => new Views.PlaceholderView("Tanımlamalar > Model"),
+				"UnitsPage" => new Views.PlaceholderView("Tanımlamalar > Birlik/Bölük-Kısım"),
+
+				"VehicleMaintenancesPage" => new Views.PlaceholderView("İşlemler/Faaliyet > Araç Bakım/Yağlama"),
+
+				"QueriesPage" => new Views.PlaceholderView("Sorgulama/Raporlar > Sorgulamalar"),
+				"ReportsPage" => new Views.PlaceholderView("Sorgulama/Raporlar > Raporlar"),
+
+				"AuthorizationPage" => new Views.PlaceholderView("Ayarlar > Yetkilendirme"),
+				"HelpPage" => new Views.PlaceholderView("Yardım"),
 
 				_ => new Views.DashboardView()
 			};

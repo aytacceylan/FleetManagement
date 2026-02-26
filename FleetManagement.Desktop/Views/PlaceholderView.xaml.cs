@@ -7,7 +7,7 @@ namespace FleetManagement.Desktop.Views
 		public PlaceholderView(string title)
 		{
 			InitializeComponent();
-			InfoText.Text = $"Menü: {title}";
+			TitleText.Text = title;
 		}
 	}
 }

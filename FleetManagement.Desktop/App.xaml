@@ -6,6 +6,10 @@
     <Application.Resources>
         <ResourceDictionary>
 
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/AppTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
             <!-- Lacivert palet -->
             <Color x:Key="Navy900">#0B1F3B</Color>
             <Color x:Key="Navy800">#102A52</Color>
