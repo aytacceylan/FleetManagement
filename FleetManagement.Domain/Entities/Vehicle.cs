@@ -8,9 +8,12 @@ namespace FleetManagement.Domain.Entities
 
         // Envanter/araç no (010000)
         public string Plate { get; set; } = null!;
-
+          
         // Gerçek plaka (34 AAA 34)
         public string? InventoryNumber { get; set; }
+
+        public int? AssignedDriverId { get; set; }
+        public Driver? AssignedDriver { get; set; }
 
         public string? Brand { get; set; }
         public string? Model { get; set; }

@@ -48,14 +48,32 @@ namespace FleetManagement.Desktop.Pages
                         MotorNo = v.MotorNo,
                         SaseNo = v.SaseNo,
 
+                        // 1) Atanan sürücü (varsa)
+                        AssignedDriverName = _db.Drivers
+                            .Where(d => d.Id == v.AssignedDriverId)
+                            .Select(d => d.FullName)
+                            .FirstOrDefault(),
+
+                        // 2) Son sefer sürücüsü (fallback)
                         DriverName = _db.VehicleMovements
                             .Where(m => m.VehicleId == v.Id)
                             .OrderByDescending(m => m.Id)
                             .Select(m => m.Driver.FullName)
-                            .FirstOrDefault()
-                    })
+                            .FirstOrDefault(),
+
+                        IsOnDuty = _db.VehicleMovements
+                            .Any(m => m.VehicleId == v.Id && m.ReturnDateTime == null),
+
+                   
+
+            })
                     .OrderByDescending(x => x.Id)
                     .ToListAsync();
+
+                // Grid'de tek kolon göstereceğiz: önce Assigned, yoksa DriverName
+                foreach (var r in list)
+                    r.DriverName = !string.IsNullOrWhiteSpace(r.AssignedDriverName) ? r.AssignedDriverName : r.DriverName;
+               
 
                 _allVehicles = list;
                 VehiclesGrid.ItemsSource = _allVehicles;
@@ -99,6 +117,8 @@ namespace FleetManagement.Desktop.Pages
             PassengerCapacityBox.Text = vehicle.PassengerCapacity?.ToString() ?? "";
             LoadCapacityBox.Text = vehicle.LoadCapacity?.ToString() ?? "";
             VehicleSituationBox.Text = vehicle.VehicleSituation ?? "";
+            AssignedDriverCombo.SelectedValue = vehicle.AssignedDriverId;
+            AssignedDriverCombo.SelectedValue = vehicle.AssignedDriverId;
 
             FormInfo.Text = $"Seçildi: #{vehicle.Id}";
         }
@@ -142,6 +162,8 @@ namespace FleetManagement.Desktop.Pages
                 entity.VehicleKm = TryParseNullableInt(VehicleKmBox.Text);
                 entity.PassengerCapacity = TryParseNullableInt(PassengerCapacityBox.Text);
                 entity.LoadCapacity = TryParseNullableInt(LoadCapacityBox.Text);
+                entity.AssignedDriverId = AssignedDriverCombo.SelectedValue is int id ? id : (int?)null;
+
 
                 if (_selectedId is null)
                     _db.Vehicles.Add(entity);
@@ -257,6 +279,8 @@ namespace FleetManagement.Desktop.Pages
             PassengerCapacityBox.Text = "";
             LoadCapacityBox.Text = "";
             VehicleSituationBox.Text = "";
+            AssignedDriverCombo.SelectedIndex = -1;
+            DriverNameBox.Text = "";
         }
 
         private static string? EmptyToNull(string? value)

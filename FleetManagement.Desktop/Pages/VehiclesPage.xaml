@@ -59,6 +59,12 @@
                         <TextBlock Text="Sürücü (Bilgi)" Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="DriverNameBox" Margin="0,6,0,12" IsReadOnly="True"/>
 
+                        <TextBlock Text="Atanan Sürücü" Foreground="{StaticResource BrushMuted}"/>
+                        <ComboBox x:Name="AssignedDriverCombo"
+                                      Margin="0,6,0,12"
+                                      DisplayMemberPath="FullName"
+                                      SelectedValuePath="Id"/>
+                        
                         <!-- 4) Araç Tipi -->
                         <TextBlock Text="Araç Tipi" Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="VehicleTypeBox" Margin="0,6,0,12"/>

@@ -38,7 +38,13 @@ namespace FleetManagement.Infrastructure.Data
 
                 // Gerçek plaka tekil olsun istiyorsan:
                 e.HasIndex(x => x.InventoryNumber).IsUnique();
+
+                e.HasOne(v => v.AssignedDriver).WithMany().HasForeignKey(v => v.AssignedDriverId).OnDelete(DeleteBehavior.Restrict);
+
+
             });
+            modelBuilder.Entity<Vehicle>().HasIndex(x => x.AssignedDriverId);
+
             modelBuilder.Entity<Driver>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<VehicleCommander>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<VehicleMovement>().HasQueryFilter(x => !x.IsDeleted);

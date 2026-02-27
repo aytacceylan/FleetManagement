@@ -65,11 +65,18 @@
                     <TextBlock Text="Araç Komutanı" Foreground="{StaticResource BrushMuted}"/>
                     <ComboBox x:Name="CommanderCombo" Margin="0,6,0,12"/>
 
-                    <TextBlock Text="Çıkış Tarihi" Foreground="{StaticResource BrushMuted}"/>
-                    <DatePicker x:Name="ExitDate" Margin="0,6,0,12"/>
+                    <TextBlock Text="Çıkış Tarih" Foreground="{StaticResource BrushMuted}"/>
+                    <DatePicker x:Name="ExitDatePicker" Margin="0,6,0,10"/>
 
-                    <TextBlock Text="Dönüş Tarihi" Foreground="{StaticResource BrushMuted}"/>
-                    <DatePicker x:Name="ReturnDate" Margin="0,6,0,12"/>
+                    <TextBlock Text="Çıkış Saat (HH:mm)" Foreground="{StaticResource BrushMuted}"/>
+                    <TextBox x:Name="ExitTimeBox" Margin="0,6,0,14" Text="08:00"/>
+
+                    <TextBlock Text="Dönüş Tarih" Foreground="{StaticResource BrushMuted}"/>
+                    <DatePicker x:Name="ReturnDatePicker" Margin="0,6,0,10"/>
+
+                    <TextBlock Text="Dönüş Saat (HH:mm)" Foreground="{StaticResource BrushMuted}"/>
+                    <TextBox x:Name="ReturnTimeBox" Margin="0,6,0,14" Text="17:00"/>
+
 
                     <TextBlock Text="Route" Foreground="{StaticResource BrushMuted}"/>
                     <TextBox x:Name="RouteBox" Margin="0,6,0,12"/>
