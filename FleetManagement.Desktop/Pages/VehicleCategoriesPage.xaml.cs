@@ -11,61 +11,58 @@ using FleetManagement.Domain.Entities;
 
 namespace FleetManagement.Desktop.Pages
 {
-    public partial class DriversPage : Page
+    public partial class VehicleCategoriesPage : Page
     {
         private readonly AppDbContext _db = new(App.DbOptions);
 
         private int? _selectedId;
-        private List<Driver> _allDrivers = new();
+        private List<VehicleCategory> _all = new();
 
-        public DriversPage()
+        public VehicleCategoriesPage()
         {
             InitializeComponent();
-            Loaded += async (_, __) => await LoadDriversAsync();
+            Loaded += async (_, __) => await LoadAsync();
         }
 
-        private async Task LoadDriversAsync()
+        private async Task LoadAsync()
         {
             try
             {
                 FormInfo.Text = "Yükleniyor...";
 
-                var list = await _db.Drivers
+                var list = await _db.VehicleCategories
                     .AsNoTracking()
                     .Where(x => !x.IsDeleted)
                     .OrderByDescending(x => x.Id)
                     .ToListAsync();
 
-                _allDrivers = list;
-                DriversGrid.ItemsSource = _allDrivers;
+                _all = list;
+                Grid.ItemsSource = _all;
 
-                FormInfo.Text = $"Yüklendi: {_allDrivers.Count} kayıt";
+                FormInfo.Text = $"Yüklendi: {_all.Count} kayıt";
             }
             catch (Exception ex)
             {
-                FormInfo.Text = "Hata: sürücüler yüklenemedi.";
+                FormInfo.Text = "Hata: kategoriler yüklenemedi.";
                 MessageBox.Show(ex.Message, "Hata");
             }
         }
 
-        private void DriversGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Grid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (DriversGrid.SelectedItem is not Driver d)
+            if (Grid.SelectedItem is not VehicleCategory x)
                 return;
 
-            _selectedId = d.Id;
+            _selectedId = x.Id;
 
-            DriverNumberBox.Text = d.DriverNumber ?? "";
-            FullNameBox.Text = d.FullName ?? "";
-            PhoneBox.Text = d.PhoneNumber ?? "";
+            CodeBox.Text = x.Code ?? "";
+            NameBox.Text = x.Name ?? "";
+            DescBox.Text = x.Description ?? "";
 
-            FormInfo.Text = $"Seçildi: #{d.Id}";
+            FormInfo.Text = $"Seçildi: #{x.Id}";
         }
 
-        private async void Refresh_Click(object sender, RoutedEventArgs e)
-        {
-            await LoadDriversAsync();
-        }
+        private async void Refresh_Click(object sender, RoutedEventArgs e) => await LoadAsync();
 
         private void New_Click(object sender, RoutedEventArgs e)
         {
@@ -77,65 +74,60 @@ namespace FleetManagement.Desktop.Pages
         {
             try
             {
-                var driverNumber = (DriverNumberBox.Text ?? "").Trim();
-                var fullName = (FullNameBox.Text ?? "").Trim();
-                var phone = (PhoneBox.Text ?? "").Trim();
+                var code = (CodeBox.Text ?? "").Trim();
+                var name = (NameBox.Text ?? "").Trim();
+                var desc = (DescBox.Text ?? "").Trim();
 
-                if (string.IsNullOrWhiteSpace(driverNumber))
+                if (string.IsNullOrWhiteSpace(code))
                 {
-                    FormInfo.Text = "Sürücü No zorunlu.";
+                    FormInfo.Text = "Kategori Kodu zorunlu.";
                     return;
                 }
 
-                if (string.IsNullOrWhiteSpace(fullName))
+                if (string.IsNullOrWhiteSpace(name))
                 {
-                    FormInfo.Text = "Ad Soyad zorunlu.";
+                    FormInfo.Text = "Kategori Adı zorunlu.";
                     return;
                 }
 
                 if (_selectedId is null)
                 {
-                    // INSERT
-                    var entity = new Driver
+                    var entity = new VehicleCategory
                     {
-                        DriverNumber = driverNumber,
-                        FullName = fullName,
-                        PhoneNumber = phone,
+                        Code = code,
+                        Name = name,
+                        Description = string.IsNullOrWhiteSpace(desc) ? null : desc,
                         CreatedAt = DateTime.UtcNow,
                         IsDeleted = false
                     };
 
-                    _db.Drivers.Add(entity);
+                    _db.VehicleCategories.Add(entity);
                     await _db.SaveChangesAsync();
-
                     FormInfo.Text = $"Kaydedildi: #{entity.Id}";
                 }
                 else
                 {
-                    // UPDATE
-                    var entity = await _db.Drivers.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
+                    var entity = await _db.VehicleCategories.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
                     if (entity is null)
                     {
                         FormInfo.Text = "Kayıt bulunamadı (yenileyin).";
                         return;
                     }
 
-                    entity.DriverNumber = driverNumber;
-                    entity.FullName = fullName;
-                    entity.PhoneNumber = phone;
+                    entity.Code = code;
+                    entity.Name = name;
+                    entity.Description = string.IsNullOrWhiteSpace(desc) ? null : desc;
 
                     await _db.SaveChangesAsync();
-
                     FormInfo.Text = $"Güncellendi: #{entity.Id}";
                 }
 
-                await LoadDriversAsync();
+                await LoadAsync();
                 ClearForm();
             }
             catch (DbUpdateException dbex)
             {
-                // DriverNumber unique index -> aynı numara girilirse buraya düşer
-                FormInfo.Text = "Hata: kayıt yapılamadı (muhtemelen Sürücü No tekrar ediyor).";
+                FormInfo.Text = "Hata: kayıt yapılamadı (muhtemelen Kategori Kodu tekrar ediyor).";
                 MessageBox.Show(dbex.InnerException?.Message ?? dbex.Message, "DB Hatası");
             }
             catch (Exception ex)
@@ -155,24 +147,23 @@ namespace FleetManagement.Desktop.Pages
                     return;
                 }
 
-                var confirm = MessageBox.Show("Seçili sürücü silinsin mi?", "Onay", MessageBoxButton.YesNo);
+                var confirm = MessageBox.Show("Seçili kategori silinsin mi?", "Onay", MessageBoxButton.YesNo);
                 if (confirm != MessageBoxResult.Yes)
                     return;
 
-                var entity = await _db.Drivers.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
+                var entity = await _db.VehicleCategories.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
                 if (entity is null)
                 {
                     FormInfo.Text = "Kayıt bulunamadı (yenileyin).";
                     return;
                 }
 
-                // SOFT DELETE (IsDeleted var)
                 entity.IsDeleted = true;
                 await _db.SaveChangesAsync();
 
                 FormInfo.Text = $"Silindi: #{_selectedId.Value}";
 
-                await LoadDriversAsync();
+                await LoadAsync();
                 ClearForm();
             }
             catch (Exception ex)
@@ -194,26 +185,26 @@ namespace FleetManagement.Desktop.Pages
 
             if (string.IsNullOrWhiteSpace(q))
             {
-                DriversGrid.ItemsSource = _allDrivers;
+                Grid.ItemsSource = _all;
                 return;
             }
 
-            DriversGrid.ItemsSource = _allDrivers
+            Grid.ItemsSource = _all
                 .Where(x =>
-                    (x.DriverNumber ?? "").ToLowerInvariant().Contains(q) ||
-                    (x.FullName ?? "").ToLowerInvariant().Contains(q) ||
-                    (x.PhoneNumber ?? "").ToLowerInvariant().Contains(q))
+                    (x.Code ?? "").ToLowerInvariant().Contains(q) ||
+                    (x.Name ?? "").ToLowerInvariant().Contains(q) ||
+                    (x.Description ?? "").ToLowerInvariant().Contains(q))
                 .ToList();
         }
 
         private void ClearForm()
         {
             _selectedId = null;
-            DriversGrid.SelectedItem = null;
+            Grid.SelectedItem = null;
 
-            DriverNumberBox.Text = "";
-            FullNameBox.Text = "";
-            PhoneBox.Text = "";
+            CodeBox.Text = "";
+            NameBox.Text = "";
+            DescBox.Text = "";
         }
     }
 }

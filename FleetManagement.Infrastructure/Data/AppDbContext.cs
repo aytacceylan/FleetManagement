@@ -15,6 +15,10 @@ namespace FleetManagement.Infrastructure.Data
 
         public DbSet<Route> Routes => Set<Route>();
 
+        public DbSet<VehicleType> VehicleTypes => Set<VehicleType>();
+
+        public DbSet<VehicleCategory> VehicleCategories => Set<VehicleCategory>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -99,6 +103,30 @@ namespace FleetManagement.Infrastructure.Data
 
                 e.HasIndex(x => x.Code).IsUnique(); // kod tekrar etmesin (öneri)
             });
+
+            modelBuilder.Entity<VehicleType>(e =>
+            {
+                e.ToTable("VehicleTypes");
+
+                e.Property(x => x.Code).HasMaxLength(50).IsRequired();
+                e.Property(x => x.Name).HasMaxLength(200).IsRequired();
+                e.Property(x => x.Description).HasMaxLength(500);
+
+                e.HasIndex(x => x.Code).IsUnique();
+            });
+
+            modelBuilder.Entity<VehicleCategory>(e =>
+            {
+                e.ToTable("VehicleCategories");
+
+                e.Property(x => x.Code).HasMaxLength(50).IsRequired();
+                e.Property(x => x.Name).HasMaxLength(200).IsRequired();
+                e.Property(x => x.Description).HasMaxLength(500);
+
+                e.HasIndex(x => x.Code).IsUnique();
+            });
+
+
         }
     }
 }
