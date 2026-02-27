@@ -18,7 +18,27 @@ namespace FleetManagement.Infrastructure.Data
             base.OnModelCreating(modelBuilder);
 
             // Soft delete filter (şimdilik sadece filtre; DB kolonlarını sonra ekleyeceğiz)
-            modelBuilder.Entity<Vehicle>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<Vehicle>(e =>
+            {
+                // Plate (envanter no) zaten unique index var demiştin, kalsın.
+                e.Property(x => x.Plate).HasMaxLength(50).IsRequired();
+
+                e.Property(x => x.InventoryNumber).HasMaxLength(50);
+                e.Property(x => x.Brand).HasMaxLength(80);
+                e.Property(x => x.Model).HasMaxLength(80);
+
+                e.Property(x => x.VehicleType).HasMaxLength(80);
+                e.Property(x => x.VehicleCategory).HasMaxLength(80);
+                e.Property(x => x.VehicleUnit).HasMaxLength(120);
+
+                e.Property(x => x.MotorNo).HasMaxLength(80);
+                e.Property(x => x.SaseNo).HasMaxLength(80);
+
+                e.Property(x => x.VehicleSituation).HasMaxLength(80);
+
+                // Gerçek plaka tekil olsun istiyorsan:
+                e.HasIndex(x => x.InventoryNumber).IsUnique();
+            });
             modelBuilder.Entity<Driver>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<VehicleCommander>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<VehicleMovement>().HasQueryFilter(x => !x.IsDeleted);
@@ -41,7 +61,8 @@ namespace FleetManagement.Infrastructure.Data
                     .HasForeignKey(x => x.VehicleCommanderId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-          
+
+
             });
 
             // Unique indexler (DB'de de var, EF modelinde de dursun)
