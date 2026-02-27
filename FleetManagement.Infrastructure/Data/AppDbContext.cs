@@ -13,6 +13,8 @@ namespace FleetManagement.Infrastructure.Data
         public DbSet<VehicleCommander> VehicleCommanders => Set<VehicleCommander>();
         public DbSet<VehicleMovement> VehicleMovements => Set<VehicleMovement>();
 
+        public DbSet<Route> Routes => Set<Route>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -83,6 +85,20 @@ namespace FleetManagement.Infrastructure.Data
             modelBuilder.Entity<Vehicle>()
                 .HasIndex(x => x.Plate)
                 .IsUnique();
+
+            modelBuilder.Entity<Route>(e =>
+            {
+                e.ToTable("Routes");
+
+                e.Property(x => x.Code).HasMaxLength(50).IsRequired();
+                e.Property(x => x.Name).HasMaxLength(200).IsRequired();
+
+                e.Property(x => x.StartPoint).HasMaxLength(200);
+                e.Property(x => x.EndPoint).HasMaxLength(200);
+                e.Property(x => x.Description).HasMaxLength(500);
+
+                e.HasIndex(x => x.Code).IsUnique(); // kod tekrar etmesin (öneri)
+            });
         }
     }
 }
