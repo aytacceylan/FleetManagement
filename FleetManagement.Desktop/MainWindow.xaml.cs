@@ -32,6 +32,7 @@ namespace FleetManagement.Desktop
                 "RoutesPage" => new Pages.RoutesPage(),
                 "VehicleTypesPage" => new Pages.VehicleTypesPage(),
                 "CategoriesPage" => new Pages.VehicleCategoriesPage(),
+                "MakamsPage" => new Pages.MakamsPage(),
                 "ModelsPage" => new Pages.PlaceholderPage("Tanımlamalar > Model"),
 				"UnitsPage" => new Pages.PlaceholderPage("Tanımlamalar > Birlik/Bölük-Kısım"),
 

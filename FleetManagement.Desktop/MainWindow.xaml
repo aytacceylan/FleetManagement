@@ -40,6 +40,7 @@
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Tipi" Tag="VehicleTypesPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Kategori" Tag="CategoriesPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Model" Tag="ModelsPage" Click="Menu_Click"/>
+                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Makam" Tag="MakamsPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Birlik/Bölük-Kısım" Tag="UnitsPage" Click="Menu_Click"/>
                             </StackPanel>
                         </Expander>

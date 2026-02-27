@@ -19,6 +19,8 @@ namespace FleetManagement.Infrastructure.Data
 
         public DbSet<VehicleCategory> VehicleCategories => Set<VehicleCategory>();
 
+        public DbSet<Makam> Makams => Set<Makam>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -126,7 +128,16 @@ namespace FleetManagement.Infrastructure.Data
                 e.HasIndex(x => x.Code).IsUnique();
             });
 
+            modelBuilder.Entity<Makam>(e =>
+            {
+                e.ToTable("Makams");
 
+                e.Property(x => x.Code).HasMaxLength(50).IsRequired();
+                e.Property(x => x.Name).HasMaxLength(200).IsRequired();
+                e.Property(x => x.Description).HasMaxLength(500);
+
+                e.HasIndex(x => x.Code).IsUnique();
+            });
         }
     }
 }
