@@ -1,23 +1,28 @@
 ﻿namespace FleetManagement.Desktop.Dtos
 {
-    public class VehicleListRow
-    {
-        public int Id { get; set; }
+	public class VehicleListRow
+	{
+		public int Id { get; set; }
 
-        public string? Plate { get; set; }
-        public string? InventoryNumber { get; set; }
+		public string? Plate { get; set; }
+		public string? InventoryNumber { get; set; }
 
-        public string? AssignedDriverName { get; set; }
-        public string? DriverName { get; set; }
+		public string? DriverFullName { get; set; }
 
-        public string? VehicleType { get; set; }
-        public string? VehicleCategory { get; set; }
+		public string? VehicleType { get; set; }
+		public string? VehicleCategory { get; set; }
+		public string? VehicleUnit { get; set; }
 
-        public string? Model { get; set; }
-        public string? MotorNo { get; set; }
-        public string? SaseNo { get; set; }
+		public string? Model { get; set; }
+		public int? VehicleKm { get; set; }
 
-        public bool IsOnDuty { get; set; }
-        public string? DutyStatus { get; set; } // "Görevde" / "Müsait"
-    }
+		// ✅ geri ekledik (hata çözülür)
+		public string? MotorNo { get; set; }
+		public string? SaseNo { get; set; }
+
+		public bool IsOnDuty { get; set; }
+		public string? DutyStatus { get; set; }
+
+		public string? MaintenanceStatus { get; set; }
+	}
 }

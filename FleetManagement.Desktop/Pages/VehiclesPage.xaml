@@ -16,16 +16,26 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
                     <TextBlock Text="Araçlar" FontSize="22" FontWeight="SemiBold"/>
-                    <TextBlock Text="Araç kayıtlarını yönetin."
+                    <TextBlock Text="Araç kayıtlarını görüntüleyin ve yönetin."
                                Margin="0,6,0,0"
                                Foreground="{StaticResource BrushMuted}"/>
                 </StackPanel>
 
-                <Button Grid.Column="1" Content="Yenile" MinWidth="120" Click="Refresh_Click"/>
+                <Button Grid.Column="1"
+                        Content="Yenile"
+                        MinWidth="120"
+                        Click="Refresh_Click"/>
+
+                <Button Grid.Column="3"
+                        Content="Yeni Araç"
+                        MinWidth="150"
+                        Click="New_Click"/>
             </Grid>
         </Border>
 
@@ -43,56 +53,38 @@
                     <StackPanel>
 
                         <TextBlock Text="Araç Formu" FontSize="16" FontWeight="SemiBold"/>
-                        <TextBlock Text="Yeni / Güncelle / Sil"
-                       Margin="0,6,0,16"
-                       Foreground="{StaticResource BrushMuted}"/>
+                        <TextBlock Text="Plaka (Envanter No) girince kayıt varsa otomatik dolar."
+                                   Margin="0,6,0,16"
+                                   Foreground="{StaticResource BrushMuted}"/>
 
-                        <!-- 1) Plaka -->
-                        <TextBlock Text="Plaka" Foreground="{StaticResource BrushMuted}"/>
-                        <TextBox x:Name="PlateBox" Margin="0,6,0,12"/>
+                        <TextBlock Text="Plaka (Envanter No)" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="PlateBox" Margin="0,6,0,12" LostFocus="PlateBox_LostFocus"/>
 
-                        <!-- 2) Sivil Plaka -->
                         <TextBlock Text="Sivil Plaka" Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="InventoryNumberBox" Margin="0,6,0,12"/>
 
-                        <!-- 3) Sürücü (Bilgi) -->
-                        <TextBlock Text="Sürücü (Bilgi)" Foreground="{StaticResource BrushMuted}"/>
-                        <TextBox x:Name="DriverNameBox" Margin="0,6,0,12" IsReadOnly="True"/>
+                        <TextBlock Text="Marka" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="BrandBox" Margin="0,6,0,12"/>
 
-                        <TextBlock Text="Atanan Sürücü" Foreground="{StaticResource BrushMuted}"/>
-                        <ComboBox x:Name="AssignedDriverCombo"
-                                      Margin="0,6,0,12"
-                                      DisplayMemberPath="FullName"
-                                      SelectedValuePath="Id"/>
-                        
-                        <!-- 4) Araç Tipi -->
-                        <TextBlock Text="Araç Tipi" Foreground="{StaticResource BrushMuted}"/>
-                        <TextBox x:Name="VehicleTypeBox" Margin="0,6,0,12"/>
-
-                        <!-- 5) Kategori -->
-                        <TextBlock Text="Kategori" Foreground="{StaticResource BrushMuted}"/>
-                        <TextBox x:Name="VehicleCategoryBox" Margin="0,6,0,12"/>
-
-                        <!-- 6) Model -->
                         <TextBlock Text="Model" Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="ModelBox" Margin="0,6,0,12"/>
 
-                        <!-- 7) Motor No -->
-                        <TextBlock Text="Motor No" Foreground="{StaticResource BrushMuted}"/>
-                        <TextBox x:Name="MotorNoBox" Margin="0,6,0,12"/>
+                        <TextBlock Text="Araç Tipi" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="VehicleTypeBox" Margin="0,6,0,12"/>
 
-                        <!-- 8) Şase No -->
-                        <TextBlock Text="Şase No" Foreground="{StaticResource BrushMuted}"/>
-                        <TextBox x:Name="SaseNoBox" Margin="0,6,0,12"/>
-
-                        <!-- Diğer detaylar -->
-                        <TextBlock Text="Marka" Foreground="{StaticResource BrushMuted}"/>
-                        <TextBox x:Name="BrandBox" Margin="0,6,0,12"/>
+                        <TextBlock Text="Kategori" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="VehicleCategoryBox" Margin="0,6,0,12"/>
 
                         <TextBlock Text="Birlik/Bölük-Kısım" Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="VehicleUnitBox" Margin="0,6,0,12"/>
 
-                        <TextBlock Text="Araç KM" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBlock Text="Motor No" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="MotorNoBox" Margin="0,6,0,12"/>
+
+                        <TextBlock Text="Şase No" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="SaseNoBox" Margin="0,6,0,12"/>
+
+                        <TextBlock Text="Km" Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="VehicleKmBox" Margin="0,6,0,12"/>
 
                         <TextBlock Text="Yolcu Kapasitesi" Foreground="{StaticResource BrushMuted}"/>
@@ -101,8 +93,11 @@
                         <TextBlock Text="Yük Kapasitesi" Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="LoadCapacityBox" Margin="0,6,0,12"/>
 
-                        <TextBlock Text="Araç Durumu" Foreground="{StaticResource BrushMuted}"/>
-                        <TextBox x:Name="VehicleSituationBox" Margin="0,6,0,16"/>
+                        <TextBlock Text="Durum" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="VehicleSituationBox" Margin="0,6,0,12"/>
+
+                        <TextBlock Text="Atanan Sürücü" Foreground="{StaticResource BrushMuted}"/>
+                        <ComboBox x:Name="AssignedDriverCombo" Margin="0,6,0,16"/>
 
                         <WrapPanel>
                             <Button Content="Kaydet" Width="110" Margin="0,0,10,10" Click="Save_Click"/>
@@ -111,8 +106,8 @@
                         </WrapPanel>
 
                         <TextBlock x:Name="FormInfo"
-                       Margin="0,8,0,0"
-                       Foreground="{StaticResource BrushMuted}"/>
+                                   Margin="0,8,0,0"
+                                   Foreground="{StaticResource BrushMuted}"/>
                     </StackPanel>
                 </ScrollViewer>
             </Border>
@@ -129,7 +124,7 @@
                     <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="280"/>
+                            <ColumnDefinition Width="340"/>
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Text="Araç Listesi"
@@ -137,15 +132,15 @@
                                    FontWeight="SemiBold"
                                    VerticalAlignment="Center"/>
 
+                        <!-- Filter standard -->
                         <StackPanel Grid.Column="1">
                             <TextBox x:Name="SearchBox"
-             TextChanged="SearchBox_TextChanged"/>
-
+                                     TextChanged="SearchBox_TextChanged"/>
                             <TextBlock x:Name="FilterInfo"
-               Margin="0,6,0,0"
-               Foreground="{StaticResource BrushMuted}"
-               FontSize="12"
-               Text="Toplam kayıt: 0"/>
+                                       Margin="0,6,0,0"
+                                       Foreground="{StaticResource BrushMuted}"
+                                       FontSize="12"
+                                       Text="Toplam kayıt: 0"/>
                         </StackPanel>
                     </Grid>
 
@@ -158,14 +153,17 @@
                               SelectionChanged="VehiclesGrid_SelectionChanged">
 
                         <DataGrid.Columns>
+                            <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
                             <DataGridTextColumn Header="Plaka" Binding="{Binding Plate}" Width="120"/>
                             <DataGridTextColumn Header="Sivil Plaka" Binding="{Binding InventoryNumber}" Width="140"/>
-                            <DataGridTextColumn Header="Sürücü" Binding="{Binding DriverName}" Width="180"/>
-                            <DataGridTextColumn Header="Tip" Binding="{Binding VehicleType}" Width="*"/>
-                            <DataGridTextColumn Header="Kategori" Binding="{Binding VehicleCategory}" Width="*"/>
-                            <DataGridTextColumn Header="Model" Binding="{Binding Model}" Width="*"/>
-                            <DataGridTextColumn Header="Motor No" Binding="{Binding MotorNo}" Width="140"/>
-                            <DataGridTextColumn Header="Şase No" Binding="{Binding SaseNo}" Width="140"/>
+                            <DataGridTextColumn Header="Tip" Binding="{Binding VehicleType}" Width="140"/>
+                            <DataGridTextColumn Header="Kategori" Binding="{Binding VehicleCategory}" Width="140"/>
+                            <DataGridTextColumn Header="Sürücü" Binding="{Binding DriverFullName}" Width="180"/>
+                            <DataGridTextColumn Header="Birlik" Binding="{Binding VehicleUnit}" Width="160"/>
+                            <DataGridTextColumn Header="Km" Binding="{Binding VehicleKm}" Width="90"/>
+                            <DataGridTextColumn Header="Görev" Binding="{Binding DutyStatus}" Width="100"/>
+                            <!-- Bakım Durumu en sağda (sonra gerçek hesap ekleyeceğiz) -->
+                            <DataGridTextColumn Header="Bakım" Binding="{Binding MaintenanceStatus}" Width="120"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
