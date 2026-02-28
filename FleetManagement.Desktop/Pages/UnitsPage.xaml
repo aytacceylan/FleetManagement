@@ -1,4 +1,4 @@
-﻿<Page x:Class="FleetManagement.Desktop.Pages.MakamsPage"
+﻿<Page x:Class="FleetManagement.Desktop.Pages.UnitsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Background="{StaticResource BrushBg}">
@@ -21,8 +21,8 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Makamlar" FontSize="22" FontWeight="SemiBold"/>
-                    <TextBlock Text="Makam tanımlarını görüntüleyin ve yönetin."
+                    <TextBlock Text="Birlik / Bölük - Kısım" FontSize="22" FontWeight="SemiBold"/>
+                    <TextBlock Text="Birlik tanımlarını görüntüleyin ve yönetin."
                                Margin="0,6,0,0"
                                Foreground="{StaticResource BrushMuted}"/>
                 </StackPanel>
@@ -33,7 +33,7 @@
                         Click="Refresh_Click"/>
 
                 <Button Grid.Column="3"
-                        Content="Yeni Makam"
+                        Content="Yeni Birlik"
                         MinWidth="150"
                         Click="New_Click"/>
             </Grid>
@@ -51,16 +51,19 @@
             <Border Grid.Column="0" Style="{StaticResource FmCard}">
                 <StackPanel>
 
-                    <TextBlock Text="Makam Formu" FontSize="16" FontWeight="SemiBold"/>
+                    <TextBlock Text="Birlik Formu" FontSize="16" FontWeight="SemiBold"/>
                     <TextBlock Text="Yeni / Güncelle / Sil"
                                Margin="0,6,0,16"
                                Foreground="{StaticResource BrushMuted}"/>
 
-                    <TextBlock Text="Makam Kodu" Foreground="{StaticResource BrushMuted}"/>
+                    <TextBlock Text="Birlik Kodu" Foreground="{StaticResource BrushMuted}"/>
                     <TextBox x:Name="CodeBox" Margin="0,6,0,12"/>
 
-                    <TextBlock Text="Makam Adı" Foreground="{StaticResource BrushMuted}"/>
+                    <TextBlock Text="Birlik Adı" Foreground="{StaticResource BrushMuted}"/>
                     <TextBox x:Name="NameBox" Margin="0,6,0,12"/>
+
+                    <TextBlock Text="Üst Birlik (ops.)" Foreground="{StaticResource BrushMuted}"/>
+                    <TextBox x:Name="ParentBox" Margin="0,6,0,12"/>
 
                     <TextBlock Text="Açıklama" Foreground="{StaticResource BrushMuted}"/>
                     <TextBox x:Name="DescBox" Margin="0,6,0,16" Height="70" AcceptsReturn="True"/>
@@ -92,22 +95,21 @@
                             <ColumnDefinition Width="280"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="Makam Listesi"
+                        <TextBlock Text="Birlik Listesi"
                                    FontSize="16"
                                    FontWeight="SemiBold"
                                    VerticalAlignment="Center"/>
 
+                        <!-- ✅ Filtre standardı -->
                         <StackPanel Grid.Column="1">
                             <TextBox x:Name="SearchBox"
-             TextChanged="SearchBox_TextChanged"/>
-
+                                     TextChanged="SearchBox_TextChanged"/>
                             <TextBlock x:Name="FilterInfo"
-               Margin="0,6,0,0"
-               Foreground="{StaticResource BrushMuted}"
-               FontSize="12"
-               Text="Toplam kayıt: 0"/>
+                                       Margin="0,6,0,0"
+                                       Foreground="{StaticResource BrushMuted}"
+                                       FontSize="12"
+                                       Text="Toplam kayıt: 0"/>
                         </StackPanel>
-
                     </Grid>
 
                     <DataGrid x:Name="Grid"
@@ -121,8 +123,8 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
                             <DataGridTextColumn Header="Kod" Binding="{Binding Code}" Width="140"/>
-                            <DataGridTextColumn Header="Makam Adı" Binding="{Binding Name}" Width="*"/>
-                            <DataGridTextColumn Header="Açıklama" Binding="{Binding Description}" Width="*"/>
+                            <DataGridTextColumn Header="Birlik Adı" Binding="{Binding Name}" Width="*"/>
+                            <DataGridTextColumn Header="Üst Birlik" Binding="{Binding ParentName}" Width="220"/>
                             <DataGridTextColumn Header="Oluşturma" Binding="{Binding CreatedAt}" Width="180"/>
                         </DataGrid.Columns>
                     </DataGrid>

@@ -197,27 +197,32 @@ namespace FleetManagement.Desktop.Pages
             FormInfo.Text = "Form temizlendi.";
         }
 
-        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            var q = (SearchBox.Text ?? "").Trim().ToLowerInvariant();
+		private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			var q = (SearchBox.Text ?? "").Trim().ToLowerInvariant();
+			var total = _allRoutes.Count;
 
-            if (string.IsNullOrWhiteSpace(q))
-            {
-                RoutesGrid.ItemsSource = _allRoutes;
-                return;
-            }
+			if (string.IsNullOrWhiteSpace(q))
+			{
+				RoutesGrid.ItemsSource = _allRoutes;
+				FilterInfo.Text = $"Toplam kayıt: {total}";
+				return;
+			}
 
-            RoutesGrid.ItemsSource = _allRoutes
-                .Where(x =>
-                    (x.Code ?? "").ToLowerInvariant().Contains(q) ||
-                    (x.Name ?? "").ToLowerInvariant().Contains(q) ||
-                    (x.StartPoint ?? "").ToLowerInvariant().Contains(q) ||
-                    (x.EndPoint ?? "").ToLowerInvariant().Contains(q) ||
-                    (x.Description ?? "").ToLowerInvariant().Contains(q))
-                .ToList();
-        }
+			var filtered = _allRoutes
+				.Where(x =>
+					(x.Code ?? "").ToLowerInvariant().Contains(q) ||
+					(x.Name ?? "").ToLowerInvariant().Contains(q) ||
+					(x.StartPoint ?? "").ToLowerInvariant().Contains(q) ||
+					(x.EndPoint ?? "").ToLowerInvariant().Contains(q) ||
+					(x.Description ?? "").ToLowerInvariant().Contains(q))
+				.ToList();
 
-        private void ClearForm()
+			RoutesGrid.ItemsSource = filtered;
+			FilterInfo.Text = $"Filtre: \"{q}\" → {filtered.Count} / {total} kayıt";
+		}
+
+		private void ClearForm()
         {
             _selectedId = null;
             RoutesGrid.SelectedItem = null;

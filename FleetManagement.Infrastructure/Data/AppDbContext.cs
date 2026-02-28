@@ -21,7 +21,11 @@ namespace FleetManagement.Infrastructure.Data
 
         public DbSet<Makam> Makams => Set<Makam>();
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+		public DbSet<VehicleModel> VehicleModels => Set<VehicleModel>();
+
+		public DbSet<Unit> Units => Set<Unit>();
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
@@ -138,6 +142,29 @@ namespace FleetManagement.Infrastructure.Data
 
                 e.HasIndex(x => x.Code).IsUnique();
             });
-        }
+
+			modelBuilder.Entity<VehicleModel>(e =>
+			{
+				e.ToTable("VehicleModels");
+
+				e.Property(x => x.Code).HasMaxLength(50).IsRequired();
+				e.Property(x => x.Name).HasMaxLength(200).IsRequired();
+				e.Property(x => x.Description).HasMaxLength(500);
+
+				e.HasIndex(x => x.Code).IsUnique();
+			});
+
+			modelBuilder.Entity<Unit>(e =>
+			{
+				e.ToTable("Units");
+
+				e.Property(x => x.Code).HasMaxLength(50).IsRequired();
+				e.Property(x => x.Name).HasMaxLength(200).IsRequired();
+				e.Property(x => x.ParentName).HasMaxLength(200);
+				e.Property(x => x.Description).HasMaxLength(500);
+
+				e.HasIndex(x => x.Code).IsUnique();
+			});
+		}
     }
 }

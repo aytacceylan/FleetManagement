@@ -97,9 +97,16 @@
                                    FontWeight="SemiBold"
                                    VerticalAlignment="Center"/>
 
-                        <TextBox x:Name="SearchBox"
-                                 Grid.Column="1"
-                                 TextChanged="SearchBox_TextChanged"/>
+                        <StackPanel Grid.Column="1">
+                            <TextBox x:Name="SearchBox"
+             TextChanged="SearchBox_TextChanged"/>
+
+                            <TextBlock x:Name="FilterInfo"
+               Margin="0,6,0,0"
+               Foreground="{StaticResource BrushMuted}"
+               FontSize="12"
+               Text="Toplam kayıt: 0"/>
+                        </StackPanel>
                     </Grid>
 
                     <DataGrid x:Name="Grid"

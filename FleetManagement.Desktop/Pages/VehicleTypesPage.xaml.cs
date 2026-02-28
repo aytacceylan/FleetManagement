@@ -178,26 +178,30 @@ namespace FleetManagement.Desktop.Pages
             ClearForm();
             FormInfo.Text = "Form temizlendi.";
         }
+		private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			var q = (SearchBox.Text ?? "").Trim().ToLowerInvariant();
+			var total = _all.Count;
 
-        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            var q = (SearchBox.Text ?? "").Trim().ToLowerInvariant();
+			if (string.IsNullOrWhiteSpace(q))
+			{
+				Grid.ItemsSource = _all;
+				FilterInfo.Text = $"Toplam kayıt: {total}";
+				return;
+			}
 
-            if (string.IsNullOrWhiteSpace(q))
-            {
-                Grid.ItemsSource = _all;
-                return;
-            }
+			var filtered = _all
+				.Where(x =>
+					(x.Code ?? "").ToLowerInvariant().Contains(q) ||
+					(x.Name ?? "").ToLowerInvariant().Contains(q) ||
+					(x.Description ?? "").ToLowerInvariant().Contains(q))
+				.ToList();
 
-            Grid.ItemsSource = _all
-                .Where(x =>
-                    (x.Code ?? "").ToLowerInvariant().Contains(q) ||
-                    (x.Name ?? "").ToLowerInvariant().Contains(q) ||
-                    (x.Description ?? "").ToLowerInvariant().Contains(q))
-                .ToList();
-        }
+			Grid.ItemsSource = filtered;
+			FilterInfo.Text = $"Filtre: \"{q}\" → {filtered.Count} / {total} kayıt";
+		}
 
-        private void ClearForm()
+		private void ClearForm()
         {
             _selectedId = null;
             Grid.SelectedItem = null;

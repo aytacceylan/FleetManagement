@@ -186,27 +186,33 @@ namespace FleetManagement.Desktop.Pages
         {
             ClearForm();
             FormInfo.Text = "Form temizlendi.";
-        }
+			SearchBox.Text = "";
+		}
 
-        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            var q = (SearchBox.Text ?? "").Trim().ToLowerInvariant();
+		private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			var q = (SearchBox.Text ?? "").Trim().ToLowerInvariant();
+			var total = _allDrivers.Count;
 
-            if (string.IsNullOrWhiteSpace(q))
-            {
-                DriversGrid.ItemsSource = _allDrivers;
-                return;
-            }
+			if (string.IsNullOrWhiteSpace(q))
+			{
+				DriversGrid.ItemsSource = _allDrivers;
+				FilterInfo.Text = $"Filtre: yok (Toplam {total})";
+				return;
+			}
 
-            DriversGrid.ItemsSource = _allDrivers
-                .Where(x =>
-                    (x.DriverNumber ?? "").ToLowerInvariant().Contains(q) ||
-                    (x.FullName ?? "").ToLowerInvariant().Contains(q) ||
-                    (x.PhoneNumber ?? "").ToLowerInvariant().Contains(q))
-                .ToList();
-        }
+			var filtered = _allDrivers
+				.Where(x =>
+					(x.DriverNumber ?? "").ToLowerInvariant().Contains(q) ||
+					(x.FullName ?? "").ToLowerInvariant().Contains(q) ||
+					(x.PhoneNumber ?? "").ToLowerInvariant().Contains(q))
+				.ToList();
 
-        private void ClearForm()
+			DriversGrid.ItemsSource = filtered;
+			FilterInfo.Text = $"Filtre: \"{q}\" → {filtered.Count} / {total} kayıt";
+		}
+
+		private void ClearForm()
         {
             _selectedId = null;
             DriversGrid.SelectedItem = null;
@@ -214,6 +220,7 @@ namespace FleetManagement.Desktop.Pages
             DriverNumberBox.Text = "";
             FullNameBox.Text = "";
             PhoneBox.Text = "";
-        }
+			SearchBox.Text = "";
+		}
     }
 }
