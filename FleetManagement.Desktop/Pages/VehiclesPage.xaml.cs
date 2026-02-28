@@ -25,8 +25,65 @@ namespace FleetManagement.Desktop.Pages
 			Loaded += async (_, __) =>
 			{
 				await LoadDriversAsync();
+				await LoadLookupsAsync();
 				await LoadVehiclesAsync();
 			};
+		}
+
+		// ==============================
+		// LOOKUPS (Combo Sources)
+		// ==============================
+		private sealed class LookupDisplay
+		{
+			public string Name { get; set; } = "";
+			public string Display { get; set; } = "";
+		}
+
+		private async Task LoadLookupsAsync()
+		{
+			// VehicleTypes
+			var types = await _db.VehicleTypes
+				.AsNoTracking()
+				.OrderBy(x => x.Name)
+				.Select(x => new LookupDisplay { Name = x.Name, Display = $"{x.Code} - {x.Name}" })
+				.ToListAsync();
+
+			VehicleTypeCombo.ItemsSource = types;
+			VehicleTypeCombo.DisplayMemberPath = "Display";
+			VehicleTypeCombo.SelectedValuePath = "Name"; // Vehicle.VehicleType = Name
+
+			// VehicleCategories
+			var cats = await _db.VehicleCategories
+				.AsNoTracking()
+				.OrderBy(x => x.Name)
+				.Select(x => new LookupDisplay { Name = x.Name, Display = $"{x.Code} - {x.Name}" })
+				.ToListAsync();
+
+			VehicleCategoryCombo.ItemsSource = cats;
+			VehicleCategoryCombo.DisplayMemberPath = "Display";
+			VehicleCategoryCombo.SelectedValuePath = "Name";
+
+			// VehicleModels
+			var models = await _db.VehicleModels
+				.AsNoTracking()
+				.OrderBy(x => x.Name)
+				.Select(x => new LookupDisplay { Name = x.Name, Display = $"{x.Code} - {x.Name}" })
+				.ToListAsync();
+
+			ModelCombo.ItemsSource = models;
+			ModelCombo.DisplayMemberPath = "Display";
+			ModelCombo.SelectedValuePath = "Name";
+
+			// Units
+			var units = await _db.Units
+				.AsNoTracking()
+				.OrderBy(x => x.Code)
+				.Select(x => new LookupDisplay { Name = x.Name, Display = $"{x.Code} - {x.Name}" })
+				.ToListAsync();
+
+			UnitCombo.ItemsSource = units;
+			UnitCombo.DisplayMemberPath = "Display";
+			UnitCombo.SelectedValuePath = "Name";
 		}
 
 		// ==============================
@@ -38,7 +95,6 @@ namespace FleetManagement.Desktop.Pages
 			{
 				var drivers = await _db.Drivers
 					.AsNoTracking()
-					.Where(d => !d.IsDeleted)
 					.OrderBy(d => d.FullName)
 					.ToListAsync();
 
@@ -70,19 +126,25 @@ namespace FleetManagement.Desktop.Pages
 						Id = v.Id,
 						Plate = v.Plate,
 						InventoryNumber = v.InventoryNumber,
-						VehicleType = v.VehicleType,
-						VehicleCategory = v.VehicleCategory,
-						VehicleUnit = v.VehicleUnit,
-						VehicleKm = v.VehicleKm,
 
+						// öncelikli kolonlar + diğerleri
+						VehicleCategory = v.VehicleCategory,
+						VehicleType = v.VehicleType,
 						Model = v.Model,
+						PassengerCapacity = v.PassengerCapacity,
+						VehicleKm = v.VehicleKm,
+						VehicleUnit = v.VehicleUnit,
+
+						Brand = v.Brand,
 						MotorNo = v.MotorNo,
 						SaseNo = v.SaseNo,
+						LoadCapacity = v.LoadCapacity,
+						VehicleSituation = v.VehicleSituation,
 
 						// ✅ Tek sürücü adı: Assigned varsa onu göster, yoksa son hareket sürücüsü
 						DriverFullName =
 							_db.Drivers
-								.Where(d => !d.IsDeleted && d.Id == v.AssignedDriverId)
+								.Where(d => d.Id == v.AssignedDriverId)
 								.Select(d => d.FullName)
 								.FirstOrDefault()
 							??
@@ -90,7 +152,7 @@ namespace FleetManagement.Desktop.Pages
 							 where m.VehicleId == v.Id && m.DriverId != null
 							 orderby m.Id descending
 							 select _db.Drivers
-								 .Where(d => !d.IsDeleted && d.Id == m.DriverId)
+								 .Where(d => d.Id == m.DriverId)
 								 .Select(d => d.FullName)
 								 .FirstOrDefault()
 							).FirstOrDefault(),
@@ -104,18 +166,16 @@ namespace FleetManagement.Desktop.Pages
 							? "Görevde"
 							: "Müsait",
 
-						// ✅ bakım hesap için ham veriler
+						// bakım ham veriler
 						MaintenanceIntervalKm = v.MaintenanceIntervalKm,
 						MaintenanceIntervalMonths = v.MaintenanceIntervalMonths,
 						LastMaintenanceKm = v.LastMaintenanceKm,
 						LastMaintenanceDate = v.LastMaintenanceDate,
 
-						// status aşağıda foreach ile hesaplanacak
 						MaintenanceStatus = null
 					})
 					.ToListAsync();
 
-				// ✅ Bakım durumunu hesapla (km veya ay hangisi erken dolarsa)
 				foreach (var r in list)
 				{
 					r.MaintenanceStatus = CalcMaintenanceStatus(
@@ -164,15 +224,14 @@ namespace FleetManagement.Desktop.Pages
 
 				_selectedId = vehicle.Id;
 
-				// İstenen otomatik dolumlar
 				InventoryNumberBox.Text = vehicle.InventoryNumber ?? "";
-				VehicleTypeBox.Text = vehicle.VehicleType ?? "";
-				VehicleCategoryBox.Text = vehicle.VehicleCategory ?? "";
-
-				// Diğer alanlar
 				BrandBox.Text = vehicle.Brand ?? "";
-				ModelBox.Text = vehicle.Model ?? "";
-				VehicleUnitBox.Text = vehicle.VehicleUnit ?? "";
+
+				VehicleTypeCombo.SelectedValue = vehicle.VehicleType;
+				VehicleCategoryCombo.SelectedValue = vehicle.VehicleCategory;
+				ModelCombo.SelectedValue = vehicle.Model;
+				UnitCombo.SelectedValue = vehicle.VehicleUnit;
+
 				MotorNoBox.Text = vehicle.MotorNo ?? "";
 				SaseNoBox.Text = vehicle.SaseNo ?? "";
 				VehicleKmBox.Text = vehicle.VehicleKm?.ToString() ?? "";
@@ -181,7 +240,6 @@ namespace FleetManagement.Desktop.Pages
 				VehicleSituationBox.Text = vehicle.VehicleSituation ?? "";
 				AssignedDriverCombo.SelectedValue = vehicle.AssignedDriverId;
 
-				// ✅ bakım alanları
 				MaintenanceIntervalKmBox.Text = vehicle.MaintenanceIntervalKm?.ToString() ?? "";
 				MaintenanceIntervalMonthsBox.Text = vehicle.MaintenanceIntervalMonths?.ToString() ?? "";
 				LastMaintenanceKmBox.Text = vehicle.LastMaintenanceKm?.ToString() ?? "";
@@ -214,10 +272,12 @@ namespace FleetManagement.Desktop.Pages
 			PlateBox.Text = vehicle.Plate ?? "";
 			InventoryNumberBox.Text = vehicle.InventoryNumber ?? "";
 			BrandBox.Text = vehicle.Brand ?? "";
-			ModelBox.Text = vehicle.Model ?? "";
-			VehicleTypeBox.Text = vehicle.VehicleType ?? "";
-			VehicleCategoryBox.Text = vehicle.VehicleCategory ?? "";
-			VehicleUnitBox.Text = vehicle.VehicleUnit ?? "";
+
+			VehicleTypeCombo.SelectedValue = vehicle.VehicleType;
+			VehicleCategoryCombo.SelectedValue = vehicle.VehicleCategory;
+			ModelCombo.SelectedValue = vehicle.Model;
+			UnitCombo.SelectedValue = vehicle.VehicleUnit;
+
 			MotorNoBox.Text = vehicle.MotorNo ?? "";
 			SaseNoBox.Text = vehicle.SaseNo ?? "";
 			VehicleKmBox.Text = vehicle.VehicleKm?.ToString() ?? "";
@@ -226,7 +286,6 @@ namespace FleetManagement.Desktop.Pages
 			VehicleSituationBox.Text = vehicle.VehicleSituation ?? "";
 			AssignedDriverCombo.SelectedValue = vehicle.AssignedDriverId;
 
-			// ✅ bakım alanları
 			MaintenanceIntervalKmBox.Text = vehicle.MaintenanceIntervalKm?.ToString() ?? "";
 			MaintenanceIntervalMonthsBox.Text = vehicle.MaintenanceIntervalMonths?.ToString() ?? "";
 			LastMaintenanceKmBox.Text = vehicle.LastMaintenanceKm?.ToString() ?? "";
@@ -262,10 +321,13 @@ namespace FleetManagement.Desktop.Pages
 				entity.Plate = plate;
 				entity.InventoryNumber = EmptyToNull(InventoryNumberBox.Text);
 				entity.Brand = EmptyToNull(BrandBox.Text);
-				entity.Model = EmptyToNull(ModelBox.Text);
-				entity.VehicleType = EmptyToNull(VehicleTypeBox.Text);
-				entity.VehicleCategory = EmptyToNull(VehicleCategoryBox.Text);
-				entity.VehicleUnit = EmptyToNull(VehicleUnitBox.Text);
+
+				// ✅ Tanımlar sayfalardan çekiliyor (Name yazıyoruz)
+				entity.VehicleType = VehicleTypeCombo.SelectedValue as string;
+				entity.VehicleCategory = VehicleCategoryCombo.SelectedValue as string;
+				entity.Model = ModelCombo.SelectedValue as string;
+				entity.VehicleUnit = UnitCombo.SelectedValue as string;
+
 				entity.MotorNo = EmptyToNull(MotorNoBox.Text);
 				entity.SaseNo = EmptyToNull(SaseNoBox.Text);
 				entity.VehicleSituation = EmptyToNull(VehicleSituationBox.Text);
@@ -273,16 +335,17 @@ namespace FleetManagement.Desktop.Pages
 				entity.VehicleKm = TryParseNullableInt(VehicleKmBox.Text);
 				entity.PassengerCapacity = TryParseNullableInt(PassengerCapacityBox.Text);
 				entity.LoadCapacity = TryParseNullableInt(LoadCapacityBox.Text);
+
 				entity.AssignedDriverId = AssignedDriverCombo.SelectedValue is int id ? id : (int?)null;
 
 				// ✅ bakım alanları
 				entity.MaintenanceIntervalKm = TryParseNullableInt(MaintenanceIntervalKmBox.Text);
 				entity.MaintenanceIntervalMonths = TryParseNullableInt(MaintenanceIntervalMonthsBox.Text);
 				entity.LastMaintenanceKm = TryParseNullableInt(LastMaintenanceKmBox.Text);
+
+				// ✅ timestamptz fix: DatePicker -> Kind=UTC
 				var dt = LastMaintenanceDatePicker.SelectedDate?.Date;
-				entity.LastMaintenanceDate = dt is null
-					? null
-					: DateTime.SpecifyKind(dt.Value, DateTimeKind.Utc);
+				entity.LastMaintenanceDate = dt is null ? null : DateTime.SpecifyKind(dt.Value, DateTimeKind.Utc);
 
 				if (_selectedId is null)
 					_db.Vehicles.Add(entity);
@@ -362,10 +425,11 @@ namespace FleetManagement.Desktop.Pages
 					(x.Plate ?? "").ToLowerInvariant().Contains(q) ||
 					(x.InventoryNumber ?? "").ToLowerInvariant().Contains(q) ||
 					(x.DriverFullName ?? "").ToLowerInvariant().Contains(q) ||
-					(x.VehicleType ?? "").ToLowerInvariant().Contains(q) ||
 					(x.VehicleCategory ?? "").ToLowerInvariant().Contains(q) ||
-					(x.VehicleUnit ?? "").ToLowerInvariant().Contains(q) ||
+					(x.VehicleType ?? "").ToLowerInvariant().Contains(q) ||
 					(x.Model ?? "").ToLowerInvariant().Contains(q) ||
+					(x.VehicleUnit ?? "").ToLowerInvariant().Contains(q) ||
+					(x.Brand ?? "").ToLowerInvariant().Contains(q) ||
 					(x.MotorNo ?? "").ToLowerInvariant().Contains(q) ||
 					(x.SaseNo ?? "").ToLowerInvariant().Contains(q) ||
 					(x.DutyStatus ?? "").ToLowerInvariant().Contains(q) ||
@@ -382,6 +446,7 @@ namespace FleetManagement.Desktop.Pages
 		private async void Refresh_Click(object sender, RoutedEventArgs e)
 		{
 			await LoadDriversAsync();
+			await LoadLookupsAsync();
 			await LoadVehiclesAsync();
 		}
 
@@ -408,10 +473,12 @@ namespace FleetManagement.Desktop.Pages
 			PlateBox.Text = "";
 			InventoryNumberBox.Text = "";
 			BrandBox.Text = "";
-			ModelBox.Text = "";
-			VehicleTypeBox.Text = "";
-			VehicleCategoryBox.Text = "";
-			VehicleUnitBox.Text = "";
+
+			VehicleTypeCombo.SelectedIndex = -1;
+			VehicleCategoryCombo.SelectedIndex = -1;
+			ModelCombo.SelectedIndex = -1;
+			UnitCombo.SelectedIndex = -1;
+
 			MotorNoBox.Text = "";
 			SaseNoBox.Text = "";
 			VehicleKmBox.Text = "";
@@ -420,13 +487,11 @@ namespace FleetManagement.Desktop.Pages
 			VehicleSituationBox.Text = "";
 			AssignedDriverCombo.SelectedIndex = -1;
 
-			// ✅ bakım alanları
 			MaintenanceIntervalKmBox.Text = "";
 			MaintenanceIntervalMonthsBox.Text = "";
 			LastMaintenanceKmBox.Text = "";
 			LastMaintenanceDatePicker.SelectedDate = null;
 
-			// filtre standardı
 			SearchBox.Text = "";
 		}
 
@@ -454,8 +519,9 @@ namespace FleetManagement.Desktop.Pages
 			if (intervalKm is null && intervalMonths is null)
 				return "Tanımsız";
 
+			// bakım periyodu var ama son bakım girilmemiş
 			if (lastKm is null && lastDate is null)
-				return "Takip Başlamadı";
+				return "Bakım Gir";
 
 			bool overdue = false;
 			bool soon = false;

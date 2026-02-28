@@ -9,26 +9,30 @@
 
 		public string? DriverFullName { get; set; }
 
-		public string? VehicleType { get; set; }
 		public string? VehicleCategory { get; set; }
-		public string? VehicleUnit { get; set; }
-
+		public string? VehicleType { get; set; }
 		public string? Model { get; set; }
-		public int? VehicleKm { get; set; }
 
-		// ✅ geri ekledik (hata çözülür)
-		public string? MotorNo { get; set; }
-		public string? SaseNo { get; set; }
+		public int? PassengerCapacity { get; set; }
+		public int? VehicleKm { get; set; }
+		public string? VehicleUnit { get; set; }
 
 		public bool IsOnDuty { get; set; }
 		public string? DutyStatus { get; set; }
 
 		public string? MaintenanceStatus { get; set; }
 
-		// ✅ bakım hesabı için (gridde göstermeyeceğiz)
-		public int? MaintenanceIntervalKm { get; set; }        // 15000 / 30000
-		public int? MaintenanceIntervalMonths { get; set; }    // 12 / 24
+		// Formda var, listede sağa doğru gösterilecek
+		public string? Brand { get; set; }
+		public string? MotorNo { get; set; }
+		public string? SaseNo { get; set; }
+		public int? LoadCapacity { get; set; }
+		public string? VehicleSituation { get; set; }
+
+		// bakım hesabı için (gridde göstermeyeceğiz)
+		public int? MaintenanceIntervalKm { get; set; }
+		public int? MaintenanceIntervalMonths { get; set; }
 		public int? LastMaintenanceKm { get; set; }
-		public DateTime? LastMaintenanceDate { get; set; }     // UTC veya date
+		public DateTime? LastMaintenanceDate { get; set; }
 	}
 }
