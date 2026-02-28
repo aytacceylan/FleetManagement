@@ -33,6 +33,11 @@ namespace FleetManagement.Domain.Entities
 
         public DateTime CreatedAt { get; set; }
         public bool IsDeleted { get; set; }
-    }
+
+		public int? MaintenanceIntervalKm { get; set; }
+		public int? MaintenanceIntervalMonths { get; set; }
+		public int? LastMaintenanceKm { get; set; }
+		public DateTime? LastMaintenanceDate { get; set; }
+	}
 }
 

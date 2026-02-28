@@ -24,5 +24,11 @@
 		public string? DutyStatus { get; set; }
 
 		public string? MaintenanceStatus { get; set; }
+
+		// ✅ bakım hesabı için (gridde göstermeyeceğiz)
+		public int? MaintenanceIntervalKm { get; set; }        // 15000 / 30000
+		public int? MaintenanceIntervalMonths { get; set; }    // 12 / 24
+		public int? LastMaintenanceKm { get; set; }
+		public DateTime? LastMaintenanceDate { get; set; }     // UTC veya date
 	}
 }

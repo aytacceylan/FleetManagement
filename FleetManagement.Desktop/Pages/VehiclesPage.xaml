@@ -87,6 +87,18 @@
                         <TextBlock Text="Km" Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="VehicleKmBox" Margin="0,6,0,12"/>
 
+                        <TextBlock Text="Bakım Periyodu (Km)" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="MaintenanceIntervalKmBox" Margin="0,6,0,12"/>
+
+                        <TextBlock Text="Bakım Periyodu (Ay)" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="MaintenanceIntervalMonthsBox" Margin="0,6,0,12"/>
+
+                        <TextBlock Text="Son Bakım Km" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="LastMaintenanceKmBox" Margin="0,6,0,12"/>
+
+                        <TextBlock Text="Son Bakım Tarihi" Foreground="{StaticResource BrushMuted}"/>
+                        <DatePicker x:Name="LastMaintenanceDatePicker" Margin="0,6,0,12"/>
+
                         <TextBlock Text="Yolcu Kapasitesi" Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="PassengerCapacityBox" Margin="0,6,0,12"/>
 
