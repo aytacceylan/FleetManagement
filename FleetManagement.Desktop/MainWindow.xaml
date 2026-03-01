@@ -1,7 +1,7 @@
 ﻿<Window x:Class="FleetManagement.Desktop.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="FleetManage" Width="1200" Height="720"
+        Title="Oto Sevk Programı" Width="1200" Height="720"
         Background="#F3F5F9">
 
     <Grid>
@@ -14,8 +14,9 @@
         <Border Grid.Column="0" Background="#0B1B3A" Padding="12">
             <DockPanel LastChildFill="True">
 
+                <!-- APP TITLE -->
                 <TextBlock DockPanel.Dock="Top"
-                           Text="FleetManage"
+                           Text="Oto Sevk Programı"
                            Foreground="White"
                            FontSize="20"
                            FontWeight="SemiBold"
@@ -24,51 +25,56 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
 
-                        <!-- Dashboard -->
+                        <!-- 1) Ana Sayfa -->
                         <Button Style="{DynamicResource MenuButtonStyle}"
-                                Content="Dashboard"
-                                Tag="DashboardPage"
+                                Content="Ana Sayfa"
+                                Tag="HomePage"
                                 Click="Menu_Click"/>
 
-                        <!-- 1) Tanımlamalar -->
-                        <Expander Header="Tanımlamalar" Style="{DynamicResource MenuExpanderStyle}" IsExpanded="True">
+                        <!-- 2) Faaliyet/Raporlar -->
+                        <Expander Header="Faaliyet/Raporlar"
+                                  Style="{DynamicResource MenuExpanderStyle}"
+                                  IsExpanded="True">
+                            <StackPanel>
+                                <Button Style="{DynamicResource SubMenuButtonStyle}"
+                                        Content="Araç Sevk Hazırla"
+                                        Tag="VehicleDispatchPreparePage"
+                                        Click="Menu_Click"/>
+
+                                <Button Style="{DynamicResource SubMenuButtonStyle}"
+                                        Content="Sorgula"
+                                        Tag="QueriesPage"
+                                        Click="Menu_Click"/>
+                            </StackPanel>
+                        </Expander>
+
+                        <!-- 3) Tanımlamalar -->
+                        <Expander Header="Tanımlamalar"
+                                  Style="{DynamicResource MenuExpanderStyle}"
+                                  IsExpanded="True">
                             <StackPanel>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç" Tag="VehiclesPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Sürücü" Tag="DriversPage" Click="Menu_Click"/>
-                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Komutanı" Tag="CommandersPage" Click="Menu_Click"/>
-                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Route" Tag="RoutesPage" Click="Menu_Click"/>
-                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Tipi" Tag="VehicleTypesPage" Click="Menu_Click"/>
-                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Kategori" Tag="CategoriesPage" Click="Menu_Click"/>
+
+                                <!-- Bakım-Birlik (Unit) -->
+                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Bakım-Birlik (Unit)" Tag="UnitsPage" Click="Menu_Click"/>
+
+                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Marka" Tag="BrandsPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Model" Tag="ModelsPage" Click="Menu_Click"/>
+                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Yılı" Tag="VehicleYearsPage" Click="Menu_Click"/>
+                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Güzergah (Rota-Route)" Tag="RoutesPage" Click="Menu_Click"/>
+                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Komutanı" Tag="CommandersPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Makam" Tag="MakamsPage" Click="Menu_Click"/>
-                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Birlik/Bölük-Kısım" Tag="UnitsPage" Click="Menu_Click"/>
+
+                                <!-- Araç Muhafızı (henüz yok -> DefaultPage) -->
+                                <Button Style="{DynamicResource SubMenuButtonStyle}"
+                                        Content="Araç Muhafızı"
+                                        Tag="DefaultPage"
+                                        Click="Menu_Click"/>
                             </StackPanel>
                         </Expander>
 
-                        <!-- 2) İşlemler/Faaliyet -->
-                        <Expander Header="İşlemler/Faaliyet" Style="{DynamicResource MenuExpanderStyle}" IsExpanded="True">
-                            <StackPanel>
-                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Hareket" Tag="VehicleMovementsPage" Click="Menu_Click"/>
-                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Bakım/Yağlama" Tag="VehicleMaintenancesPage" Click="Menu_Click"/>
-                            </StackPanel>
-                        </Expander>
-
-                        <!-- 3) Sorgulama/Raporlar -->
-                        <Expander Header="Sorgulama/Raporlar" Style="{DynamicResource MenuExpanderStyle}" IsExpanded="True">
-                            <StackPanel>
-                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Sorgulamalar" Tag="QueriesPage" Click="Menu_Click"/>
-                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Raporlar" Tag="ReportsPage" Click="Menu_Click"/>
-                            </StackPanel>
-                        </Expander>
-
-                        <!-- 4) Ayarlar -->
-                        <Expander Header="Ayarlar" Style="{DynamicResource MenuExpanderStyle}" IsExpanded="True">
-                            <StackPanel>
-                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Yetkilendirme" Tag="AuthorizationPage" Click="Menu_Click"/>
-                            </StackPanel>
-                        </Expander>
-
-                        <!-- 5) Yardım -->
+                        <!-- 4) Yardım -->
                         <Button Style="{DynamicResource MenuButtonStyle}"
                                 Content="Yardım"
                                 Tag="HelpPage"
