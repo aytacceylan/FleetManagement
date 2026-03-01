@@ -44,5 +44,6 @@ namespace FleetManagement.Desktop.Pages
 		{
 			// TODO: seçilen satırı forma doldur
 		}
+		private void New_Click(object sender, RoutedEventArgs e) => Clear_Click(sender, e);
 	}
 }

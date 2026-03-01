@@ -7,10 +7,12 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="12"/>
+            <RowDefinition Height="260"/>
+            <RowDefinition Height="12"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- HEADER -->
+        <!-- ================= HEADER ================= -->
         <Border Grid.Row="0" Style="{StaticResource FmCard}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -21,7 +23,9 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Sürücüler" FontSize="22" FontWeight="SemiBold"/>
+                    <TextBlock Text="Sürücüler"
+                               FontSize="22"
+                               FontWeight="SemiBold"/>
                     <TextBlock Text="Sürücü kayıtlarını görüntüleyin ve yönetin."
                                Margin="0,6,0,0"
                                Foreground="{StaticResource BrushMuted}"/>
@@ -39,95 +43,186 @@
             </Grid>
         </Border>
 
-        <!-- CONTENT -->
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="380"/>
-                <ColumnDefinition Width="12"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        <!-- ================= FORM ================= -->
+        <Border Grid.Row="2" Style="{StaticResource FmCard}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <!-- FORM -->
-            <Border Grid.Column="0" Style="{StaticResource FmCard}">
-                <StackPanel>
+                <!-- FORM HEADER -->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Sürücü Formu" FontSize="16" FontWeight="SemiBold"/>
-                    <TextBlock Text="Yeni / Güncelle / Sil"
-                               Margin="0,6,0,16"
-                               Foreground="{StaticResource BrushMuted}"/>
+                    <TextBlock Text="Sürücü Formu"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
 
-                    <TextBlock Text="Sürücü No" Foreground="{StaticResource BrushMuted}"/>
-                    <TextBox x:Name="DriverNumberBox" Margin="0,6,0,12"/>
+                    <Button Grid.Column="1"
+                            Content="Kaydet"
+                            Width="110"
+                            Click="Save_Click"/>
 
-                    <TextBlock Text="Ad Soyad" Foreground="{StaticResource BrushMuted}"/>
-                    <TextBox x:Name="FullNameBox" Margin="0,6,0,12"/>
+                    <Button Grid.Column="3"
+                            Content="Sil"
+                            Width="110"
+                            Click="Delete_Click"/>
 
-                    <TextBlock Text="Telefon" Foreground="{StaticResource BrushMuted}"/>
-                    <TextBox x:Name="PhoneBox" Margin="0,6,0,16"/>
+                    <Button Grid.Column="5"
+                            Content="Temizle"
+                            Width="110"
+                            Click="Clear_Click"/>
+                </Grid>
 
-                    <WrapPanel>
-                        <Button Content="Kaydet" Width="110" Margin="0,0,10,10" Click="Save_Click"/>
-                        <Button Content="Sil" Width="110" Margin="0,0,10,10" Click="Delete_Click"/>
-                        <Button Content="Temizle" Width="110" Margin="0,0,10,10" Click="Clear_Click"/>
-                    </WrapPanel>
-
-                    <TextBlock x:Name="FormInfo"
-                               Margin="0,8,0,0"
-                               Foreground="{StaticResource BrushMuted}"/>
-                </StackPanel>
-            </Border>
-
-            <!-- LIST -->
-            <Border Grid.Column="2" Style="{StaticResource FmCard}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="12"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <Grid Grid.Row="0">
+                <!-- FORM CONTENT (Max 4 kolon) -->
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                    <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="280"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="Sürücü Listesi"
-                                   FontSize="16"
-                                   FontWeight="SemiBold"
-                                   VerticalAlignment="Center"/>
+                        <!-- 1. Kolon -->
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Sürücü No"
+                                       Foreground="{StaticResource BrushMuted}"
+                                       Margin="0,8,0,0"/>
+                            <TextBox x:Name="DriverNumberBox"
+                                     Margin="0,6,0,10"/>
 
-                        <StackPanel Grid.Column="1">
-                            <TextBox x:Name="SearchBox"
-             TextChanged="SearchBox_TextChanged"/>
-
-                            <TextBlock x:Name="FilterInfo"
-               Margin="0,6,0,0"
-               Foreground="{StaticResource BrushMuted}"
-               FontSize="12"
-               Text="Filtre: yok"/>
+                            <TextBlock Text="Ad Soyad"
+                                       Foreground="{StaticResource BrushMuted}"/>
+                            <TextBox x:Name="FullNameBox"
+                                     Margin="0,6,0,10"/>
                         </StackPanel>
 
+                        <!-- 2. Kolon -->
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Telefon"
+                                       Foreground="{StaticResource BrushMuted}"
+                                       Margin="0,8,0,0"/>
+                            <TextBox x:Name="PhoneBox"
+                                     Margin="0,6,0,10"/>
+
+                            <!-- İstersen sonra ek alan: Ehliyet Sınıfı vs. şimdilik boş -->
+                            <TextBlock Text="Not"
+                                       Foreground="{StaticResource BrushMuted}"/>
+                            <TextBox x:Name="NoteBox"
+                                     Margin="0,6,0,10"
+                                     Text="—"
+                                     IsReadOnly="True"
+                                     Background="#F6F8FC"
+                                     BorderBrush="#D6DDEB"
+                                     BorderThickness="1"
+                                     Padding="10,6"/>
+                        </StackPanel>
+
+                        <!-- 3. Kolon -->
+                        <StackPanel Grid.Column="4">
+                            <TextBlock Text="Durum"
+                                       Foreground="{StaticResource BrushMuted}"
+                                       Margin="0,8,0,0"/>
+                            <TextBox x:Name="StatusBox"
+                                     Margin="0,6,0,10"
+                                     Text="Aktif"
+                                     IsReadOnly="True"
+                                     Background="#F6F8FC"
+                                     BorderBrush="#D6DDEB"
+                                     BorderThickness="1"
+                                     Padding="10,6"/>
+
+                            <TextBlock Text="Bilgi"
+                                       Foreground="{StaticResource BrushMuted}"/>
+                            <TextBox x:Name="InfoBox"
+                                     Margin="0,6,0,10"
+                                     Text="—"
+                                     IsReadOnly="True"
+                                     Background="#F6F8FC"
+                                     BorderBrush="#D6DDEB"
+                                     BorderThickness="1"
+                                     Padding="10,6"/>
+                        </StackPanel>
+
+                        <!-- 4. Kolon -->
+                        <StackPanel Grid.Column="6">
+                            <TextBlock Text="Form Durumu"
+                                       Foreground="{StaticResource BrushMuted}"
+                                       Margin="0,8,0,0"/>
+                            <TextBlock x:Name="FormInfo"
+                                       Margin="0,6,0,0"
+                                       Foreground="{StaticResource BrushMuted}"/>
+                        </StackPanel>
                     </Grid>
+                </ScrollViewer>
+            </Grid>
+        </Border>
 
-                    <DataGrid x:Name="DriversGrid"
-                              Grid.Row="2"
-                              AutoGenerateColumns="False"
-                              IsReadOnly="True"
-                              CanUserAddRows="False"
-                              SelectionMode="Single"
-                              SelectionChanged="DriversGrid_SelectionChanged">
+        <!-- ================= LIST ================= -->
+        <Border Grid.Row="4" Style="{StaticResource FmCard}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
-                            <DataGridTextColumn Header="Sürücü No" Binding="{Binding DriverNumber}" Width="*"/>
-                            <DataGridTextColumn Header="Ad Soyad" Binding="{Binding FullName}" Width="*"/>
-                            <DataGridTextColumn Header="Telefon" Binding="{Binding PhoneNumber}" Width="*"/>
-                            <DataGridTextColumn Header="Oluşturma" Binding="{Binding CreatedAt}" Width="180"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
+                <!-- LIST HEADER (Başlık + Arama) -->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="280"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Sürücü Listesi"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+
+                    <StackPanel Grid.Column="1">
+                        <TextBox x:Name="SearchBox"
+                                 TextChanged="SearchBox_TextChanged"/>
+
+                        <TextBlock x:Name="FilterInfo"
+                                   Margin="0,6,0,0"
+                                   Foreground="{StaticResource BrushMuted}"
+                                   FontSize="12"
+                                   Text="Filtre: yok"/>
+                    </StackPanel>
                 </Grid>
-            </Border>
-        </Grid>
+
+                <DataGrid x:Name="DriversGrid"
+                          Grid.Row="2"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          SelectionMode="Single"
+                          SelectionChanged="DriversGrid_SelectionChanged">
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
+                        <DataGridTextColumn Header="Sürücü No" Binding="{Binding DriverNumber}" Width="130"/>
+                        <DataGridTextColumn Header="Ad Soyad" Binding="{Binding FullName}" Width="*"/>
+                        <DataGridTextColumn Header="Telefon" Binding="{Binding PhoneNumber}" Width="160"/>
+                        <DataGridTextColumn Header="Oluşturma" Binding="{Binding CreatedAt}" Width="180"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+
     </Grid>
 </Page>
