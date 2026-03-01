@@ -91,7 +91,7 @@
 
     <!-- ====== COMBOBOX (mavi kutu + beyaz yazı / beyaz liste) ====== -->
     <Style TargetType="ComboBox">
-        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Foreground" Value="Black"/>
         <Setter Property="Background" Value="{StaticResource BrushNavy800}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BrushBorder}"/>
         <Setter Property="BorderThickness" Value="1"/>

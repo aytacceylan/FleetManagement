@@ -1,4 +1,6 @@
-﻿namespace FleetManagement.Desktop.Dtos
+﻿using System.Windows.Media;
+
+namespace FleetManagement.Desktop.Dtos
 {
 	public class VehicleListRow
 	{
@@ -39,5 +41,9 @@
 		public int? MaintenanceIntervalMonths { get; set; }
 		public int? LastMaintenanceKm { get; set; }
 		public DateTime? LastMaintenanceDate { get; set; }
+
+		public Brush? MaintenanceBrush { get; set; }
+
+
 	}
 }
