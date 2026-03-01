@@ -18,7 +18,9 @@ namespace FleetManagement.Domain.Entities
         public string? Brand { get; set; }
         public string? Model { get; set; }
 
-        public string? VehicleType { get; set; }
+		public int? VehicleYear { get; set; }
+
+		public string? VehicleType { get; set; }
         public string? VehicleCategory { get; set; }
         public string? VehicleUnit { get; set; }
 
@@ -38,6 +40,8 @@ namespace FleetManagement.Domain.Entities
 		public int? MaintenanceIntervalMonths { get; set; }
 		public int? LastMaintenanceKm { get; set; }
 		public DateTime? LastMaintenanceDate { get; set; }
+
+
 	}
 }
 

@@ -52,9 +52,10 @@ namespace FleetManagement.Infrastructure.Data
                 e.HasIndex(x => x.InventoryNumber).IsUnique();
 
                 e.HasOne(v => v.AssignedDriver).WithMany().HasForeignKey(v => v.AssignedDriverId).OnDelete(DeleteBehavior.Restrict);
+				e.Property(x => x.VehicleYear);
 
 
-            });
+			});
             modelBuilder.Entity<Vehicle>().HasIndex(x => x.AssignedDriverId);
 
             modelBuilder.Entity<Driver>().HasQueryFilter(x => !x.IsDeleted);
@@ -165,6 +166,8 @@ namespace FleetManagement.Infrastructure.Data
 
 				e.HasIndex(x => x.Code).IsUnique();
 			});
+
+
 		}
     }
 }

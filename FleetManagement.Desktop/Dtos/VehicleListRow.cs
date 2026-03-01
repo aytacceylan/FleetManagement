@@ -24,7 +24,12 @@
 
 		// Formda var, listede sağa doğru gösterilecek
 		public string? Brand { get; set; }
-		public string? MotorNo { get; set; }
+
+		public int? VehicleYear { get; set; }
+
+		public string? MotorNo { get; set; } = null;
+
+
 		public string? SaseNo { get; set; }
 		public int? LoadCapacity { get; set; }
 		public string? VehicleSituation { get; set; }
