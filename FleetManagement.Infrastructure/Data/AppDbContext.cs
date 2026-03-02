@@ -25,7 +25,13 @@ namespace FleetManagement.Infrastructure.Data
 
 		public DbSet<Unit> Units => Set<Unit>();
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
+        public DbSet<VehicleGuard> VehicleGuards => Set<VehicleGuard>();
+        public DbSet<VehicleBrand> VehicleBrands => Set<VehicleBrand>();
+        public DbSet<VehicleYear> VehicleYears => Set<VehicleYear>();
+
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
@@ -167,7 +173,37 @@ namespace FleetManagement.Infrastructure.Data
 				e.HasIndex(x => x.Code).IsUnique();
 			});
 
+            modelBuilder.Entity<VehicleGuard>(e =>
+            {
+                e.ToTable("VehicleGuards");
+                e.Property(x => x.GuardNumber).HasMaxLength(50).IsRequired();
+                e.Property(x => x.FullName).HasMaxLength(200).IsRequired();
+                e.Property(x => x.PhoneNumber).HasMaxLength(50);
 
-		}
+                // İstersen unique kalsın (bence kalsın). İstemiyorsan bu satırı kaldır.
+                e.HasIndex(x => x.GuardNumber).IsUnique();
+            });
+            modelBuilder.Entity<VehicleGuard>().HasQueryFilter(x => !x.IsDeleted);
+
+            modelBuilder.Entity<VehicleBrand>(e =>
+            {
+                e.ToTable("VehicleBrands");
+                e.Property(x => x.Code).HasMaxLength(50).IsRequired();
+                e.Property(x => x.Name).HasMaxLength(200).IsRequired();
+                e.Property(x => x.Description).HasMaxLength(500);
+                e.HasIndex(x => x.Code).IsUnique();
+            });
+            modelBuilder.Entity<VehicleBrand>().HasQueryFilter(x => !x.IsDeleted);
+
+            modelBuilder.Entity<VehicleYear>(e =>
+            {
+                e.ToTable("VehicleYears");
+                e.Property(x => x.Year).IsRequired();
+                e.Property(x => x.Note).HasMaxLength(200);
+                e.HasIndex(x => x.Year).IsUnique();
+            });
+            modelBuilder.Entity<VehicleYear>().HasQueryFilter(x => !x.IsDeleted);
+
+        }
     }
 }

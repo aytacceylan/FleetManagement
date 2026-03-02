@@ -1,0 +1,131 @@
+﻿<Page x:Class="FleetManagement.Desktop.Pages.VehicleYearsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="{StaticResource BrushBg}">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="220"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Style="{StaticResource FmCard}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Text="Araç Yılları" FontSize="22" FontWeight="SemiBold"/>
+                    <TextBlock Text="Araç yılı tanımlarını görüntüleyin ve yönetin."
+                               Margin="0,6,0,0" Foreground="{StaticResource BrushMuted}"/>
+                </StackPanel>
+
+                <Button Grid.Column="1" Content="Yenile" MinWidth="120" Click="Refresh_Click"/>
+                <Button Grid.Column="3" Content="Yeni Yıl" MinWidth="150" Click="New_Click"/>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="2" Style="{StaticResource FmCard}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Araç Yılı Formu" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <Button Grid.Column="1" Content="Kaydet" Width="110" Click="Save_Click"/>
+                    <Button Grid.Column="3" Content="Sil" Width="110" Click="Delete_Click"/>
+                    <Button Grid.Column="5" Content="Temizle" Width="110" Click="Clear_Click"/>
+                </Grid>
+
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Yıl" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBox x:Name="YearBox" Margin="0,6,0,10"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Not" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBox x:Name="NoteBox" Margin="0,6,0,10"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="6">
+                            <TextBlock Text="Form Durumu" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBlock x:Name="FormInfo" Margin="0,6,0,0" Foreground="{StaticResource BrushMuted}"/>
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="4" Style="{StaticResource FmCard}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="280"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Araç Yılı Listesi" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <StackPanel Grid.Column="1">
+                        <TextBox x:Name="SearchBox" TextChanged="SearchBox_TextChanged"/>
+                        <TextBlock x:Name="FilterInfo" Margin="0,6,0,0"
+                                   Foreground="{StaticResource BrushMuted}" FontSize="12"
+                                   Text="Toplam kayıt: 0"/>
+                    </StackPanel>
+                </Grid>
+
+                <DataGrid x:Name="Grid"
+                          Grid.Row="2"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          SelectionMode="Single"
+                          SelectionChanged="Grid_SelectionChanged">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
+                        <DataGridTextColumn Header="Yıl" Binding="{Binding Year}" Width="110"/>
+                        <DataGridTextColumn Header="Not" Binding="{Binding Note}" Width="*"/>
+                        <DataGridTextColumn Header="Oluşturma" Binding="{Binding CreatedAt}" Width="180"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+
+    </Grid>
+</Page>

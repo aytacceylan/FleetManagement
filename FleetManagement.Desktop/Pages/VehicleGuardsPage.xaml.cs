@@ -9,40 +9,39 @@ using System.Windows.Data;
 
 namespace FleetManagement.Desktop.Pages
 {
-    public partial class UnitsPage : Page
+    public partial class VehicleGuardsPage : Page
     {
-        private readonly ObservableCollection<Unit> _items = new();
+        private readonly ObservableCollection<VehicleGuard> _items = new();
         private ICollectionView? _view;
-        private Unit? _selected;
+        private VehicleGuard? _selected;
 
-        public UnitsPage()
+        public VehicleGuardsPage()
         {
             InitializeComponent();
 
+            // Sunum/başlangıç: boş liste ile çalışır (istersen demo data ekleyebilirsin)
             _view = CollectionViewSource.GetDefaultView(_items);
             _view.Filter = Filter;
 
-            Grid.ItemsSource = _view;
+            GuardsGrid.ItemsSource = _view;
             UpdateCount();
         }
 
         private bool Filter(object obj)
         {
-            if (obj is not Unit x) return false;
-
+            if (obj is not VehicleGuard x) return false;
             var q = (SearchBox.Text ?? "").Trim().ToLowerInvariant();
             if (string.IsNullOrWhiteSpace(q)) return true;
 
-            return (x.Code ?? "").ToLowerInvariant().Contains(q)
-                || (x.Name ?? "").ToLowerInvariant().Contains(q)
-                || (x.ParentName ?? "").ToLowerInvariant().Contains(q)
-                || (x.Description ?? "").ToLowerInvariant().Contains(q);
+            return (x.GuardNumber ?? "").ToLowerInvariant().Contains(q)
+                || (x.FullName ?? "").ToLowerInvariant().Contains(q)
+                || (x.PhoneNumber ?? "").ToLowerInvariant().Contains(q);
         }
 
         private void Refresh_Click(object sender, RoutedEventArgs e)
         {
             _view?.Refresh();
-       
+            FormInfo.Text = "Yenilendi.";
             UpdateCount();
         }
 
@@ -50,55 +49,50 @@ namespace FleetManagement.Desktop.Pages
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            var code = (CodeBox.Text ?? "").Trim();
-            var name = (NameBox.Text ?? "").Trim();
-            var parent = (ParentNameBox.Text ?? "").Trim();
-            var desc = (DescBox.Text ?? "").Trim();
+            var no = (GuardNumberBox.Text ?? "").Trim();
+            var name = (FullNameBox.Text ?? "").Trim();
+            var phone = (PhoneBox.Text ?? "").Trim();
 
-            if (string.IsNullOrWhiteSpace(code))
+            if (string.IsNullOrWhiteSpace(no))
             {
-
+                FormInfo.Text = "Muhafız No boş olamaz.";
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-
+                FormInfo.Text = "Ad Soyad boş olamaz.";
                 return;
             }
 
-            // Unique Code kontrolü (RAM)
-            var exists = _items.Any(x => x != _selected && string.Equals(x.Code, code, StringComparison.OrdinalIgnoreCase));
+            // Unique kontrol (RAM)
+            var exists = _items.Any(x => x != _selected && string.Equals(x.GuardNumber, no, StringComparison.OrdinalIgnoreCase));
             if (exists)
             {
-
+                FormInfo.Text = "Bu Muhafız No zaten var.";
                 return;
             }
 
             if (_selected is null)
             {
-                var item = new Unit
+                var item = new VehicleGuard
                 {
                     Id = _items.Count == 0 ? 1 : _items.Max(x => x.Id) + 1,
-                    Code = code,
-                    Name = name,
-                    ParentName = string.IsNullOrWhiteSpace(parent) ? null : parent,
-                    Description = string.IsNullOrWhiteSpace(desc) ? null : desc,
+                    GuardNumber = no,
+                    FullName = name,
+                    PhoneNumber = string.IsNullOrWhiteSpace(phone) ? null : phone,
                     CreatedAt = DateTime.Now
                 };
-
                 _items.Insert(0, item);
-
+                FormInfo.Text = "Kaydedildi.";
             }
             else
             {
-                _selected.Code = code;
-                _selected.Name = name;
-                _selected.ParentName = string.IsNullOrWhiteSpace(parent) ? null : parent;
-                _selected.Description = string.IsNullOrWhiteSpace(desc) ? null : desc;
-
+                _selected.GuardNumber = no;
+                _selected.FullName = name;
+                _selected.PhoneNumber = string.IsNullOrWhiteSpace(phone) ? null : phone;
+                FormInfo.Text = "Güncellendi.";
                 _view?.Refresh();
-
             }
 
             UpdateCount();
@@ -108,27 +102,26 @@ namespace FleetManagement.Desktop.Pages
         {
             if (_selected is null)
             {
-
+                FormInfo.Text = "Silmek için listeden kayıt seç.";
                 return;
             }
 
             _items.Remove(_selected);
             Clear_Click(sender, e);
-
+            FormInfo.Text = "Silindi.";
             UpdateCount();
         }
 
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
             _selected = null;
-            Grid.SelectedItem = null;
+            GuardsGrid.SelectedItem = null;
 
-            CodeBox.Text = "";
-            NameBox.Text = "";
-            ParentNameBox.Text = "";
-            DescBox.Text = "";
+            GuardNumberBox.Text = "";
+            FullNameBox.Text = "";
+            PhoneBox.Text = "";
 
-
+            FormInfo.Text = "Temizlendi.";
         }
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -137,17 +130,15 @@ namespace FleetManagement.Desktop.Pages
             UpdateCount();
         }
 
-        private void Grid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void GuardsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _selected = Grid.SelectedItem as Unit;
+            _selected = GuardsGrid.SelectedItem as VehicleGuard;
             if (_selected is null) return;
 
-            CodeBox.Text = _selected.Code;
-            NameBox.Text = _selected.Name;
-            ParentNameBox.Text = _selected.ParentName ?? "";
-            DescBox.Text = _selected.Description ?? "";
-
-
+            GuardNumberBox.Text = _selected.GuardNumber;
+            FullNameBox.Text = _selected.FullName;
+            PhoneBox.Text = _selected.PhoneNumber ?? "";
+            FormInfo.Text = $"Seçildi: {_selected.FullName}";
         }
 
         private void UpdateCount()
