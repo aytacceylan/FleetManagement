@@ -348,9 +348,6 @@
                             <TextBox x:Name="MaintenanceIntervalMonthsBox"
                                      Margin="0,6,0,10"/>
 
-                            <TextBlock x:Name="FormInfo"
-                                       Margin="0,6,0,0"
-                                       Foreground="{StaticResource BrushMuted}"/>
                         </StackPanel>
                     </Grid>
                 </ScrollViewer>
@@ -394,12 +391,10 @@
 
                         <!-- 3. kolon -->
                         <DataGridTextColumn Header="Km" Binding="{Binding VehicleKm}" Width="70"/>
-                        <DataGridTextColumn Header="Yolcu" Binding="{Binding PassengerCapacity}" Width="60"/>
-                        <DataGridTextColumn Header="Yük" Binding="{Binding LoadCapacity}" Width="60"/>
 
-                        <!-- 4. kolon -->
-                        <DataGridTextColumn Header="Motor" Binding="{Binding MotorNo}" Width="110"/>
-                        <DataGridTextColumn Header="Şase" Binding="{Binding SaseNo}" Width="120"/>
+
+
+
                         <DataGridTextColumn Header="Görev" Binding="{Binding DutyStatus}" Width="80"/>
 
                         <DataGridTemplateColumn Header="Bakım" Width="90">
@@ -413,6 +408,17 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
+
+                        <!-- 4. kolon -->
+
+                        <DataGridTextColumn Header="Yolcu" Binding="{Binding PassengerCapacity}" Width="60"/>
+                        <DataGridTextColumn Header="Yük" Binding="{Binding LoadCapacity}" Width="60"/>
+                        <DataGridTextColumn Header="Motor" Binding="{Binding MotorNo}" Width="110"/>
+                        <DataGridTextColumn Header="Şase" Binding="{Binding SaseNo}" Width="120"/>
+
+
+
+
 
                         <!-- 5. kolon -->
                         <DataGridTextColumn Header="Son Km" Binding="{Binding LastMaintenanceKm}" Width="75"/>

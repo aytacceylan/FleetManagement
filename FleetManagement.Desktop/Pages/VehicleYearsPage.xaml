@@ -7,11 +7,12 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="12"/>
-            <RowDefinition Height="220"/>
+            <RowDefinition Height="170"/>
             <RowDefinition Height="12"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- HEADER -->
         <Border Grid.Row="0" Style="{StaticResource FmCard}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -28,10 +29,11 @@
                 </StackPanel>
 
                 <Button Grid.Column="1" Content="Yenile" MinWidth="120" Click="Refresh_Click"/>
-                <Button Grid.Column="3" Content="Yeni Yıl" MinWidth="150" Click="New_Click"/>
+                <Button Grid.Column="3" Content="Yeni" MinWidth="120" Click="New_Click"/>
             </Grid>
         </Border>
 
+        <!-- FORM -->
         <Border Grid.Row="2" Style="{StaticResource FmCard}">
             <Grid>
                 <Grid.RowDefinitions>
@@ -56,37 +58,22 @@
                     <Button Grid.Column="5" Content="Temizle" Width="110" Click="Clear_Click"/>
                 </Grid>
 
-                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="12"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="12"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="12"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                <!-- ✅ Tek alan -->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Yıl" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
-                            <TextBox x:Name="YearBox" Margin="0,6,0,10"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Text="Not" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
-                            <TextBox x:Name="NoteBox" Margin="0,6,0,10"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="6">
-                            <TextBlock Text="Form Durumu" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
-                            <TextBlock x:Name="FormInfo" Margin="0,6,0,0" Foreground="{StaticResource BrushMuted}"/>
-                        </StackPanel>
-                    </Grid>
-                </ScrollViewer>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Yıl" Foreground="{StaticResource BrushMuted}" />
+                        <TextBox x:Name="YearBox" Margin="0,6,0,0"/>
+                    </StackPanel>
+                </Grid>
             </Grid>
         </Border>
 
+        <!-- LIST -->
         <Border Grid.Row="4" Style="{StaticResource FmCard}">
             <Grid>
                 <Grid.RowDefinitions>
@@ -120,7 +107,6 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
                         <DataGridTextColumn Header="Yıl" Binding="{Binding Year}" Width="110"/>
-                        <DataGridTextColumn Header="Not" Binding="{Binding Note}" Width="*"/>
                         <DataGridTextColumn Header="Oluşturma" Binding="{Binding CreatedAt}" Width="180"/>
                     </DataGrid.Columns>
                 </DataGrid>

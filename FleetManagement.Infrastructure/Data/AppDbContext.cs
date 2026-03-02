@@ -195,15 +195,16 @@ namespace FleetManagement.Infrastructure.Data
             });
             modelBuilder.Entity<VehicleBrand>().HasQueryFilter(x => !x.IsDeleted);
 
-            modelBuilder.Entity<VehicleYear>(e =>
-            {
-                e.ToTable("VehicleYears");
-                e.Property(x => x.Year).IsRequired();
-                e.Property(x => x.Note).HasMaxLength(200);
-                e.HasIndex(x => x.Year).IsUnique();
-            });
-            modelBuilder.Entity<VehicleYear>().HasQueryFilter(x => !x.IsDeleted);
+			modelBuilder.Entity<VehicleYear>(e =>
+			{
+				e.ToTable("VehicleYears");
 
-        }
+				e.Property(x => x.Year).IsRequired();
+
+				e.HasIndex(x => x.Year).IsUnique();
+			});
+
+			modelBuilder.Entity<VehicleYear>().HasQueryFilter(x => !x.IsDeleted);
+		}
     }
 }

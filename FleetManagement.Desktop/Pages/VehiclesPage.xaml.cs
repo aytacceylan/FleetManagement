@@ -90,7 +90,7 @@ namespace FleetManagement.Desktop.Pages
 		{
 			try
 			{
-				FormInfo.Text = "Yükleniyor...";
+				// Notify("Yükleniyor..."); // çok spam olmasın diye kapalı
 
 				var list = await _db.Vehicles
 					.AsNoTracking()
@@ -154,22 +154,19 @@ namespace FleetManagement.Desktop.Pages
 				_allVehicles = list;
 				VehiclesGrid.ItemsSource = _allVehicles;
 
-				FormInfo.Text = $"Yüklendi: {_allVehicles.Count} kayıt";
-
-				// Form duty/maintenance boş başlasın
+				// Notify($"Yüklendi: {_allVehicles.Count} kayıt"); // istersen aç
 				DutyInfoBox.Text = "";
 				MaintInfoBox.Text = "";
 			}
 			catch (Exception ex)
 			{
-				FormInfo.Text = "Hata: araçlar yüklenemedi.";
+				Notify("Hata: araçlar yüklenemedi.", "Hata");
 				MessageBox.Show(ex.ToString(), "Hata (detay)");
 			}
 		}
 
 		private async Task<string> GetDutyStatusAsync(int vehicleId)
 		{
-			// ✅ VehicleMovement entity'nde ReturnDateTime var -> görevde = ReturnDateTime null olan hareket var
 			var onDuty = await _db.VehicleMovements
 				.AsNoTracking()
 				.AnyAsync(m => m.VehicleId == vehicleId && m.ReturnDateTime == null);
@@ -179,7 +176,6 @@ namespace FleetManagement.Desktop.Pages
 
 		private async Task<string?> GetDriverNameForListAsync(int vehicleId)
 		{
-			// 1) Assigned Driver (varsa)
 			var assignedDriverId = await _db.Vehicles.AsNoTracking()
 				.Where(v => v.Id == vehicleId)
 				.Select(v => v.AssignedDriverId)
@@ -193,7 +189,6 @@ namespace FleetManagement.Desktop.Pages
 					.FirstOrDefaultAsync();
 			}
 
-			// 2) Son movement sürücüsü (fallback)
 			var lastDriverId = await _db.VehicleMovements.AsNoTracking()
 				.Where(m => m.VehicleId == vehicleId && m.DriverId != null)
 				.OrderByDescending(m => m.Id)
@@ -207,8 +202,6 @@ namespace FleetManagement.Desktop.Pages
 				.Select(d => d.FullName)
 				.FirstOrDefaultAsync();
 		}
-
-		
 
 		// ==============================
 		// SELECTION
@@ -227,10 +220,9 @@ namespace FleetManagement.Desktop.Pages
 
 			FillFormFromVehicle(vehicle);
 
-			// ✅ kesin doldur
 			await RefreshDutyAndMaintenanceAsync(vehicle);
 
-			FormInfo.Text = $"Seçildi: #{vehicle.Id}";
+			// Notify($"Seçildi: #{vehicle.Id}"); // istersen aç
 		}
 
 		// ==============================
@@ -252,7 +244,7 @@ namespace FleetManagement.Desktop.Pages
 					_selectedId = null;
 					DutyInfoBox.Text = "";
 					MaintInfoBox.Text = "";
-					FormInfo.Text = "Plaka bulunamadı. Yeni kayıt girebilirsin.";
+					Notify("Plaka bulunamadı. Yeni kayıt girebilirsin.", "Bilgi");
 					return;
 				}
 
@@ -260,10 +252,9 @@ namespace FleetManagement.Desktop.Pages
 
 				FillFormFromVehicle(vehicle);
 
-				// ✅ kesin doldur
 				await RefreshDutyAndMaintenanceAsync(vehicle);
 
-				FormInfo.Text = $"Plaka bulundu, kayıt yüklendi: #{vehicle.Id}";
+				Notify($"Plaka bulundu, kayıt yüklendi: #{vehicle.Id}", "Bilgi");
 			}
 			catch (Exception ex)
 			{
@@ -273,28 +264,23 @@ namespace FleetManagement.Desktop.Pages
 
 		private void FillFormFromVehicle(Vehicle v)
 		{
-			// 1. kolon
 			PlateBox.Text = v.Plate ?? "";
 			InventoryNumberBox.Text = v.InventoryNumber ?? "";
 			AssignedDriverCombo.SelectedValue = v.AssignedDriverId;
 			UnitCombo.SelectedValue = v.VehicleUnit;
 
-			// 2. kolon
 			VehicleTypeCombo.SelectedValue = v.VehicleType;
 			BrandBox.Text = v.Brand ?? "";
 			ModelCombo.SelectedValue = v.Model;
 			VehicleYearBox.Text = v.VehicleYear?.ToString() ?? "";
 
-			// 3. kolon
 			VehicleKmBox.Text = v.VehicleKm?.ToString() ?? "";
 			PassengerCapacityBox.Text = v.PassengerCapacity?.ToString() ?? "";
 			LoadCapacityBox.Text = v.LoadCapacity?.ToString() ?? "";
 
-			// 4. kolon
 			MotorNoBox.Text = v.MotorNo ?? "";
 			SaseNoBox.Text = v.SaseNo ?? "";
 
-			// 5. kolon
 			LastMaintenanceKmBox.Text = v.LastMaintenanceKm?.ToString() ?? "";
 			LastMaintenanceDatePicker.SelectedDate = v.LastMaintenanceDate?.Date;
 			MaintenanceIntervalKmBox.Text = v.MaintenanceIntervalKm?.ToString() ?? "";
@@ -311,7 +297,7 @@ namespace FleetManagement.Desktop.Pages
 				var plate = (PlateBox.Text ?? "").Trim();
 				if (string.IsNullOrWhiteSpace(plate))
 				{
-					FormInfo.Text = "Plaka (Envanter No) zorunlu.";
+					Notify("Plaka (Envanter No) zorunlu.", "Uyarı");
 					return;
 				}
 
@@ -321,32 +307,27 @@ namespace FleetManagement.Desktop.Pages
 
 				if (entity is null)
 				{
-					FormInfo.Text = "Kayıt bulunamadı.";
+					Notify("Kayıt bulunamadı.", "Uyarı");
 					return;
 				}
 
-				// 1. kolon
 				entity.Plate = plate;
 				entity.InventoryNumber = EmptyToNull(InventoryNumberBox.Text);
 				entity.AssignedDriverId = AssignedDriverCombo.SelectedValue is int did ? did : (int?)null;
 				entity.VehicleUnit = UnitCombo.SelectedValue as string;
 
-				// 2. kolon
 				entity.VehicleType = VehicleTypeCombo.SelectedValue as string;
 				entity.Brand = EmptyToNull(BrandBox.Text);
 				entity.Model = ModelCombo.SelectedValue as string;
 				entity.VehicleYear = TryParseNullableInt(VehicleYearBox.Text);
 
-				// 3. kolon
 				entity.VehicleKm = TryParseNullableInt(VehicleKmBox.Text);
 				entity.PassengerCapacity = TryParseNullableInt(PassengerCapacityBox.Text);
 				entity.LoadCapacity = TryParseNullableInt(LoadCapacityBox.Text);
 
-				// 4. kolon
 				entity.MotorNo = EmptyToNull(MotorNoBox.Text);
 				entity.SaseNo = EmptyToNull(SaseNoBox.Text);
 
-				// 5. kolon
 				entity.LastMaintenanceKm = TryParseNullableInt(LastMaintenanceKmBox.Text);
 
 				var dt = LastMaintenanceDatePicker.SelectedDate?.Date;
@@ -360,21 +341,21 @@ namespace FleetManagement.Desktop.Pages
 
 				await _db.SaveChangesAsync();
 
-				FormInfo.Text = _selectedId is null
+				Notify(_selectedId is null
 					? $"Kaydedildi: #{entity.Id}"
-					: $"Güncellendi: #{entity.Id}";
+					: $"Güncellendi: #{entity.Id}");
 
 				await LoadVehiclesAsync();
 				ClearForm();
 			}
 			catch (DbUpdateException ex)
 			{
-				FormInfo.Text = "Hata: Plaka veya Sivil Plaka tekrar ediyor olabilir.";
+				Notify("Hata: Plaka veya Sivil Plaka tekrar ediyor olabilir.", "DB Hatası");
 				MessageBox.Show(ex.InnerException?.Message ?? ex.Message, "DB Hatası");
 			}
 			catch (Exception ex)
 			{
-				FormInfo.Text = "Hata: kaydetme başarısız.";
+				Notify("Hata: kaydetme başarısız.", "Hata");
 				MessageBox.Show(ex.Message, "Hata");
 			}
 		}
@@ -385,7 +366,7 @@ namespace FleetManagement.Desktop.Pages
 			{
 				if (_selectedId is null)
 				{
-					FormInfo.Text = "Silmek için kayıt seç.";
+					Notify("Silmek için kayıt seç.", "Uyarı");
 					return;
 				}
 
@@ -398,14 +379,14 @@ namespace FleetManagement.Desktop.Pages
 				entity.IsDeleted = true;
 				await _db.SaveChangesAsync();
 
-				FormInfo.Text = $"Silindi: #{_selectedId.Value}";
+				Notify($"Silindi: #{_selectedId.Value}");
 
 				await LoadVehiclesAsync();
 				ClearForm();
 			}
 			catch (Exception ex)
 			{
-				FormInfo.Text = "Hata: silme başarısız.";
+				Notify("Hata: silme başarısız.", "Hata");
 				MessageBox.Show(ex.Message, "Hata");
 			}
 		}
@@ -418,18 +399,19 @@ namespace FleetManagement.Desktop.Pages
 			await LoadDriversAsync();
 			await LoadLookupsAsync();
 			await LoadVehiclesAsync();
+			Notify("Yenilendi.");
 		}
 
 		private void New_Click(object sender, RoutedEventArgs e)
 		{
 			ClearForm();
-			FormInfo.Text = "Yeni kayıt için form hazır.";
+			// Notify("Yeni kayıt için form hazır.");
 		}
 
 		private void Clear_Click(object sender, RoutedEventArgs e)
 		{
 			ClearForm();
-			FormInfo.Text = "Form temizlendi.";
+			Notify("Temizlendi");
 		}
 
 		private void ClearForm()
@@ -463,6 +445,7 @@ namespace FleetManagement.Desktop.Pages
 			MaintenanceIntervalKmBox.Text = "";
 			MaintenanceIntervalMonthsBox.Text = "";
 		}
+
 		private async Task RefreshDutyAndMaintenanceAsync(Vehicle v)
 		{
 			var duty = await GetDutyStatusAsync(v.Id);
@@ -494,7 +477,6 @@ namespace FleetManagement.Desktop.Pages
 			return int.TryParse(t, out var v) ? v : null;
 		}
 
-		// ✅ KM veya Ay hangisi erken dolarsa
 		private static string CalcMaintenanceStatus(
 			int? currentKm,
 			int? intervalKm,
@@ -511,7 +493,6 @@ namespace FleetManagement.Desktop.Pages
 			bool overdue = false;
 			bool soon = false;
 
-			// KM
 			if (intervalKm is not null && currentKm is not null && lastKm is not null)
 			{
 				var dueKm = lastKm.Value + intervalKm.Value;
@@ -520,7 +501,6 @@ namespace FleetManagement.Desktop.Pages
 				else if (currentKm.Value >= dueKm - 1000) soon = true;
 			}
 
-			// Tarih
 			if (intervalMonths is not null && lastDate is not null)
 			{
 				var dueDate = lastDate.Value.Date.AddMonths(intervalMonths.Value);
@@ -534,6 +514,13 @@ namespace FleetManagement.Desktop.Pages
 			if (soon) return "Yaklaşıyor";
 			return "Normal";
 		}
-	}
 
+		private static void Notify(string message, string title = "Bilgi")
+		{
+			// Sessiz mod istersen:
+			// return;
+
+			MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+		}
+	}
 }

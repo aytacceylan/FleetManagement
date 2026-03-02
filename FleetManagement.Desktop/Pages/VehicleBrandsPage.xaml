@@ -7,11 +7,12 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="12"/>
-            <RowDefinition Height="260"/>
+            <RowDefinition Height="200"/>
             <RowDefinition Height="12"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- HEADER -->
         <Border Grid.Row="0" Style="{StaticResource FmCard}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -28,10 +29,11 @@
                 </StackPanel>
 
                 <Button Grid.Column="1" Content="Yenile" MinWidth="120" Click="Refresh_Click"/>
-                <Button Grid.Column="3" Content="Yeni Marka" MinWidth="150" Click="New_Click"/>
+                <Button Grid.Column="3" Content="Yeni" MinWidth="120" Click="New_Click"/>
             </Grid>
         </Border>
 
+        <!-- FORM -->
         <Border Grid.Row="2" Style="{StaticResource FmCard}">
             <Grid>
                 <Grid.RowDefinitions>
@@ -40,6 +42,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
+                <!-- FORM HEADER -->
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -56,41 +59,36 @@
                     <Button Grid.Column="5" Content="Temizle" Width="110" Click="Clear_Click"/>
                 </Grid>
 
-                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="12"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="12"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="12"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                <!-- FORM CONTENT: 3 kolon -->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Marka Kodu" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
-                            <TextBox x:Name="CodeBox" Margin="0,6,0,10"/>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Marka Kodu" Foreground="{StaticResource BrushMuted}" />
+                        <TextBox x:Name="CodeBox" Margin="0,6,0,0"/>
+                    </StackPanel>
 
-                            <TextBlock Text="Marka Adı" Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="NameBox" Margin="0,6,0,10"/>
-                        </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Marka Adı" Foreground="{StaticResource BrushMuted}" />
+                        <TextBox x:Name="NameBox" Margin="0,6,0,0"/>
+                    </StackPanel>
 
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Text="Açıklama" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
-                            <TextBox x:Name="DescBox" Margin="0,6,0,10" Height="92"
-                                     AcceptsReturn="True" TextWrapping="Wrap"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="6">
-                            <TextBlock Text="Form Durumu" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
-                            <TextBlock x:Name="FormInfo" Margin="0,6,0,0" Foreground="{StaticResource BrushMuted}"/>
-                        </StackPanel>
-                    </Grid>
-                </ScrollViewer>
+                    <StackPanel Grid.Column="4">
+                        <TextBlock Text="Açıklama" Foreground="{StaticResource BrushMuted}" />
+                        <TextBox x:Name="DescBox" Margin="0,6,0,0"
+                                 Height="92" AcceptsReturn="True" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Grid>
             </Grid>
         </Border>
 
+        <!-- LIST -->
         <Border Grid.Row="4" Style="{StaticResource FmCard}">
             <Grid>
                 <Grid.RowDefinitions>

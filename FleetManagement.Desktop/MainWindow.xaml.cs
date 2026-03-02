@@ -40,11 +40,11 @@ namespace FleetManagement.Desktop
                 "UnitsPage" => new Pages.UnitsPage(),
                 "VehicleTypesPage" => new Pages.VehicleTypesPage(),
 
-                "VehicleBrandsPage" => new Pages.PlaceholderPage("Tanımlamalar > Marka (yakında)"),
-                "VehicleModelsPage" => new Pages.VehicleModelsPage(),
-                "VehicleYearsPage" => new Pages.PlaceholderPage("Tanımlamalar > Araç Yılı (yakında)"),
+                "VehicleBrandsPage" => new Pages.VehicleBrandsPage(),
+				"VehicleModelsPage" => new Pages.VehicleModelsPage(),
+                "VehicleYearsPage" => new Pages.VehicleYearsPage(),
 
-                "RoutesPage" => new Pages.RoutesPage(),
+				"RoutesPage" => new Pages.RoutesPage(),
                 "VehicleCommandersPage" => new Pages.VehicleCommandersPage(),
                 "MakamsPage" => new Pages.MakamsPage(),
 

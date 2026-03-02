@@ -1,13 +1,12 @@
-﻿using System;
+﻿using FleetManagement.Domain.Entities;
+using FleetManagement.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.EntityFrameworkCore;
-
-using FleetManagement.Infrastructure.Data;
-using FleetManagement.Domain.Entities;
 
 namespace FleetManagement.Desktop.Pages
 {
@@ -28,8 +27,6 @@ namespace FleetManagement.Desktop.Pages
 		{
 			try
 			{
-				FormInfo.Text = "Yükleniyor...";
-
 				var list = await _db.VehicleModels
 					.AsNoTracking()
 					.Where(x => !x.IsDeleted)
@@ -38,37 +35,25 @@ namespace FleetManagement.Desktop.Pages
 
 				_all = list;
 				Grid.ItemsSource = _all;
-
 				FilterInfo.Text = $"Toplam kayıt: {_all.Count}";
-				FormInfo.Text = $"Yüklendi: {_all.Count} kayıt";
 			}
 			catch (Exception ex)
 			{
-				FormInfo.Text = "Hata: modeller yüklenemedi.";
+				Notify("Hata: modeller yüklenemedi.", "Hata");
 				MessageBox.Show(ex.Message, "Hata");
 			}
 		}
 
-		private void Grid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		private async void Refresh_Click(object sender, RoutedEventArgs e)
 		{
-			if (Grid.SelectedItem is not VehicleModel x)
-				return;
-
-			_selectedId = x.Id;
-
-			CodeBox.Text = x.Code ?? "";
-			NameBox.Text = x.Name ?? "";
-			DescBox.Text = x.Description ?? "";
-
-			FormInfo.Text = $"Seçildi: #{x.Id}";
+			await LoadAsync();
+			Notify("Liste yenilendi.");
 		}
-
-		private async void Refresh_Click(object sender, RoutedEventArgs e) => await LoadAsync();
 
 		private void New_Click(object sender, RoutedEventArgs e)
 		{
 			ClearForm();
-			FormInfo.Text = "Yeni kayıt için form hazır.";
+			Notify("Yeni kayıt için form hazır.");
 		}
 
 		private async void Save_Click(object sender, RoutedEventArgs e)
@@ -79,15 +64,20 @@ namespace FleetManagement.Desktop.Pages
 				var name = (NameBox.Text ?? "").Trim();
 				var desc = (DescBox.Text ?? "").Trim();
 
-				if (string.IsNullOrWhiteSpace(code))
+				if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(name))
 				{
-					FormInfo.Text = "Model Kodu zorunlu.";
+					Notify("Kod ve Ad zorunludur.", "Uyarı");
 					return;
 				}
 
-				if (string.IsNullOrWhiteSpace(name))
+				var exists = await _db.VehicleModels.AsNoTracking()
+					.AnyAsync(x => !x.IsDeleted
+								   && x.Code.ToLower() == code.ToLower()
+								   && (_selectedId == null || x.Id != _selectedId.Value));
+
+				if (exists)
 				{
-					FormInfo.Text = "Model Adı zorunlu.";
+					Notify("Bu kod zaten var.", "Uyarı");
 					return;
 				}
 
@@ -104,14 +94,15 @@ namespace FleetManagement.Desktop.Pages
 
 					_db.VehicleModels.Add(entity);
 					await _db.SaveChangesAsync();
-					FormInfo.Text = $"Kaydedildi: #{entity.Id}";
+
+					Notify($"Kaydedildi: #{entity.Id}");
 				}
 				else
 				{
 					var entity = await _db.VehicleModels.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
 					if (entity is null)
 					{
-						FormInfo.Text = "Kayıt bulunamadı (yenileyin).";
+						Notify("Kayıt bulunamadı (yenileyin).", "Uyarı");
 						return;
 					}
 
@@ -120,7 +111,8 @@ namespace FleetManagement.Desktop.Pages
 					entity.Description = string.IsNullOrWhiteSpace(desc) ? null : desc;
 
 					await _db.SaveChangesAsync();
-					FormInfo.Text = $"Güncellendi: #{entity.Id}";
+
+					Notify($"Güncellendi: #{entity.Id}");
 				}
 
 				await LoadAsync();
@@ -128,12 +120,12 @@ namespace FleetManagement.Desktop.Pages
 			}
 			catch (DbUpdateException dbex)
 			{
-				FormInfo.Text = "Hata: kayıt yapılamadı (muhtemelen Model Kodu tekrar ediyor).";
+				Notify("Hata: kayıt yapılamadı (muhtemelen Kod tekrar ediyor).", "DB Hatası");
 				MessageBox.Show(dbex.InnerException?.Message ?? dbex.Message, "DB Hatası");
 			}
 			catch (Exception ex)
 			{
-				FormInfo.Text = "Hata: kaydetme başarısız.";
+				Notify("Hata: kaydetme başarısız.", "Hata");
 				MessageBox.Show(ex.Message, "Hata");
 			}
 		}
@@ -144,7 +136,7 @@ namespace FleetManagement.Desktop.Pages
 			{
 				if (_selectedId is null)
 				{
-					FormInfo.Text = "Silmek için listeden kayıt seç.";
+					Notify("Silmek için listeden kayıt seç.", "Uyarı");
 					return;
 				}
 
@@ -155,21 +147,21 @@ namespace FleetManagement.Desktop.Pages
 				var entity = await _db.VehicleModels.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
 				if (entity is null)
 				{
-					FormInfo.Text = "Kayıt bulunamadı (yenileyin).";
+					Notify("Kayıt bulunamadı (yenileyin).", "Uyarı");
 					return;
 				}
 
 				entity.IsDeleted = true;
 				await _db.SaveChangesAsync();
 
-				FormInfo.Text = $"Silindi: #{_selectedId.Value}";
+				Notify($"Silindi: #{_selectedId.Value}");
 
 				await LoadAsync();
 				ClearForm();
 			}
 			catch (Exception ex)
 			{
-				FormInfo.Text = "Hata: silme başarısız.";
+				Notify("Hata: silme başarısız.", "Hata");
 				MessageBox.Show(ex.Message, "Hata");
 			}
 		}
@@ -177,7 +169,19 @@ namespace FleetManagement.Desktop.Pages
 		private void Clear_Click(object sender, RoutedEventArgs e)
 		{
 			ClearForm();
-			FormInfo.Text = "Form temizlendi.";
+			Notify("Temizlendi");
+		}
+
+		private void Grid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (Grid.SelectedItem is not VehicleModel x)
+				return;
+
+			_selectedId = x.Id;
+
+			CodeBox.Text = x.Code ?? "";
+			NameBox.Text = x.Name ?? "";
+			DescBox.Text = x.Description ?? "";
 		}
 
 		private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -200,7 +204,7 @@ namespace FleetManagement.Desktop.Pages
 				.ToList();
 
 			Grid.ItemsSource = filtered;
-			FilterInfo.Text = $"Filtre: \"{q}\" → {filtered.Count} / {total} kayıt";
+			FilterInfo.Text = $"Toplam kayıt: {filtered.Count} / {total}";
 		}
 
 		private void ClearForm()
@@ -211,8 +215,12 @@ namespace FleetManagement.Desktop.Pages
 			CodeBox.Text = "";
 			NameBox.Text = "";
 			DescBox.Text = "";
+			SearchBox.Text = "";
+		}
 
-			SearchBox.Text = ""; // ✅ filtreyi de sıfırla
+		private static void Notify(string message, string title = "Bilgi")
+		{
+			MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
 		}
 	}
 }

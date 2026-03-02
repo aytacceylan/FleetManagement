@@ -7,6 +7,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="12"/>
+            <RowDefinition Height="170"/>
+            <RowDefinition Height="12"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -22,111 +24,124 @@
 
                 <StackPanel>
                     <TextBlock Text="Araç Tipleri" FontSize="22" FontWeight="SemiBold"/>
-                    <TextBlock Text="Araç tipi tanımlarını görüntüleyin ve yönetin."
+                    <TextBlock Text="Araç tipi tanımlarını yönetin."
                                Margin="0,6,0,0"
                                Foreground="{StaticResource BrushMuted}"/>
                 </StackPanel>
 
-                <Button Grid.Column="1"
-                        Content="Yenile"
-                        MinWidth="120"
-                        Click="Refresh_Click"/>
-
-                <Button Grid.Column="3"
-                        Content="Yeni Araç Tipi"
-                        MinWidth="170"
-                        Click="New_Click"/>
+                <Button Grid.Column="1" Content="Yenile" MinWidth="120" Click="Refresh_Click"/>
+                <Button Grid.Column="3" Content="Yeni" MinWidth="120" Click="New_Click"/>
             </Grid>
         </Border>
 
-        <!-- CONTENT -->
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="380"/>
-                <ColumnDefinition Width="12"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        <!-- FORM -->
+        <Border Grid.Row="2" Style="{StaticResource FmCard}">
+            <Grid Margin="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <!-- FORM -->
-            <Border Grid.Column="0" Style="{StaticResource FmCard}">
-                <StackPanel>
+                <!-- FORM HEADER -->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Araç Tipi Formu" FontSize="16" FontWeight="SemiBold"/>
-                    <TextBlock Text="Yeni / Güncelle / Sil"
-                               Margin="0,6,0,16"
-                               Foreground="{StaticResource BrushMuted}"/>
+                    <TextBlock Text="Araç Tipi Formu"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
 
-                    <TextBlock Text="Tip Kodu" Foreground="{StaticResource BrushMuted}"/>
-                    <TextBox x:Name="CodeBox" Margin="0,6,0,12"/>
-
-                    <TextBlock Text="Tip Adı" Foreground="{StaticResource BrushMuted}"/>
-                    <TextBox x:Name="NameBox" Margin="0,6,0,12"/>
-
-                    <TextBlock Text="Açıklama" Foreground="{StaticResource BrushMuted}"/>
-                    <TextBox x:Name="DescBox" Margin="0,6,0,16" Height="70" AcceptsReturn="True"/>
-
-                    <WrapPanel>
-                        <Button Content="Kaydet" Width="110" Margin="0,0,10,10" Click="Save_Click"/>
-                        <Button Content="Sil" Width="110" Margin="0,0,10,10" Click="Delete_Click"/>
-                        <Button Content="Temizle" Width="110" Margin="0,0,10,10" Click="Clear_Click"/>
-                    </WrapPanel>
-
-                    <TextBlock x:Name="FormInfo"
-                               Margin="0,8,0,0"
-                               Foreground="{StaticResource BrushMuted}"/>
-                </StackPanel>
-            </Border>
-
-            <!-- LIST -->
-            <Border Grid.Column="2" Style="{StaticResource FmCard}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="12"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <Grid Grid.Row="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="280"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Text="Araç Tipi Listesi"
-                                   FontSize="16"
-                                   FontWeight="SemiBold"
-                                   VerticalAlignment="Center"/>
-
-                        <StackPanel Grid.Column="1">
-                            <TextBox x:Name="SearchBox"
-             TextChanged="SearchBox_TextChanged"/>
-
-                            <TextBlock x:Name="FilterInfo"
-               Margin="0,6,0,0"
-               Foreground="{StaticResource BrushMuted}"
-               FontSize="12"
-               Text="Toplam kayıt: 0"/>
-                        </StackPanel>
-                    </Grid>
-
-                    <DataGrid x:Name="Grid"
-                              Grid.Row="2"
-                              AutoGenerateColumns="False"
-                              IsReadOnly="True"
-                              CanUserAddRows="False"
-                              SelectionMode="Single"
-                              SelectionChanged="Grid_SelectionChanged">
-
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
-                            <DataGridTextColumn Header="Kod" Binding="{Binding Code}" Width="140"/>
-                            <DataGridTextColumn Header="Tip Adı" Binding="{Binding Name}" Width="*"/>
-                            <DataGridTextColumn Header="Açıklama" Binding="{Binding Description}" Width="*"/>
-                            <DataGridTextColumn Header="Oluşturma" Binding="{Binding CreatedAt}" Width="180"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
+                    <Button Grid.Column="1" Content="Kaydet" Width="110" Click="Save_Click"/>
+                    <Button Grid.Column="3" Content="Sil" Width="110" Click="Delete_Click"/>
+                    <Button Grid.Column="5" Content="Temizle" Width="110" Click="Clear_Click"/>
                 </Grid>
-            </Border>
-        </Grid>
+
+                <!-- 3 PROPERTY = 3 KOLON -->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Kod -->
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Kod" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="CodeBox" Margin="0,6,0,0"/>
+                    </StackPanel>
+
+                    <!-- Ad -->
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Ad" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="NameBox" Margin="0,6,0,0"/>
+                    </StackPanel>
+
+                    <!-- Açıklama (kısa) -->
+                    <StackPanel Grid.Column="4">
+                        <TextBlock Text="Açıklama" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="DescBox" Margin="0,6,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- LIST -->
+        <Border Grid.Row="4" Style="{StaticResource FmCard}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="260"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Araç Tipi Listesi"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+
+                    <StackPanel Grid.Column="1">
+                        <TextBox x:Name="SearchBox" TextChanged="SearchBox_TextChanged"/>
+                        <TextBlock x:Name="FilterInfo"
+                                   Margin="0,6,0,0"
+                                   Foreground="{StaticResource BrushMuted}"
+                                   FontSize="12"
+                                   Text="Toplam kayıt: 0"/>
+                    </StackPanel>
+                </Grid>
+
+                <DataGrid x:Name="Grid"
+                          Grid.Row="2"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          SelectionMode="Single"
+                          SelectionChanged="Grid_SelectionChanged">
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Kod" Binding="{Binding Code}" Width="140"/>
+                        <DataGridTextColumn Header="Ad" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="Açıklama" Binding="{Binding Description}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+            </Grid>
+        </Border>
+
     </Grid>
 </Page>

@@ -11,182 +11,183 @@ using FleetManagement.Domain.Entities;
 
 namespace FleetManagement.Desktop.Pages
 {
-    public partial class DriversPage : Page
-    {
-        private readonly AppDbContext _db = new(App.DbOptions);
+	public partial class DriversPage : Page
+	{
+		private readonly AppDbContext _db = new(App.DbOptions);
 
-        private int? _selectedId;
-        private List<Driver> _allDrivers = new();
+		private int? _selectedId;
+		private List<Driver> _allDrivers = new();
 
-        public DriversPage()
-        {
-            InitializeComponent();
-            Loaded += async (_, __) => await LoadDriversAsync();
-        }
+		public DriversPage()
+		{
+			InitializeComponent();
+			Loaded += async (_, __) => await LoadDriversAsync();
+		}
 
-        private async Task LoadDriversAsync()
-        {
-            try
-            {
-                FormInfo.Text = "Yükleniyor...";
+		private async Task LoadDriversAsync()
+		{
+			try
+			{
+				var list = await _db.Drivers
+					.AsNoTracking()
+					.Where(x => !x.IsDeleted)
+					.OrderByDescending(x => x.Id)
+					.ToListAsync();
 
-                var list = await _db.Drivers
-                    .AsNoTracking()
-                    .Where(x => !x.IsDeleted)
-                    .OrderByDescending(x => x.Id)
-                    .ToListAsync();
+				_allDrivers = list;
+				DriversGrid.ItemsSource = _allDrivers;
 
-                _allDrivers = list;
-                DriversGrid.ItemsSource = _allDrivers;
+				// İstersen sessiz kalsın:
+				// Notify($"Yüklendi: {_allDrivers.Count} kayıt");
+				FilterInfo.Text = $"Toplam kayıt: {_allDrivers.Count}";
+			}
+			catch (Exception ex)
+			{
+				Notify("Hata: sürücüler yüklenemedi.", "Hata");
+				MessageBox.Show(ex.Message, "Hata");
+			}
+		}
 
-                FormInfo.Text = $"Yüklendi: {_allDrivers.Count} kayıt";
-            }
-            catch (Exception ex)
-            {
-                FormInfo.Text = "Hata: sürücüler yüklenemedi.";
-                MessageBox.Show(ex.Message, "Hata");
-            }
-        }
+		private void DriversGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (DriversGrid.SelectedItem is not Driver d)
+				return;
 
-        private void DriversGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (DriversGrid.SelectedItem is not Driver d)
-                return;
+			_selectedId = d.Id;
 
-            _selectedId = d.Id;
+			DriverNumberBox.Text = d.DriverNumber ?? "";
+			FullNameBox.Text = d.FullName ?? "";
+			PhoneBox.Text = d.PhoneNumber ?? "";
 
-            DriverNumberBox.Text = d.DriverNumber ?? "";
-            FullNameBox.Text = d.FullName ?? "";
-            PhoneBox.Text = d.PhoneNumber ?? "";
+			// İstersen bunu da sessiz yap:
+			// Notify($"Seçildi: #{d.Id}");
+		}
 
-            FormInfo.Text = $"Seçildi: #{d.Id}";
-        }
+		private async void Refresh_Click(object sender, RoutedEventArgs e)
+		{
+			await LoadDriversAsync();
+			Notify("Liste yenilendi.");
+		}
 
-        private async void Refresh_Click(object sender, RoutedEventArgs e)
-        {
-            await LoadDriversAsync();
-        }
+		private void New_Click(object sender, RoutedEventArgs e)
+		{
+			ClearForm();
+			// Notify("Yeni kayıt için form hazır.");
+		}
 
-        private void New_Click(object sender, RoutedEventArgs e)
-        {
-            ClearForm();
-            FormInfo.Text = "Yeni kayıt için form hazır.";
-        }
+		private async void Save_Click(object sender, RoutedEventArgs e)
+		{
+			try
+			{
+				var driverNumber = (DriverNumberBox.Text ?? "").Trim();
+				var fullName = (FullNameBox.Text ?? "").Trim();
+				var phone = (PhoneBox.Text ?? "").Trim();
 
-        private async void Save_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var driverNumber = (DriverNumberBox.Text ?? "").Trim();
-                var fullName = (FullNameBox.Text ?? "").Trim();
-                var phone = (PhoneBox.Text ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(driverNumber))
+				{
+					Notify("Sürücü No zorunlu.", "Uyarı");
+					return;
+				}
 
-                if (string.IsNullOrWhiteSpace(driverNumber))
-                {
-                    FormInfo.Text = "Sürücü No zorunlu.";
-                    return;
-                }
+				if (string.IsNullOrWhiteSpace(fullName))
+				{
+					Notify("Ad Soyad zorunlu.", "Uyarı");
+					return;
+				}
 
-                if (string.IsNullOrWhiteSpace(fullName))
-                {
-                    FormInfo.Text = "Ad Soyad zorunlu.";
-                    return;
-                }
+				if (_selectedId is null)
+				{
+					// INSERT
+					var entity = new Driver
+					{
+						DriverNumber = driverNumber,
+						FullName = fullName,
+						PhoneNumber = phone,
+						CreatedAt = DateTime.UtcNow,
+						IsDeleted = false
+					};
 
-                if (_selectedId is null)
-                {
-                    // INSERT
-                    var entity = new Driver
-                    {
-                        DriverNumber = driverNumber,
-                        FullName = fullName,
-                        PhoneNumber = phone,
-                        CreatedAt = DateTime.UtcNow,
-                        IsDeleted = false
-                    };
+					_db.Drivers.Add(entity);
+					await _db.SaveChangesAsync();
 
-                    _db.Drivers.Add(entity);
-                    await _db.SaveChangesAsync();
+					Notify($"Kaydedildi: #{entity.Id}");
+				}
+				else
+				{
+					// UPDATE
+					var entity = await _db.Drivers.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
+					if (entity is null)
+					{
+						Notify("Kayıt bulunamadı (yenileyin).", "Uyarı");
+						return;
+					}
 
-                    FormInfo.Text = $"Kaydedildi: #{entity.Id}";
-                }
-                else
-                {
-                    // UPDATE
-                    var entity = await _db.Drivers.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
-                    if (entity is null)
-                    {
-                        FormInfo.Text = "Kayıt bulunamadı (yenileyin).";
-                        return;
-                    }
+					entity.DriverNumber = driverNumber;
+					entity.FullName = fullName;
+					entity.PhoneNumber = phone;
 
-                    entity.DriverNumber = driverNumber;
-                    entity.FullName = fullName;
-                    entity.PhoneNumber = phone;
+					await _db.SaveChangesAsync();
 
-                    await _db.SaveChangesAsync();
+					Notify($"Güncellendi: #{entity.Id}");
+				}
 
-                    FormInfo.Text = $"Güncellendi: #{entity.Id}";
-                }
+				await LoadDriversAsync();
+				ClearForm();
+			}
+			catch (DbUpdateException dbex)
+			{
+				// DriverNumber unique index -> aynı numara girilirse buraya düşer
+				Notify("Hata: kayıt yapılamadı (muhtemelen Sürücü No tekrar ediyor).", "DB Hatası");
+				MessageBox.Show(dbex.InnerException?.Message ?? dbex.Message, "DB Hatası");
+			}
+			catch (Exception ex)
+			{
+				Notify("Hata: kaydetme başarısız.", "Hata");
+				MessageBox.Show(ex.Message, "Hata");
+			}
+		}
 
-                await LoadDriversAsync();
-                ClearForm();
-            }
-            catch (DbUpdateException dbex)
-            {
-                // DriverNumber unique index -> aynı numara girilirse buraya düşer
-                FormInfo.Text = "Hata: kayıt yapılamadı (muhtemelen Sürücü No tekrar ediyor).";
-                MessageBox.Show(dbex.InnerException?.Message ?? dbex.Message, "DB Hatası");
-            }
-            catch (Exception ex)
-            {
-                FormInfo.Text = "Hata: kaydetme başarısız.";
-                MessageBox.Show(ex.Message, "Hata");
-            }
-        }
+		private async void Delete_Click(object sender, RoutedEventArgs e)
+		{
+			try
+			{
+				if (_selectedId is null)
+				{
+					Notify("Silmek için listeden kayıt seç.", "Uyarı");
+					return;
+				}
 
-        private async void Delete_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (_selectedId is null)
-                {
-                    FormInfo.Text = "Silmek için listeden kayıt seç.";
-                    return;
-                }
+				var confirm = MessageBox.Show("Seçili sürücü silinsin mi?", "Onay", MessageBoxButton.YesNo);
+				if (confirm != MessageBoxResult.Yes)
+					return;
 
-                var confirm = MessageBox.Show("Seçili sürücü silinsin mi?", "Onay", MessageBoxButton.YesNo);
-                if (confirm != MessageBoxResult.Yes)
-                    return;
+				var entity = await _db.Drivers.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
+				if (entity is null)
+				{
+					Notify("Kayıt bulunamadı (yenileyin).", "Uyarı");
+					return;
+				}
 
-                var entity = await _db.Drivers.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
-                if (entity is null)
-                {
-                    FormInfo.Text = "Kayıt bulunamadı (yenileyin).";
-                    return;
-                }
+				// SOFT DELETE
+				entity.IsDeleted = true;
+				await _db.SaveChangesAsync();
 
-                // SOFT DELETE (IsDeleted var)
-                entity.IsDeleted = true;
-                await _db.SaveChangesAsync();
+				Notify($"Silindi: #{_selectedId.Value}");
 
-                FormInfo.Text = $"Silindi: #{_selectedId.Value}";
+				await LoadDriversAsync();
+				ClearForm();
+			}
+			catch (Exception ex)
+			{
+				Notify("Hata: silme başarısız.", "Hata");
+				MessageBox.Show(ex.Message, "Hata");
+			}
+		}
 
-                await LoadDriversAsync();
-                ClearForm();
-            }
-            catch (Exception ex)
-            {
-                FormInfo.Text = "Hata: silme başarısız.";
-                MessageBox.Show(ex.Message, "Hata");
-            }
-        }
-
-        private void Clear_Click(object sender, RoutedEventArgs e)
-        {
-            ClearForm();
-            FormInfo.Text = "Form temizlendi.";
-			SearchBox.Text = "";
+		private void Clear_Click(object sender, RoutedEventArgs e)
+		{
+			ClearForm();
+			Notify("Temizlendi");
 		}
 
 		private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -197,7 +198,7 @@ namespace FleetManagement.Desktop.Pages
 			if (string.IsNullOrWhiteSpace(q))
 			{
 				DriversGrid.ItemsSource = _allDrivers;
-				FilterInfo.Text = $"Filtre: yok (Toplam {total})";
+				FilterInfo.Text = $"Toplam kayıt: {total}";
 				return;
 			}
 
@@ -209,18 +210,26 @@ namespace FleetManagement.Desktop.Pages
 				.ToList();
 
 			DriversGrid.ItemsSource = filtered;
-			FilterInfo.Text = $"Filtre: \"{q}\" → {filtered.Count} / {total} kayıt";
+			FilterInfo.Text = $"Toplam kayıt: {filtered.Count} / {total}";
 		}
 
 		private void ClearForm()
-        {
-            _selectedId = null;
-            DriversGrid.SelectedItem = null;
+		{
+			_selectedId = null;
+			DriversGrid.SelectedItem = null;
 
-            DriverNumberBox.Text = "";
-            FullNameBox.Text = "";
-            PhoneBox.Text = "";
+			DriverNumberBox.Text = "";
+			FullNameBox.Text = "";
+			PhoneBox.Text = "";
 			SearchBox.Text = "";
 		}
-    }
+
+		private static void Notify(string message, string title = "Bilgi")
+		{
+			// İstersen tamamen sessize almak için:
+			// return;
+
+			MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+		}
+	}
 }

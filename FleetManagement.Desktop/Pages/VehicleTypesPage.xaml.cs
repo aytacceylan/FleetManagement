@@ -1,214 +1,152 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using FleetManagement.Domain.Entities;
+using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.EntityFrameworkCore;
-
-using FleetManagement.Infrastructure.Data;
-using FleetManagement.Domain.Entities;
+using System.Windows.Data;
 
 namespace FleetManagement.Desktop.Pages
 {
-    public partial class VehicleTypesPage : Page
-    {
-        private readonly AppDbContext _db = new(App.DbOptions);
+	public partial class VehicleTypesPage : Page
+	{
+		private readonly ObservableCollection<VehicleType> _items = new();
+		private ICollectionView? _view;
+		private VehicleType? _selected;
 
-        private int? _selectedId;
-        private List<VehicleType> _all = new();
-
-        public VehicleTypesPage()
-        {
-            InitializeComponent();
-            Loaded += async (_, __) => await LoadAsync();
-        }
-
-        private async Task LoadAsync()
-        {
-            try
-            {
-                FormInfo.Text = "Yükleniyor...";
-
-                var list = await _db.VehicleTypes
-                    .AsNoTracking()
-                    .Where(x => !x.IsDeleted)
-                    .OrderByDescending(x => x.Id)
-                    .ToListAsync();
-
-                _all = list;
-                Grid.ItemsSource = _all;
-
-                FormInfo.Text = $"Yüklendi: {_all.Count} kayıt";
-            }
-            catch (Exception ex)
-            {
-                FormInfo.Text = "Hata: araç tipleri yüklenemedi.";
-                MessageBox.Show(ex.Message, "Hata");
-            }
-        }
-
-        private void Grid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (Grid.SelectedItem is not VehicleType x)
-                return;
-
-            _selectedId = x.Id;
-
-            CodeBox.Text = x.Code ?? "";
-            NameBox.Text = x.Name ?? "";
-            DescBox.Text = x.Description ?? "";
-
-            FormInfo.Text = $"Seçildi: #{x.Id}";
-        }
-
-        private async void Refresh_Click(object sender, RoutedEventArgs e) => await LoadAsync();
-
-        private void New_Click(object sender, RoutedEventArgs e)
-        {
-            ClearForm();
-            FormInfo.Text = "Yeni kayıt için form hazır.";
-        }
-
-        private async void Save_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var code = (CodeBox.Text ?? "").Trim();
-                var name = (NameBox.Text ?? "").Trim();
-                var desc = (DescBox.Text ?? "").Trim();
-
-                if (string.IsNullOrWhiteSpace(code))
-                {
-                    FormInfo.Text = "Tip Kodu zorunlu.";
-                    return;
-                }
-
-                if (string.IsNullOrWhiteSpace(name))
-                {
-                    FormInfo.Text = "Tip Adı zorunlu.";
-                    return;
-                }
-
-                if (_selectedId is null)
-                {
-                    var entity = new VehicleType
-                    {
-                        Code = code,
-                        Name = name,
-                        Description = string.IsNullOrWhiteSpace(desc) ? null : desc,
-                        CreatedAt = DateTime.UtcNow,
-                        IsDeleted = false
-                    };
-
-                    _db.VehicleTypes.Add(entity);
-                    await _db.SaveChangesAsync();
-                    FormInfo.Text = $"Kaydedildi: #{entity.Id}";
-                }
-                else
-                {
-                    var entity = await _db.VehicleTypes.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
-                    if (entity is null)
-                    {
-                        FormInfo.Text = "Kayıt bulunamadı (yenileyin).";
-                        return;
-                    }
-
-                    entity.Code = code;
-                    entity.Name = name;
-                    entity.Description = string.IsNullOrWhiteSpace(desc) ? null : desc;
-
-                    await _db.SaveChangesAsync();
-                    FormInfo.Text = $"Güncellendi: #{entity.Id}";
-                }
-
-                await LoadAsync();
-                ClearForm();
-            }
-            catch (DbUpdateException dbex)
-            {
-                FormInfo.Text = "Hata: kayıt yapılamadı (muhtemelen Tip Kodu tekrar ediyor).";
-                MessageBox.Show(dbex.InnerException?.Message ?? dbex.Message, "DB Hatası");
-            }
-            catch (Exception ex)
-            {
-                FormInfo.Text = "Hata: kaydetme başarısız.";
-                MessageBox.Show(ex.Message, "Hata");
-            }
-        }
-
-        private async void Delete_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (_selectedId is null)
-                {
-                    FormInfo.Text = "Silmek için listeden kayıt seç.";
-                    return;
-                }
-
-                var confirm = MessageBox.Show("Seçili araç tipi silinsin mi?", "Onay", MessageBoxButton.YesNo);
-                if (confirm != MessageBoxResult.Yes)
-                    return;
-
-                var entity = await _db.VehicleTypes.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
-                if (entity is null)
-                {
-                    FormInfo.Text = "Kayıt bulunamadı (yenileyin).";
-                    return;
-                }
-
-                entity.IsDeleted = true;
-                await _db.SaveChangesAsync();
-
-                FormInfo.Text = $"Silindi: #{_selectedId.Value}";
-
-                await LoadAsync();
-                ClearForm();
-            }
-            catch (Exception ex)
-            {
-                FormInfo.Text = "Hata: silme başarısız.";
-                MessageBox.Show(ex.Message, "Hata");
-            }
-        }
-
-        private void Clear_Click(object sender, RoutedEventArgs e)
-        {
-            ClearForm();
-            FormInfo.Text = "Form temizlendi.";
-        }
-		private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+		public VehicleTypesPage()
 		{
-			var q = (SearchBox.Text ?? "").Trim().ToLowerInvariant();
-			var total = _all.Count;
+			InitializeComponent();
 
-			if (string.IsNullOrWhiteSpace(q))
+			_view = CollectionViewSource.GetDefaultView(_items);
+			_view.Filter = Filter;
+
+			Grid.ItemsSource = _view;
+			UpdateCount();
+		}
+
+		private bool Filter(object obj)
+		{
+			if (obj is not VehicleType x) return false;
+
+			var q = (SearchBox.Text ?? "").Trim().ToLowerInvariant();
+			if (string.IsNullOrWhiteSpace(q)) return true;
+
+			return (x.Code ?? "").ToLowerInvariant().Contains(q)
+				|| (x.Name ?? "").ToLowerInvariant().Contains(q)
+				|| (x.Description ?? "").ToLowerInvariant().Contains(q);
+		}
+
+		private void Refresh_Click(object sender, RoutedEventArgs e)
+		{
+			_view?.Refresh();
+			UpdateCount();
+			Notify("Liste yenilendi.");
+		}
+
+		private void New_Click(object sender, RoutedEventArgs e)
+		{
+			Clear_Click(sender, e);
+			Notify("Yeni kayıt için form hazır.");
+		}
+
+		private void Save_Click(object sender, RoutedEventArgs e)
+		{
+			var code = (CodeBox.Text ?? "").Trim();
+			var name = (NameBox.Text ?? "").Trim();
+			var desc = (DescBox.Text ?? "").Trim();
+
+			if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(name))
 			{
-				Grid.ItemsSource = _all;
-				FilterInfo.Text = $"Toplam kayıt: {total}";
+				Notify("Kod ve Ad zorunludur.", "Uyarı");
 				return;
 			}
 
-			var filtered = _all
-				.Where(x =>
-					(x.Code ?? "").ToLowerInvariant().Contains(q) ||
-					(x.Name ?? "").ToLowerInvariant().Contains(q) ||
-					(x.Description ?? "").ToLowerInvariant().Contains(q))
-				.ToList();
+			var exists = _items.Any(x => x != _selected && string.Equals(x.Code, code, StringComparison.OrdinalIgnoreCase));
+			if (exists)
+			{
+				Notify("Bu kod zaten var.", "Uyarı");
+				return;
+			}
 
-			Grid.ItemsSource = filtered;
-			FilterInfo.Text = $"Filtre: \"{q}\" → {filtered.Count} / {total} kayıt";
+			if (_selected is null)
+			{
+				var item = new VehicleType
+				{
+					Id = _items.Count == 0 ? 1 : _items.Max(x => x.Id) + 1,
+					Code = code,
+					Name = name,
+					Description = string.IsNullOrWhiteSpace(desc) ? null : desc,
+					CreatedAt = DateTime.Now
+				};
+				_items.Insert(0, item);
+				Notify("Kayıt eklendi.");
+			}
+			else
+			{
+				_selected.Code = code;
+				_selected.Name = name;
+				_selected.Description = string.IsNullOrWhiteSpace(desc) ? null : desc;
+				_view?.Refresh();
+				Notify("Kayıt güncellendi.");
+			}
+
+			UpdateCount();
 		}
 
-		private void ClearForm()
-        {
-            _selectedId = null;
-            Grid.SelectedItem = null;
+		private void Delete_Click(object sender, RoutedEventArgs e)
+		{
+			if (_selected is null)
+			{
+				Notify("Silmek için kayıt seç.", "Uyarı");
+				return;
+			}
 
-            CodeBox.Text = "";
-            NameBox.Text = "";
-            DescBox.Text = "";
-        }
-    }
+			_items.Remove(_selected);
+			Clear_Click(sender, e);
+			UpdateCount();
+
+			Notify("Kayıt silindi.");
+		}
+
+		private void Clear_Click(object sender, RoutedEventArgs e)
+		{
+			_selected = null;
+			Grid.SelectedItem = null;
+
+			CodeBox.Text = "";
+			NameBox.Text = "";
+			DescBox.Text = "";
+
+			Notify("Form temizlendi.");
+		}
+
+		private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			_view?.Refresh();
+			UpdateCount();
+		}
+
+		private void Grid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			_selected = Grid.SelectedItem as VehicleType;
+			if (_selected is null) return;
+
+			CodeBox.Text = _selected.Code;
+			NameBox.Text = _selected.Name;
+			DescBox.Text = _selected.Description ?? "";
+		}
+
+		private void UpdateCount()
+		{
+			var count = _view?.Cast<object>().Count() ?? 0;
+			FilterInfo.Text = $"Toplam kayıt: {count}";
+		}
+
+		private static void Notify(string message, string title = "Bilgi")
+		{
+			MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+		}
+	}
 }

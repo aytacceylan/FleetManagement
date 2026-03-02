@@ -1,125 +1,227 @@
 ﻿using FleetManagement.Domain.Entities;
+using FleetManagement.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 
 namespace FleetManagement.Desktop.Pages
 {
-    public partial class VehicleBrandsPage : Page
-    {
-        private readonly ObservableCollection<VehicleBrand> _items = new();
-        private ICollectionView? _view;
-        private VehicleBrand? _selected;
+	public partial class VehicleBrandsPage : Page
+	{
+		private readonly AppDbContext _db = new(App.DbOptions);
 
-        public VehicleBrandsPage()
-        {
-            InitializeComponent();
-            _view = CollectionViewSource.GetDefaultView(_items);
-            _view.Filter = Filter;
-            Grid.ItemsSource = _view;
-            UpdateCount();
-        }
+		private int? _selectedId;
+		private List<VehicleBrand> _all = new();
 
-        private bool Filter(object obj)
-        {
-            if (obj is not VehicleBrand x) return false;
-            var q = (SearchBox.Text ?? "").Trim().ToLowerInvariant();
-            if (string.IsNullOrWhiteSpace(q)) return true;
+		public VehicleBrandsPage()
+		{
+			InitializeComponent();
+			Loaded += async (_, __) => await LoadAsync();
+		}
 
-            return (x.Code ?? "").ToLowerInvariant().Contains(q)
-                || (x.Name ?? "").ToLowerInvariant().Contains(q)
-                || (x.Description ?? "").ToLowerInvariant().Contains(q);
-        }
+		private async Task LoadAsync()
+		{
+			try
+			{
+				var list = await _db.VehicleBrands
+					.AsNoTracking()
+					.Where(x => !x.IsDeleted)
+					.OrderByDescending(x => x.Id)
+					.ToListAsync();
 
-        private void Refresh_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            _view?.Refresh();
-            FormInfo.Text = "Yenilendi.";
-            UpdateCount();
-        }
+				_all = list;
+				Grid.ItemsSource = _all;
+				FilterInfo.Text = $"Toplam kayıt: {_all.Count}";
+			}
+			catch (Exception ex)
+			{
+				Notify("Hata: markalar yüklenemedi.", "Hata");
+				MessageBox.Show(ex.Message, "Hata");
+			}
+		}
 
-        private void New_Click(object sender, System.Windows.RoutedEventArgs e) => Clear_Click(sender, e);
+		private async void Refresh_Click(object sender, RoutedEventArgs e)
+		{
+			await LoadAsync();
+			Notify("Liste yenilendi.");
+		}
 
-        private void Save_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            var code = (CodeBox.Text ?? "").Trim();
-            var name = (NameBox.Text ?? "").Trim();
-            var desc = (DescBox.Text ?? "").Trim();
+		private void New_Click(object sender, RoutedEventArgs e)
+		{
+			ClearForm();
+			Notify("Yeni kayıt için form hazır.");
+		}
 
-            if (string.IsNullOrWhiteSpace(code)) { FormInfo.Text = "Kod boş olamaz."; return; }
-            if (string.IsNullOrWhiteSpace(name)) { FormInfo.Text = "Ad boş olamaz."; return; }
+		private async void Save_Click(object sender, RoutedEventArgs e)
+		{
+			try
+			{
+				var code = (CodeBox.Text ?? "").Trim();
+				var name = (NameBox.Text ?? "").Trim();
+				var desc = (DescBox.Text ?? "").Trim();
 
-            var exists = _items.Any(x => x != _selected && string.Equals(x.Code, code, StringComparison.OrdinalIgnoreCase));
-            if (exists) { FormInfo.Text = "Bu kod zaten var."; return; }
+				if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(name))
+				{
+					Notify("Kod ve Ad zorunludur.", "Uyarı");
+					return;
+				}
 
-            if (_selected is null)
-            {
-                var item = new VehicleBrand
-                {
-                    Id = _items.Count == 0 ? 1 : _items.Max(x => x.Id) + 1,
-                    Code = code,
-                    Name = name,
-                    Description = string.IsNullOrWhiteSpace(desc) ? null : desc,
-                    CreatedAt = DateTime.Now
-                };
-                _items.Insert(0, item);
-                FormInfo.Text = "Kaydedildi.";
-            }
-            else
-            {
-                _selected.Code = code;
-                _selected.Name = name;
-                _selected.Description = string.IsNullOrWhiteSpace(desc) ? null : desc;
-                _view?.Refresh();
-                FormInfo.Text = "Güncellendi.";
-            }
+				// Unique Code kontrolü (soft delete hariç)
+				var exists = await _db.VehicleBrands.AsNoTracking()
+					.AnyAsync(x => !x.IsDeleted
+								   && x.Code.ToLower() == code.ToLower()
+								   && (_selectedId == null || x.Id != _selectedId.Value));
 
-            UpdateCount();
-        }
+				if (exists)
+				{
+					Notify("Bu kod zaten var.", "Uyarı");
+					return;
+				}
 
-        private void Delete_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            if (_selected is null) { FormInfo.Text = "Silmek için kayıt seç."; return; }
-            _items.Remove(_selected);
-            Clear_Click(sender, e);
-            FormInfo.Text = "Silindi.";
-            UpdateCount();
-        }
+				if (_selectedId is null)
+				{
+					var entity = new VehicleBrand
+					{
+						Code = code,
+						Name = name,
+						Description = string.IsNullOrWhiteSpace(desc) ? null : desc,
+						CreatedAt = DateTime.UtcNow,
+						IsDeleted = false
+					};
 
-        private void Clear_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            _selected = null;
-            Grid.SelectedItem = null;
-            CodeBox.Text = "";
-            NameBox.Text = "";
-            DescBox.Text = "";
-            FormInfo.Text = "Temizlendi.";
-        }
+					_db.VehicleBrands.Add(entity);
+					await _db.SaveChangesAsync();
 
-        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            _view?.Refresh();
-            UpdateCount();
-        }
+					Notify($"Kaydedildi: #{entity.Id}");
+				}
+				else
+				{
+					var entity = await _db.VehicleBrands.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
+					if (entity is null)
+					{
+						Notify("Kayıt bulunamadı (yenileyin).", "Uyarı");
+						return;
+					}
 
-        private void Grid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            _selected = Grid.SelectedItem as VehicleBrand;
-            if (_selected is null) return;
+					entity.Code = code;
+					entity.Name = name;
+					entity.Description = string.IsNullOrWhiteSpace(desc) ? null : desc;
 
-            CodeBox.Text = _selected.Code;
-            NameBox.Text = _selected.Name;
-            DescBox.Text = _selected.Description ?? "";
-            FormInfo.Text = $"Seçildi: {_selected.Name}";
-        }
+					await _db.SaveChangesAsync();
 
-        private void UpdateCount()
-        {
-            var count = _view?.Cast<object>().Count() ?? 0;
-            FilterInfo.Text = $"Toplam kayıt: {count}";
-        }
-    }
+					Notify($"Güncellendi: #{entity.Id}");
+				}
+
+				await LoadAsync();
+				ClearForm();
+			}
+			catch (DbUpdateException dbex)
+			{
+				Notify("Hata: kayıt yapılamadı (muhtemelen Kod tekrar ediyor).", "DB Hatası");
+				MessageBox.Show(dbex.InnerException?.Message ?? dbex.Message, "DB Hatası");
+			}
+			catch (Exception ex)
+			{
+				Notify("Hata: kaydetme başarısız.", "Hata");
+				MessageBox.Show(ex.Message, "Hata");
+			}
+		}
+
+		private async void Delete_Click(object sender, RoutedEventArgs e)
+		{
+			try
+			{
+				if (_selectedId is null)
+				{
+					Notify("Silmek için listeden kayıt seç.", "Uyarı");
+					return;
+				}
+
+				var confirm = MessageBox.Show("Seçili marka silinsin mi?", "Onay", MessageBoxButton.YesNo);
+				if (confirm != MessageBoxResult.Yes)
+					return;
+
+				var entity = await _db.VehicleBrands.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
+				if (entity is null)
+				{
+					Notify("Kayıt bulunamadı (yenileyin).", "Uyarı");
+					return;
+				}
+
+				entity.IsDeleted = true;
+				await _db.SaveChangesAsync();
+
+				Notify($"Silindi: #{_selectedId.Value}");
+
+				await LoadAsync();
+				ClearForm();
+			}
+			catch (Exception ex)
+			{
+				Notify("Hata: silme başarısız.", "Hata");
+				MessageBox.Show(ex.Message, "Hata");
+			}
+		}
+
+		private void Clear_Click(object sender, RoutedEventArgs e)
+		{
+			ClearForm();
+			Notify("Temizlendi");
+		}
+
+		private void Grid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (Grid.SelectedItem is not VehicleBrand x)
+				return;
+
+			_selectedId = x.Id;
+
+			CodeBox.Text = x.Code ?? "";
+			NameBox.Text = x.Name ?? "";
+			DescBox.Text = x.Description ?? "";
+		}
+
+		private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			var q = (SearchBox.Text ?? "").Trim().ToLowerInvariant();
+			var total = _all.Count;
+
+			if (string.IsNullOrWhiteSpace(q))
+			{
+				Grid.ItemsSource = _all;
+				FilterInfo.Text = $"Toplam kayıt: {total}";
+				return;
+			}
+
+			var filtered = _all
+				.Where(x =>
+					(x.Code ?? "").ToLowerInvariant().Contains(q) ||
+					(x.Name ?? "").ToLowerInvariant().Contains(q) ||
+					(x.Description ?? "").ToLowerInvariant().Contains(q))
+				.ToList();
+
+			Grid.ItemsSource = filtered;
+			FilterInfo.Text = $"Toplam kayıt: {filtered.Count} / {total}";
+		}
+
+		private void ClearForm()
+		{
+			_selectedId = null;
+			Grid.SelectedItem = null;
+
+			CodeBox.Text = "";
+			NameBox.Text = "";
+			DescBox.Text = "";
+			SearchBox.Text = "";
+		}
+
+		private static void Notify(string message, string title = "Bilgi")
+		{
+			MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+		}
+	}
 }
