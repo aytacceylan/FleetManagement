@@ -177,7 +177,7 @@
 
                             </ComboBox>
 
-                            <TextBlock Text="Birlik/Bölük"
+                            <TextBlock Text="Ait Olduğu Takım"
            Foreground="{StaticResource BrushMuted}"/>
 
                             <ComboBox x:Name="UnitCombo"
@@ -221,12 +221,70 @@
                                        Foreground="{StaticResource BrushMuted}"
                                        Margin="0,8,0,0"/>
                             <ComboBox x:Name="VehicleTypeCombo"
-                                      Margin="0,6,0,10"/>
+                                         Margin="0,6,0,10"
+                                         IsEditable="True"
+                                         IsReadOnly="True"
+                                         Foreground="Black"
+                                         Background="#3D5869"
+                                         BorderBrush="Black">
+
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <!-- Normal liste -->
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Setter Property="Background" Value="black"/>
+
+                                        <Style.Triggers>
+                                            <!-- Hover -->
+                                            <Trigger Property="IsHighlighted" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+
+                                            <!-- Seçili -->
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+
+                            </ComboBox>
 
                             <TextBlock Text="Marka"
                                        Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="BrandBox"
-                                     Margin="0,6,0,10"/>
+                            <ComboBox x:Name="BrandBox"
+                                         Margin="0,6,0,10"
+                                         IsEditable="True"
+                                         IsReadOnly="True"
+                                         Foreground="Black"
+                                         Background="#3D5869"
+                                         BorderBrush="Black">
+
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <!-- Normal liste -->
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Setter Property="Background" Value="black"/>
+
+                                        <Style.Triggers>
+                                            <!-- Hover -->
+                                            <Trigger Property="IsHighlighted" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+
+                                            <!-- Seçili -->
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+
+                            </ComboBox>
 
                             <TextBlock Text="Model"
                                        Foreground="{StaticResource BrushMuted}"/>
@@ -264,8 +322,37 @@
 
                             <TextBlock Text="Araç Yılı"
                                        Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="VehicleYearBox"
-                                     Margin="0,6,0,10"/>
+                            <ComboBox x:Name="VehicleYearBox"
+                                         Margin="0,6,0,10"
+                                         IsEditable="True"
+                                         IsReadOnly="True"
+                                         Foreground="Black"
+                                         Background="#3D5869"
+                                         BorderBrush="Black">
+
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <!-- Normal liste -->
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Setter Property="Background" Value="black"/>
+
+                                        <Style.Triggers>
+                                            <!-- Hover -->
+                                            <Trigger Property="IsHighlighted" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+
+                                            <!-- Seçili -->
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+
+                            </ComboBox>
                         </StackPanel>
 
                         <!-- 3. Kolon -->
@@ -303,26 +390,72 @@
                             <TextBlock Text="Görev"
                                        Foreground="{StaticResource BrushMuted}"/>
 
-                            <TextBox x:Name="DutyInfoBox"
-         Margin="0,6,0,10"
-         IsReadOnly="True"
-         Text="—"
-         Padding="10,6"
-         Background="#F6F8FC"
-         BorderBrush="#D6DDEB"
-         BorderThickness="1"/>
+                            <ComboBox x:Name="DutyInfoBox"
+                                     Margin="0,6,0,10"
+                                     IsEditable="True"
+                                     IsReadOnly="True"
+                                     Foreground="Black"
+                                     Background="#3D5869"
+                                     BorderBrush="Black">
+
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <!-- Normal liste -->
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Setter Property="Background" Value="black"/>
+
+                                        <Style.Triggers>
+                                            <!-- Hover -->
+                                            <Trigger Property="IsHighlighted" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+
+                                            <!-- Seçili -->
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+
+                            </ComboBox>
 
                             <TextBlock Text="Bakım"
                                        Foreground="{StaticResource BrushMuted}"/>
 
-                            <TextBox x:Name="MaintInfoBox"
-         Margin="0,6,0,0"
-         IsReadOnly="True"
-         Text="—"
-         Padding="10,6"
-         Background="#F6F8FC"
-         BorderBrush="#D6DDEB"
-         BorderThickness="1"/>
+                            <ComboBox x:Name="MaintInfoBox"
+                                      Margin="0,6,0,10"
+                                      IsEditable="True"
+                                      IsReadOnly="True"
+                                      Foreground="Black"
+                                      Background="#3D5869"
+                                      BorderBrush="Black">
+
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <!-- Normal liste -->
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Setter Property="Background" Value="black"/>
+
+                                        <Style.Triggers>
+                                            <!-- Hover -->
+                                            <Trigger Property="IsHighlighted" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+
+                                            <!-- Seçili -->
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+
+                            </ComboBox>
                         </StackPanel>
 
                         <!-- 5. Kolon -->
@@ -335,6 +468,8 @@
 
                             <TextBlock Text="Son Bakım Tarihi"
                                        Foreground="{StaticResource BrushMuted}"/>
+                            
+                            
                             <DatePicker x:Name="LastMaintenanceDatePicker"
                                         Margin="0,6,0,10"/>
 
@@ -381,7 +516,7 @@
                         <DataGridTextColumn Header="Plaka" Binding="{Binding Plate}" Width="95"/>
                         <DataGridTextColumn Header="Sivil" Binding="{Binding InventoryNumber}" Width="105"/>
                         <DataGridTextColumn Header="Sürücü" Binding="{Binding DriverFullName}" Width="150"/>
-                        <DataGridTextColumn Header="Birlik" Binding="{Binding VehicleUnit}" Width="130"/>
+                        <DataGridTextColumn Header="Ait Olduğu Takım" Binding="{Binding VehicleUnit}" Width="130"/>
 
                         <!-- 2. kolon -->
                         <DataGridTextColumn Header="Tip" Binding="{Binding VehicleType}" Width="95"/>
@@ -411,13 +546,10 @@
 
                         <!-- 4. kolon -->
 
-                        <DataGridTextColumn Header="Yolcu" Binding="{Binding PassengerCapacity}" Width="60"/>
-                        <DataGridTextColumn Header="Yük" Binding="{Binding LoadCapacity}" Width="60"/>
+                        <DataGridTextColumn Header="Yolcu Kpasitesi" Binding="{Binding PassengerCapacity}" Width="60"/>
+                        <DataGridTextColumn Header="Yük Kapasitesi" Binding="{Binding LoadCapacity}" Width="60"/>
                         <DataGridTextColumn Header="Motor" Binding="{Binding MotorNo}" Width="110"/>
                         <DataGridTextColumn Header="Şase" Binding="{Binding SaseNo}" Width="120"/>
-
-
-
 
 
                         <!-- 5. kolon -->
