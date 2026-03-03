@@ -86,8 +86,6 @@ namespace FleetManagement.Desktop.Pages
                     {
                         Code = code,
                         Name = name,
-                        StartPoint = EmptyToNull(StartBox.Text),
-                        EndPoint = EmptyToNull(EndBox.Text),
                         Description = EmptyToNull(DescBox.Text),
                         CreatedAt = DateTime.UtcNow,
                         IsDeleted = false
@@ -109,8 +107,6 @@ namespace FleetManagement.Desktop.Pages
 
                     entity.Code = code;
                     entity.Name = name;
-                    entity.StartPoint = EmptyToNull(StartBox.Text);
-                    entity.EndPoint = EmptyToNull(EndBox.Text);
                     entity.Description = EmptyToNull(DescBox.Text);
 
                     await _db.SaveChangesAsync();
@@ -184,8 +180,6 @@ namespace FleetManagement.Desktop.Pages
 
             CodeBox.Text = x.Code ?? "";
             NameBox.Text = x.Name ?? "";
-            StartBox.Text = x.StartPoint ?? "";
-            EndBox.Text = x.EndPoint ?? "";
             DescBox.Text = x.Description ?? "";
         }
 
@@ -221,8 +215,6 @@ namespace FleetManagement.Desktop.Pages
 
             CodeBox.Text = "";
             NameBox.Text = "";
-            StartBox.Text = "";
-            EndBox.Text = "";
             DescBox.Text = "";
             SearchBox.Text = "";
         }

@@ -128,8 +128,8 @@ namespace FleetManagement.Infrastructure.Data
                 e.Property(x => x.Name).HasMaxLength(200).IsRequired();
                 e.Property(x => x.Description).HasMaxLength(500);
 
-                e.HasIndex(x => x.Code).IsUnique();
-            });
+                e.HasIndex(x => x.Code).IsUnique().HasFilter("\"IsDeleted\" = false");
+			});
 
             modelBuilder.Entity<VehicleCategory>(e =>
             {
@@ -173,7 +173,7 @@ namespace FleetManagement.Infrastructure.Data
 				e.Property(x => x.ParentName).HasMaxLength(200);
 				e.Property(x => x.Description).HasMaxLength(500);
 
-				e.HasIndex(x => x.Code).IsUnique();
+				e.HasIndex(x => x.Code).IsUnique().HasFilter("\"IsDeleted\" = false");
 			});
 
             modelBuilder.Entity<VehicleGuard>(e =>
@@ -250,6 +250,8 @@ namespace FleetManagement.Infrastructure.Data
                 // modelBuilder.Entity<HelpNote>().HasQueryFilter(x => !x.IsDeleted); Soft delete filter istersen:
             });
 
-        }
+			modelBuilder.Entity<VehicleType>().HasQueryFilter(x => !x.IsDeleted);
+			modelBuilder.Entity<Unit>().HasQueryFilter(x => !x.IsDeleted);
+		}
     }
 }

@@ -208,5 +208,10 @@ namespace FleetManagement.Desktop.Pages
         {
             MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
         }
-    }
+
+		private void NameBox_TextChanged(object sender, TextChangedEventArgs e)
+		{
+
+		}
+	}
 }

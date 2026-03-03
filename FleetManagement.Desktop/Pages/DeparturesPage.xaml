@@ -8,7 +8,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="12"/>
-            <RowDefinition Height="220"/>
+            <RowDefinition Height="120"/>
             <RowDefinition Height="12"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -78,8 +78,8 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="Departure Adı" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
-                            <TextBox x:Name="NameBox" Margin="0,6,0,10"/>
+                            <TextBlock Text="Başkanlık Adı" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBox x:Name="NameBox" Margin="0,6,0,10" TextChanged="NameBox_TextChanged"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="4">
@@ -134,7 +134,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
                         <DataGridTextColumn Header="Kod" Binding="{Binding Code}" Width="140"/>
-                        <DataGridTextColumn Header="Departure Adı" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="Başkanlık Adı" Binding="{Binding Name}" Width="*"/>
                         <DataGridTextColumn Header="Açıklama" Binding="{Binding Description}" Width="*"/>
                         <DataGridTextColumn Header="Oluşturma" Binding="{Binding CreatedAt}" Width="180"/>
                     </DataGrid.Columns>

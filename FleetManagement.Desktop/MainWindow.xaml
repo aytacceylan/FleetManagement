@@ -55,14 +55,14 @@
                             <StackPanel>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç" Tag="VehiclesPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Sürücü" Tag="DriversPage" Click="Menu_Click"/>
-                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Bakım-Birlik (Unit)" Tag="UnitsPage" Click="Menu_Click"/>
+                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Bölük Birim" Tag="UnitsPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Tipi" Tag="VehicleTypesPage" Click="Menu_Click"/>
 
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Marka" Tag="VehicleBrandsPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Model" Tag="VehicleModelsPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Yılı" Tag="VehicleYearsPage" Click="Menu_Click"/>
 
-                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Güzergah (Rota-Route)" Tag="RoutesPage" Click="Menu_Click"/>
+                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Güzergah" Tag="RoutesPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Komutanı" Tag="VehicleCommandersPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Başkanlık" Tag="DeparturesPage" Click="Menu_Click"/>
 
