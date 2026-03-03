@@ -7,10 +7,12 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="12"/>
+            <RowDefinition Height="320"/>
+            <RowDefinition Height="12"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- HEADER -->
+        <!-- ================= HEADER ================= -->
         <Border Grid.Row="0" Style="{StaticResource FmCard}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -27,122 +29,188 @@
                                Foreground="{StaticResource BrushMuted}"/>
                 </StackPanel>
 
-                <Button Grid.Column="1"
-                        Content="Yenile"
-                        MinWidth="120"
-                        Click="RefreshMovements_Click"/>
-
-                <Button Grid.Column="3"
-                        Content="Kaydet"
-                        MinWidth="140"
-                        Click="SaveMovement_Click"/>
+                <Button Grid.Column="1" Content="Yenile" MinWidth="120" Click="Refresh_Click"/>
+                <Button Grid.Column="3" Content="Yeni Kayıt" MinWidth="150" Click="New_Click"/>
             </Grid>
         </Border>
 
-        <!-- CONTENT -->
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="420"/>
-                <ColumnDefinition Width="12"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        <!-- ================= FORM ================= -->
+        <Border Grid.Row="2" Style="{StaticResource FmCard}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <!-- FORM -->
-            <Border Grid.Column="0" Style="{StaticResource FmCard}">
-                <StackPanel>
+                <!-- FORM HEADER -->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Hareket Formu" FontSize="16" FontWeight="SemiBold"/>
-                    <TextBlock Text="Araç seç, sürücü seç, tarih ve km bilgilerini gir."
-                               Margin="0,6,0,16"
-                               Foreground="{StaticResource BrushMuted}"/>
+                    <TextBlock Text="Hareket Formu"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
 
-                    <TextBlock Text="Araç" Foreground="{StaticResource BrushMuted}"/>
-                    <ComboBox x:Name="VehicleCombo" Margin="0,6,0,12"/>
+                    <Button Grid.Column="1" Content="Kaydet" Width="110" Click="Save_Click"/>
+                    <Button Grid.Column="3" Content="Sil" Width="110" Click="Delete_Click"/>
+                    <Button Grid.Column="5" Content="Temizle" Width="110" Click="Clear_Click"/>
+                </Grid>
 
-                    <TextBlock Text="Sürücü" Foreground="{StaticResource BrushMuted}"/>
-                    <ComboBox x:Name="DriverCombo" Margin="0,6,0,12"/>
-
-                    <TextBlock Text="Araç Komutanı" Foreground="{StaticResource BrushMuted}"/>
-                    <ComboBox x:Name="CommanderCombo" Margin="0,6,0,12"/>
-
-                    <TextBlock Text="Çıkış Tarih" Foreground="{StaticResource BrushMuted}"/>
-                    <DatePicker x:Name="ExitDatePicker" Margin="0,6,0,10"/>
-
-                    <TextBlock Text="Çıkış Saat (HH:mm)" Foreground="{StaticResource BrushMuted}"/>
-                    <TextBox x:Name="ExitTimeBox" Margin="0,6,0,14" Text="08:00"/>
-
-                    <TextBlock Text="Dönüş Tarih" Foreground="{StaticResource BrushMuted}"/>
-                    <DatePicker x:Name="ReturnDatePicker" Margin="0,6,0,10"/>
-
-                    <TextBlock Text="Dönüş Saat (HH:mm)" Foreground="{StaticResource BrushMuted}"/>
-                    <TextBox x:Name="ReturnTimeBox" Margin="0,6,0,14" Text="17:00"/>
-
-
-                    <TextBlock Text="Route" Foreground="{StaticResource BrushMuted}"/>
-                    <TextBox x:Name="RouteBox" Margin="0,6,0,12"/>
-
-                    <TextBlock Text="Purpose" Foreground="{StaticResource BrushMuted}"/>
-                    <TextBox x:Name="PurposeBox" Margin="0,6,0,12"/>
-
-                    <TextBlock Text="Açıklama" Foreground="{StaticResource BrushMuted}"/>
-                    <TextBox x:Name="DescBox" Margin="0,6,0,12" Height="70" TextWrapping="Wrap" AcceptsReturn="True"/>
-
+                <!-- FORM CONTENT (5 kolon) -->
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="12"/>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
+                        <!-- 1) Araç -->
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Başlangıç KM" Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="StartKmBox" Margin="0,6,0,0"/>
+                            <TextBlock Text="Araç" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <ComboBox x:Name="VehicleCombo" Margin="0,6,0,10"/>
+
+                            <TextBlock Text="Araç (Serbest)" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBox x:Name="VehiclePlateTextBox" Margin="0,6,0,10"/>
                         </StackPanel>
 
+                        <!-- 2) Sürücü -->
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="Bitiş KM" Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="EndKmBox" Margin="0,6,0,0"/>
+                            <TextBlock Text="Sürücü" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <ComboBox x:Name="DriverCombo" Margin="0,6,0,10"/>
+
+                            <TextBlock Text="Sürücü (Serbest)" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBox x:Name="DriverTextBox" Margin="0,6,0,10"/>
                         </StackPanel>
+
+                        <!-- 3) Komutan -->
+                        <StackPanel Grid.Column="4">
+                            <TextBlock Text="Araç Komutanı" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <ComboBox x:Name="CommanderCombo" Margin="0,6,0,10"/>
+
+                            <TextBlock Text="Komutan (Serbest)" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBox x:Name="CommanderTextBox" Margin="0,6,0,10"/>
+                        </StackPanel>
+
+                        <!-- 4) Tarih/Saat -->
+                        <StackPanel Grid.Column="6">
+                            <TextBlock Text="Çıkış Tarih" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <DatePicker x:Name="ExitDatePicker" Margin="0,6,0,10"/>
+
+                            <TextBlock Text="Çıkış Saat (HH:mm)" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBox x:Name="ExitTimeBox" Margin="0,6,0,10" Text="08:00"/>
+
+                            <TextBlock Text="Dönüş Tarih" Foreground="{StaticResource BrushMuted}"/>
+                            <DatePicker x:Name="ReturnDatePicker" Margin="0,6,0,10"/>
+
+                            <TextBlock Text="Dönüş Saat (HH:mm)" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBox x:Name="ReturnTimeBox" Margin="0,6,0,10" Text="17:00"/>
+                        </StackPanel>
+
+                        <!-- 5) Görev/Km -->
+                        <StackPanel Grid.Column="8">
+                            <TextBlock Text="Rota" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBox x:Name="RouteBox" Margin="0,6,0,10"/>
+
+                            <TextBlock Text="Amaç" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBox x:Name="PurposeBox" Margin="0,6,0,10"/>
+
+                            <TextBlock Text="Yük / Yolcu" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBox x:Name="LoadOrPassengerBox" Margin="0,6,0,10"/>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="12"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Başlangıç KM" Foreground="{StaticResource BrushMuted}"/>
+                                    <TextBox x:Name="StartKmBox" Margin="0,6,0,10"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Bitiş KM" Foreground="{StaticResource BrushMuted}"/>
+                                    <TextBox x:Name="EndKmBox" Margin="0,6,0,10"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <TextBlock Text="Açıklama" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBox x:Name="DescBox" Margin="0,6,0,0"/>
+                        </StackPanel>
+
                     </Grid>
+                </ScrollViewer>
+            </Grid>
+        </Border>
 
-                    <TextBlock x:Name="MovementInfo"
-                               Margin="0,12,0,0"
-                               Foreground="{StaticResource BrushMuted}"/>
-                </StackPanel>
-            </Border>
+        <!-- ================= LIST ================= -->
+        <Border Grid.Row="4" Style="{StaticResource FmCard}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <!-- LIST -->
-            <Border Grid.Column="2" Style="{StaticResource FmCard}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="12"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="280"/>
+                    </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="0"
-                               Text="Hareket Listesi"
+                    <TextBlock Text="Hareket Listesi"
                                FontSize="16"
-                               FontWeight="SemiBold"/>
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
 
-                    <DataGrid x:Name="MovementsGrid"
-                              Grid.Row="2"
-                              AutoGenerateColumns="False"
-                              IsReadOnly="True"
-                              CanUserAddRows="False"
-                              SelectionMode="Single">
-
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
-                            <DataGridTextColumn Header="Araç" Binding="{Binding VehicleDisplay}" Width="*"/>
-                            <DataGridTextColumn Header="Sürücü" Binding="{Binding DriverDisplay}" Width="*"/>
-                            <DataGridTextColumn Header="Çıkış" Binding="{Binding ExitDate}" Width="160"/>
-                            <DataGridTextColumn Header="Dönüş" Binding="{Binding ReturnDate}" Width="160"/>
-                            <DataGridTextColumn Header="Route" Binding="{Binding Route}" Width="*"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
+                    <StackPanel Grid.Column="1">
+                        <TextBox x:Name="SearchBox" TextChanged="SearchBox_TextChanged"/>
+                        <TextBlock x:Name="FilterInfo"
+                                   Margin="0,6,0,0"
+                                   Foreground="{StaticResource BrushMuted}"
+                                   FontSize="12"
+                                   Text="Toplam kayıt: 0"/>
+                    </StackPanel>
                 </Grid>
-            </Border>
-        </Grid>
+
+                <DataGrid x:Name="MovementsGrid"
+                          Grid.Row="2"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          SelectionMode="Single"
+                          SelectionChanged="MovementsGrid_SelectionChanged">
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
+                        <DataGridTextColumn Header="Araç" Binding="{Binding VehicleDisplay}" Width="140"/>
+                        <DataGridTextColumn Header="Sürücü" Binding="{Binding DriverDisplay}" Width="160"/>
+                        <DataGridTextColumn Header="Komutan" Binding="{Binding CommanderDisplay}" Width="160"/>
+                        <DataGridTextColumn Header="Çıkış" Binding="{Binding ExitDateTimeText}" Width="160"/>
+                        <DataGridTextColumn Header="Dönüş" Binding="{Binding ReturnDateTimeText}" Width="160"/>
+                        <DataGridTextColumn Header="Rota" Binding="{Binding Route}" Width="140"/>
+                        <DataGridTextColumn Header="Amaç" Binding="{Binding Purpose}" Width="140"/>
+                        <DataGridTextColumn Header="KM" Binding="{Binding KmText}" Width="120"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+
     </Grid>
 </Page>
