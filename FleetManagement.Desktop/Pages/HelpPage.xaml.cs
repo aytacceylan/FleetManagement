@@ -208,19 +208,46 @@ namespace FleetManagement.Desktop.Pages
         // ==========================
         // PDF ACTIONS
         // ==========================
+
+        private static string? TryFindGuidePath()
+        {
+            // 1) Önce output (bin) altını dene
+            var p1 = System.IO.Path.Combine(AppContext.BaseDirectory, "Assets", "UserGuide.pdf");
+            if (System.IO.File.Exists(p1)) return p1;
+
+            // 2) Sonra yukarı çıkarak proje klasörünü bulmaya çalış
+            // bin\Debug\netX -> ... -> FleetManagement.Desktop\Assets\UserGuide.pdf
+            var dir = new System.IO.DirectoryInfo(AppContext.BaseDirectory);
+
+            for (int i = 0; i < 8 && dir != null; i++)
+            {
+                var p2 = System.IO.Path.Combine(dir.FullName, "FleetManagement.Desktop", "Assets", "UserGuide.pdf");
+                if (System.IO.File.Exists(p2)) return p2;
+
+                // bazen direkt Desktop klasörü üstündeyken:
+                var p3 = System.IO.Path.Combine(dir.FullName, "Assets", "UserGuide.pdf");
+                if (System.IO.File.Exists(p3)) return p3;
+
+                dir = dir.Parent;
+            }
+
+            return null;
+        }
+
         private void OpenGuide_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (!File.Exists(GuidePath))
+                var path = TryFindGuidePath();
+                if (path is null)
                 {
-                    Notify("Kılavuz dosyası bulunamadı. (Assets/UserGuide.pdf)", "Uyarı");
+                    Notify("Kılavuz bulunamadı. Beklenen yerler:\n- bin\\...\\Assets\\UserGuide.pdf\n- FleetManagement.Desktop\\Assets\\UserGuide.pdf", "Uyarı");
                     return;
                 }
 
-                Process.Start(new ProcessStartInfo
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
-                    FileName = GuidePath,
+                    FileName = path,
                     UseShellExecute = true
                 });
             }
@@ -235,13 +262,14 @@ namespace FleetManagement.Desktop.Pages
         {
             try
             {
-                if (!File.Exists(GuidePath))
+                var path = TryFindGuidePath();
+                if (path is null)
                 {
-                    Notify("Kılavuz dosyası bulunamadı. (Assets/UserGuide.pdf)", "Uyarı");
+                    Notify("Kılavuz bulunamadı, dışa aktarılamıyor.", "Uyarı");
                     return;
                 }
 
-                var dlg = new SaveFileDialog
+                var dlg = new Microsoft.Win32.SaveFileDialog
                 {
                     Title = "Kılavuzu Dışa Aktar",
                     Filter = "PDF (*.pdf)|*.pdf",
@@ -250,7 +278,7 @@ namespace FleetManagement.Desktop.Pages
 
                 if (dlg.ShowDialog() != true) return;
 
-                File.Copy(GuidePath, dlg.FileName, overwrite: true);
+                System.IO.File.Copy(path, dlg.FileName, overwrite: true);
                 Notify("Kılavuz dışa aktarıldı.");
             }
             catch (Exception ex)
@@ -259,5 +287,11 @@ namespace FleetManagement.Desktop.Pages
                 MessageBox.Show(ex.Message, "Hata");
             }
         }
+
+
+
+
+
+
     }
 }
