@@ -7,12 +7,12 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="12"/>
-            <RowDefinition Height="260"/>
+            <RowDefinition Height="190"/>
             <RowDefinition Height="12"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- ================= HEADER ================= -->
+        <!-- HEADER -->
         <Border Grid.Row="0" Style="{StaticResource FmCard}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -23,29 +23,18 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Araç Komutanları"
-                               FontSize="22"
-                               FontWeight="SemiBold"/>
-                    <TextBlock Text="Araç komutanı kayıtlarını yönetin."
+                    <TextBlock Text="Araç Komutanları" FontSize="22" FontWeight="SemiBold"/>
+                    <TextBlock Text="Araç komutanı kayıtlarını görüntüleyin ve yönetin."
                                Margin="0,6,0,0"
                                Foreground="{StaticResource BrushMuted}"/>
                 </StackPanel>
 
-                <Button Grid.Column="1"
-                        Content="Yenile"
-                        MinWidth="120"
-                        Click="Refresh_Click"/>
-
-                <!-- Eski sayfada yoktu ama standarda uysun diye ekliyoruz.
-                     Eğer code-behind'da New_Click yoksa bu butonu kaldırabilirsin. -->
-                <Button Grid.Column="3"
-                        Content="Yeni Komutan"
-                        MinWidth="150"
-                        Click="New_Click"/>
+                <Button Grid.Column="1" Content="Yenile" MinWidth="120" Click="Refresh_Click"/>
+                <Button Grid.Column="3" Content="Yeni" MinWidth="120" Click="New_Click"/>
             </Grid>
         </Border>
 
-        <!-- ================= FORM ================= -->
+        <!-- FORM -->
         <Border Grid.Row="2" Style="{StaticResource FmCard}">
             <Grid>
                 <Grid.RowDefinitions>
@@ -54,7 +43,6 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- FORM HEADER -->
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -65,105 +53,48 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Komutan Formu"
-                               FontSize="16"
-                               FontWeight="SemiBold"
-                               VerticalAlignment="Center"/>
-
-                    <Button Grid.Column="1"
-                            Content="Kaydet"
-                            Width="110"
-                            Click="Save_Click"/>
-
-                    <Button Grid.Column="3"
-                            Content="Sil"
-                            Width="110"
-                            Click="Delete_Click"/>
-
-                    <Button Grid.Column="5"
-                            Content="Temizle"
-                            Width="110"
-                            Click="Clear_Click"/>
+                    <TextBlock Text="Komutan Formu" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <Button Grid.Column="1" Content="Kaydet" Width="110" Click="Save_Click"/>
+                    <Button Grid.Column="3" Content="Sil" Width="110" Click="Delete_Click"/>
+                    <Button Grid.Column="5" Content="Temizle" Width="110" Click="Clear_Click"/>
                 </Grid>
 
-                <!-- FORM CONTENT (Max 4 kolon) -->
-                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="12"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="12"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="12"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                <!-- 4 kolon -->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                        <!-- 1. Kolon -->
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Komutan No"
-                                       Foreground="{StaticResource BrushMuted}"
-                                       Margin="0,8,0,0"/>
-                            <TextBox x:Name="CommanderNumberBox"
-                                     Margin="0,6,0,10"/>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Komutan No" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="CommanderNumberBox" Margin="0,6,0,0"/>
+                    </StackPanel>
 
-                            <TextBlock Text="Ad Soyad"
-                                       Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="FullNameBox"
-                                     Margin="0,6,0,10"/>
-                        </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Ad Soyad" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="FullNameBox" Margin="0,6,0,0"/>
+                    </StackPanel>
 
-                        <!-- 2. Kolon -->
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Text="Telefon"
-                                       Foreground="{StaticResource BrushMuted}"
-                                       Margin="0,8,0,0"/>
-                            <TextBox x:Name="PhoneBox"
-                                     Margin="0,6,0,10"/>
+                    <StackPanel Grid.Column="4">
+                        <TextBlock Text="Telefon" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="PhoneBox" Margin="0,6,0,0"/>
+                    </StackPanel>
 
-                            <!-- İleride ek alan ihtiyacı için yer: şimdilik sadece görünüm doldursun -->
-                            <TextBlock Text="Not"
-                                       Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="NoteBox"
-                                     Margin="0,6,0,10"
-                                     Text="—"
-                                     IsReadOnly="True"
-                                     Padding="10,6"
-                                     Background="#F6F8FC"
-                                     BorderBrush="#D6DDEB"
-                                     BorderThickness="1"/>
-                        </StackPanel>
-
-                        <!-- 3. Kolon (boş / ileride genişler) -->
-                        <StackPanel Grid.Column="4">
-                            <TextBlock Text="Bilgi"
-                                       Foreground="{StaticResource BrushMuted}"
-                                       Margin="0,8,0,0"/>
-                            <TextBox x:Name="InfoBox"
-                                     Margin="0,6,0,10"
-                                     Text="—"
-                                     IsReadOnly="True"
-                                     Padding="10,6"
-                                     Background="#F6F8FC"
-                                     BorderBrush="#D6DDEB"
-                                     BorderThickness="1"/>
-                        </StackPanel>
-
-                        <!-- 4. Kolon -->
-                        <StackPanel Grid.Column="6">
-                            <TextBlock Text="Form Durumu"
-                                       Foreground="{StaticResource BrushMuted}"
-                                       Margin="0,8,0,0"/>
-                            <TextBlock x:Name="FormInfo"
-                                       Margin="0,6,0,0"
-                                       Foreground="{StaticResource BrushMuted}"/>
-                        </StackPanel>
-                    </Grid>
-                </ScrollViewer>
+                    <StackPanel Grid.Column="6">
+                        <TextBlock Text="Birlik/Birim" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="UnitNameBox" Margin="0,6,0,0"/>
+                    </StackPanel>
+                </Grid>
             </Grid>
         </Border>
 
-        <!-- ================= LIST ================= -->
+        <!-- LIST -->
         <Border Grid.Row="4" Style="{StaticResource FmCard}">
             <Grid>
                 <Grid.RowDefinitions>
@@ -172,22 +103,16 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- LIST HEADER (Başlık + Arama) -->
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="280"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Komutan Listesi"
-                               FontSize="16"
-                               FontWeight="SemiBold"
-                               VerticalAlignment="Center"/>
+                    <TextBlock Text="Komutan Listesi" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
 
                     <StackPanel Grid.Column="1">
-                        <TextBox x:Name="SearchBox"
-                                 TextChanged="SearchBox_TextChanged"/>
-
+                        <TextBox x:Name="SearchBox" TextChanged="SearchBox_TextChanged"/>
                         <TextBlock x:Name="FilterInfo"
                                    Margin="0,6,0,0"
                                    Foreground="{StaticResource BrushMuted}"
@@ -206,14 +131,14 @@
 
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
-                        <DataGridTextColumn Header="Komutan No" Binding="{Binding CommanderNumber}" Width="140"/>
+                        <DataGridTextColumn Header="Komutan No" Binding="{Binding CommanderNumber}" Width="150"/>
                         <DataGridTextColumn Header="Ad Soyad" Binding="{Binding FullName}" Width="*"/>
-                        <DataGridTextColumn Header="Telefon" Binding="{Binding PhoneNumber}" Width="160"/>
+                        <DataGridTextColumn Header="Telefon" Binding="{Binding PhoneNumber}" Width="150"/>
+                        <DataGridTextColumn Header="Birlik" Binding="{Binding UnitName}" Width="180"/>
                         <DataGridTextColumn Header="Oluşturma" Binding="{Binding CreatedAt}" Width="180"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
         </Border>
-
     </Grid>
 </Page>

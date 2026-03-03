@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿// DeparturesPage.xaml.cs
+using FleetManagement.Domain.Entities;
+using FleetManagement.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.EntityFrameworkCore;
-
-using FleetManagement.Infrastructure.Data;
-using FleetManagement.Domain.Entities;
 
 namespace FleetManagement.Desktop.Pages
 {
-    public partial class MakamsPage : Page
+    public partial class DeparturesPage : Page
     {
         private readonly AppDbContext _db = new(App.DbOptions);
 
         private int? _selectedId;
-        private List<Makam> _all = new();
+        private List<Departure> _all = new();
 
-        public MakamsPage()
+        public DeparturesPage()
         {
             InitializeComponent();
             Loaded += async (_, __) => await LoadAsync();
@@ -28,9 +24,7 @@ namespace FleetManagement.Desktop.Pages
         {
             try
             {
-                FormInfo.Text = "Yükleniyor...";
-
-                var list = await _db.Makams
+                var list = await _db.Departures
                     .AsNoTracking()
                     .Where(x => !x.IsDeleted)
                     .OrderByDescending(x => x.Id)
@@ -38,28 +32,23 @@ namespace FleetManagement.Desktop.Pages
 
                 _all = list;
                 Grid.ItemsSource = _all;
-
-                FormInfo.Text = $"Yüklendi: {_all.Count} kayıt";
+                FilterInfo.Text = $"Toplam kayıt: {_all.Count}";
             }
             catch (Exception ex)
             {
-                FormInfo.Text = "Hata: makamlar yüklenemedi.";
+                Notify("Liste yüklenemedi.", "Hata");
                 MessageBox.Show(ex.Message, "Hata");
             }
         }
 
         private void Grid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Grid.SelectedItem is not Makam x)
-                return;
+            if (Grid.SelectedItem is not Departure x) return;
 
             _selectedId = x.Id;
-
             CodeBox.Text = x.Code ?? "";
             NameBox.Text = x.Name ?? "";
             DescBox.Text = x.Description ?? "";
-
-            FormInfo.Text = $"Seçildi: #{x.Id}";
         }
 
         private async void Refresh_Click(object sender, RoutedEventArgs e) => await LoadAsync();
@@ -67,7 +56,7 @@ namespace FleetManagement.Desktop.Pages
         private void New_Click(object sender, RoutedEventArgs e)
         {
             ClearForm();
-            FormInfo.Text = "Yeni kayıt için form hazır.";
+            Notify("Yeni kayıt için hazır.");
         }
 
         private async void Save_Click(object sender, RoutedEventArgs e)
@@ -80,19 +69,19 @@ namespace FleetManagement.Desktop.Pages
 
                 if (string.IsNullOrWhiteSpace(code))
                 {
-                    FormInfo.Text = "Makam Kodu zorunlu.";
+                    Notify("Kod zorunlu.", "Uyarı");
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(name))
                 {
-                    FormInfo.Text = "Makam Adı zorunlu.";
+                    Notify("Departure adı zorunlu.", "Uyarı");
                     return;
                 }
 
                 if (_selectedId is null)
                 {
-                    var entity = new Makam
+                    var entity = new Departure
                     {
                         Code = code,
                         Name = name,
@@ -101,16 +90,17 @@ namespace FleetManagement.Desktop.Pages
                         IsDeleted = false
                     };
 
-                    _db.Makams.Add(entity);
+                    _db.Departures.Add(entity);
                     await _db.SaveChangesAsync();
-                    FormInfo.Text = $"Kaydedildi: #{entity.Id}";
+
+                    Notify($"Kaydedildi: #{entity.Id}");
                 }
                 else
                 {
-                    var entity = await _db.Makams.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
+                    var entity = await _db.Departures.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
                     if (entity is null)
                     {
-                        FormInfo.Text = "Kayıt bulunamadı (yenileyin).";
+                        Notify("Kayıt bulunamadı (yenileyin).", "Uyarı");
                         return;
                     }
 
@@ -119,20 +109,21 @@ namespace FleetManagement.Desktop.Pages
                     entity.Description = string.IsNullOrWhiteSpace(desc) ? null : desc;
 
                     await _db.SaveChangesAsync();
-                    FormInfo.Text = $"Güncellendi: #{entity.Id}";
+                    Notify($"Güncellendi: #{entity.Id}");
                 }
 
                 await LoadAsync();
                 ClearForm();
+                SearchBox.Text = "";
             }
             catch (DbUpdateException dbex)
             {
-                FormInfo.Text = "Hata: kayıt yapılamadı (muhtemelen Makam Kodu tekrar ediyor).";
+                Notify("Kayıt yapılamadı (Kod tekrar ediyor olabilir).", "DB Hatası");
                 MessageBox.Show(dbex.InnerException?.Message ?? dbex.Message, "DB Hatası");
             }
             catch (Exception ex)
             {
-                FormInfo.Text = "Hata: kaydetme başarısız.";
+                Notify("Kaydetme başarısız.", "Hata");
                 MessageBox.Show(ex.Message, "Hata");
             }
         }
@@ -143,32 +134,32 @@ namespace FleetManagement.Desktop.Pages
             {
                 if (_selectedId is null)
                 {
-                    FormInfo.Text = "Silmek için listeden kayıt seç.";
+                    Notify("Silmek için listeden kayıt seç.", "Uyarı");
                     return;
                 }
 
-                var confirm = MessageBox.Show("Seçili makam silinsin mi?", "Onay", MessageBoxButton.YesNo);
-                if (confirm != MessageBoxResult.Yes)
-                    return;
+                var confirm = MessageBox.Show("Seçili kayıt silinsin mi?", "Onay", MessageBoxButton.YesNo);
+                if (confirm != MessageBoxResult.Yes) return;
 
-                var entity = await _db.Makams.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
+                var entity = await _db.Departures.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
                 if (entity is null)
                 {
-                    FormInfo.Text = "Kayıt bulunamadı (yenileyin).";
+                    Notify("Kayıt bulunamadı (yenileyin).", "Uyarı");
                     return;
                 }
 
                 entity.IsDeleted = true;
                 await _db.SaveChangesAsync();
 
-                FormInfo.Text = $"Silindi: #{_selectedId.Value}";
+                Notify($"Silindi: #{_selectedId.Value}");
 
                 await LoadAsync();
                 ClearForm();
+                SearchBox.Text = "";
             }
             catch (Exception ex)
             {
-                FormInfo.Text = "Hata: silme başarısız.";
+                Notify("Silme başarısız.", "Hata");
                 MessageBox.Show(ex.Message, "Hata");
             }
         }
@@ -176,25 +167,31 @@ namespace FleetManagement.Desktop.Pages
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
             ClearForm();
-            FormInfo.Text = "Form temizlendi.";
+            SearchBox.Text = "";
+            Notify("Temizlendi");
         }
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             var q = (SearchBox.Text ?? "").Trim().ToLowerInvariant();
+            var total = _all.Count;
 
             if (string.IsNullOrWhiteSpace(q))
             {
                 Grid.ItemsSource = _all;
+                FilterInfo.Text = $"Toplam kayıt: {total}";
                 return;
             }
 
-            Grid.ItemsSource = _all
+            var filtered = _all
                 .Where(x =>
                     (x.Code ?? "").ToLowerInvariant().Contains(q) ||
                     (x.Name ?? "").ToLowerInvariant().Contains(q) ||
                     (x.Description ?? "").ToLowerInvariant().Contains(q))
                 .ToList();
+
+            Grid.ItemsSource = filtered;
+            FilterInfo.Text = $"Toplam kayıt: {filtered.Count} / {total}";
         }
 
         private void ClearForm()
@@ -205,6 +202,11 @@ namespace FleetManagement.Desktop.Pages
             CodeBox.Text = "";
             NameBox.Text = "";
             DescBox.Text = "";
+        }
+
+        private static void Notify(string message, string title = "Bilgi")
+        {
+            MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

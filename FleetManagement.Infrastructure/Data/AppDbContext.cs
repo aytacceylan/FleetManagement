@@ -19,15 +19,18 @@ namespace FleetManagement.Infrastructure.Data
 
         public DbSet<VehicleCategory> VehicleCategories => Set<VehicleCategory>();
 
-        public DbSet<Makam> Makams => Set<Makam>();
+        public DbSet<Departure> Departures => Set<Departure>();
 
-		public DbSet<VehicleModel> VehicleModels => Set<VehicleModel>();
+        public DbSet<VehicleModel> VehicleModels => Set<VehicleModel>();
 
 		public DbSet<Unit> Units => Set<Unit>();
 
         public DbSet<VehicleGuard> VehicleGuards => Set<VehicleGuard>();
         public DbSet<VehicleBrand> VehicleBrands => Set<VehicleBrand>();
         public DbSet<VehicleYear> VehicleYears => Set<VehicleYear>();
+        public DbSet<DutyType> DutyTypes => Set<DutyType>();
+
+        public DbSet<HelpNote> HelpNotes => Set<HelpNote>();
 
 
 
@@ -139,9 +142,9 @@ namespace FleetManagement.Infrastructure.Data
                 e.HasIndex(x => x.Code).IsUnique();
             });
 
-            modelBuilder.Entity<Makam>(e =>
+            modelBuilder.Entity<Departure>(e =>
             {
-                e.ToTable("Makams");
+                e.ToTable("Departures");
 
                 e.Property(x => x.Code).HasMaxLength(50).IsRequired();
                 e.Property(x => x.Name).HasMaxLength(200).IsRequired();
@@ -176,14 +179,24 @@ namespace FleetManagement.Infrastructure.Data
             modelBuilder.Entity<VehicleGuard>(e =>
             {
                 e.ToTable("VehicleGuards");
-                e.Property(x => x.GuardNumber).HasMaxLength(50).IsRequired();
-                e.Property(x => x.FullName).HasMaxLength(200).IsRequired();
-                e.Property(x => x.PhoneNumber).HasMaxLength(50);
 
-                // İstersen unique kalsın (bence kalsın). İstemiyorsan bu satırı kaldır.
-                e.HasIndex(x => x.GuardNumber).IsUnique();
+                e.Property(x => x.GuardNumber)
+                    .HasMaxLength(50)
+                    .IsRequired(false);
+
+                e.Property(x => x.FullName)
+                    .HasMaxLength(200)
+                    .IsRequired();
+
+                e.Property(x => x.PhoneNumber)
+                    .HasMaxLength(50)
+                    .IsRequired(false);
+
+                // GuardNumber boş geçilebilir ama doluysa unique olsun
+                e.HasIndex(x => x.GuardNumber)
+                    .IsUnique()
+                    .HasFilter("\"GuardNumber\" IS NOT NULL");
             });
-            modelBuilder.Entity<VehicleGuard>().HasQueryFilter(x => !x.IsDeleted);
 
             modelBuilder.Entity<VehicleBrand>(e =>
             {
@@ -205,6 +218,38 @@ namespace FleetManagement.Infrastructure.Data
 			});
 
 			modelBuilder.Entity<VehicleYear>().HasQueryFilter(x => !x.IsDeleted);
-		}
+
+            modelBuilder.Entity<DutyType>(e =>
+            {
+                e.ToTable("DutyTypes");
+
+                e.Property(x => x.Code).HasMaxLength(50);
+                e.Property(x => x.Name).HasMaxLength(200).IsRequired();
+                e.Property(x => x.Description).HasMaxLength(200);
+
+                // ✅ Name: sadece aktif kayıtlarda uniq
+                e.HasIndex(x => x.Name)
+                 .IsUnique()
+                 .HasFilter("\"IsDeleted\" = false");
+
+                // ✅ Code: sadece aktif + Code doluysa uniq
+                e.HasIndex(x => x.Code)
+                 .IsUnique()
+                 .HasFilter("\"IsDeleted\" = false AND \"Code\" IS NOT NULL");
+            });
+
+            modelBuilder.Entity<HelpNote>(e =>
+            {
+                e.ToTable("HelpNotes");
+
+                e.Property(x => x.Title).HasMaxLength(200).IsRequired();
+                e.Property(x => x.Content).HasMaxLength(2000);
+
+                e.HasIndex(x => x.Title); // unique yapmıyorum; kullanıcı aynı başlığı tekrar yazabilir
+
+                // modelBuilder.Entity<HelpNote>().HasQueryFilter(x => !x.IsDeleted); Soft delete filter istersen:
+            });
+
+        }
     }
 }

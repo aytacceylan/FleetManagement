@@ -46,15 +46,15 @@ namespace FleetManagement.Desktop
 
 				"RoutesPage" => new Pages.RoutesPage(),
                 "VehicleCommandersPage" => new Pages.VehicleCommandersPage(),
-                "MakamsPage" => new Pages.MakamsPage(),
+                "DeparturesPage" => new Pages.DeparturesPage(),
 
-                "VehicleGuardsPage" => new Pages.PlaceholderPage("Tanımlamalar > Araç Muhafızı (yakında)"),
-                "DutyTypesPage" => new Pages.PlaceholderPage("Tanımlamalar > Görev Türü (yakında)"),
+                "VehicleGuardsPage" => new Pages.VehicleGuardsPage(),
+                "DutyTypesPage" => new Pages.DutyTypesPage(),
 
                 // =======================
                 // Yardım
                 // =======================
-                "HelpPage" => new Pages.PlaceholderPage("Yardım"),
+                "HelpPage" => new Pages.HelpPage(),
 
                 // =======================
                 // Default

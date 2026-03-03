@@ -7,7 +7,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="12"/>
-            <RowDefinition Height="300"/>
+            <RowDefinition Height="220"/>
             <RowDefinition Height="12"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -23,23 +23,14 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Rotalar"
-                               FontSize="22"
-                               FontWeight="SemiBold"/>
+                    <TextBlock Text="Rotalar" FontSize="22" FontWeight="SemiBold"/>
                     <TextBlock Text="Rota kayıtlarını görüntüleyin ve yönetin."
                                Margin="0,6,0,0"
                                Foreground="{StaticResource BrushMuted}"/>
                 </StackPanel>
 
-                <Button Grid.Column="1"
-                        Content="Yenile"
-                        MinWidth="120"
-                        Click="Refresh_Click"/>
-
-                <Button Grid.Column="3"
-                        Content="Yeni Rota"
-                        MinWidth="150"
-                        Click="New_Click"/>
+                <Button Grid.Column="1" Content="Yenile" MinWidth="120" Click="Refresh_Click"/>
+                <Button Grid.Column="3" Content="Yeni Rota" MinWidth="150" Click="New_Click"/>
             </Grid>
         </Border>
 
@@ -63,91 +54,55 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Rota Formu"
-                               FontSize="16"
-                               FontWeight="SemiBold"
-                               VerticalAlignment="Center"/>
-
-                    <Button Grid.Column="1"
-                            Content="Kaydet"
-                            Width="110"
-                            Click="Save_Click"/>
-
-                    <Button Grid.Column="3"
-                            Content="Sil"
-                            Width="110"
-                            Click="Delete_Click"/>
-
-                    <Button Grid.Column="5"
-                            Content="Temizle"
-                            Width="110"
-                            Click="Clear_Click"/>
+                    <TextBlock Text="Rota Formu" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <Button Grid.Column="1" Content="Kaydet" Width="110" Click="Save_Click"/>
+                    <Button Grid.Column="3" Content="Sil" Width="110" Click="Delete_Click"/>
+                    <Button Grid.Column="5" Content="Temizle" Width="110" Click="Clear_Click"/>
                 </Grid>
 
-                <!-- FORM CONTENT (Max 4 kolon) -->
-                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="12"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="12"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="12"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                <!-- FORM CONTENT: 5 alan -> 5 kolon (senin kuralına göre) -->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                        <!-- 1. Kolon -->
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Rota Kodu"
-                                       Foreground="{StaticResource BrushMuted}"
-                                       Margin="0,8,0,0"/>
-                            <TextBox x:Name="CodeBox"
-                                     Margin="0,6,0,10"/>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Rota Kodu" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="CodeBox" Margin="0,6,0,0"/>
+                    </StackPanel>
 
-                            <TextBlock Text="Rota Adı"
-                                       Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="NameBox"
-                                     Margin="0,6,0,10"/>
-                        </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Rota Adı" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="NameBox" Margin="0,6,0,0"/>
+                    </StackPanel>
 
-                        <!-- 2. Kolon -->
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Text="Başlangıç"
-                                       Foreground="{StaticResource BrushMuted}"
-                                       Margin="0,8,0,0"/>
-                            <TextBox x:Name="StartBox"
-                                     Margin="0,6,0,10"/>
+                    <StackPanel Grid.Column="4">
+                        <TextBlock Text="Başlangıç" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="StartBox" Margin="0,6,0,0"/>
+                    </StackPanel>
 
-                            <TextBlock Text="Bitiş"
-                                       Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="EndBox"
-                                     Margin="0,6,0,10"/>
-                        </StackPanel>
+                    <StackPanel Grid.Column="6">
+                        <TextBlock Text="Bitiş" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="EndBox" Margin="0,6,0,0"/>
+                    </StackPanel>
 
-                        <!-- 3. Kolon -->
-                        <StackPanel Grid.Column="4">
-                            <TextBlock Text="Açıklama"
-                                       Foreground="{StaticResource BrushMuted}"
-                                       Margin="0,8,0,0"/>
-                            <TextBox x:Name="DescBox"
-                                     Margin="0,6,0,10"
-                                     Height="92"
-                                     AcceptsReturn="True"
-                                     TextWrapping="Wrap"/>
-                        </StackPanel>
-
-                        <!-- 4. Kolon -->
-                        <StackPanel Grid.Column="6">
-                            <TextBlock Text="Form Durumu"
-                                       Foreground="{StaticResource BrushMuted}"
-                                       Margin="0,8,0,0"/>
-                            <TextBlock x:Name="FormInfo"
-                                       Margin="0,6,0,0"
-                                       Foreground="{StaticResource BrushMuted}"/>
-                        </StackPanel>
-                    </Grid>
-                </ScrollViewer>
+                    <StackPanel Grid.Column="8">
+                        <TextBlock Text="Açıklama" Foreground="{StaticResource BrushMuted}"/>
+                        <!-- ✅ tek satır -->
+                        <TextBox x:Name="DescBox"
+                                 Margin="0,6,0,0"
+                                 Height="34"
+                                 TextWrapping="NoWrap"/>
+                    </StackPanel>
+                </Grid>
             </Grid>
         </Border>
 
@@ -160,22 +115,16 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- LIST HEADER (Başlık + Arama) -->
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="280"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Rota Listesi"
-                               FontSize="16"
-                               FontWeight="SemiBold"
-                               VerticalAlignment="Center"/>
+                    <TextBlock Text="Rota Listesi" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
 
                     <StackPanel Grid.Column="1">
-                        <TextBox x:Name="SearchBox"
-                                 TextChanged="SearchBox_TextChanged"/>
-
+                        <TextBox x:Name="SearchBox" TextChanged="SearchBox_TextChanged"/>
                         <TextBlock x:Name="FilterInfo"
                                    Margin="0,6,0,0"
                                    Foreground="{StaticResource BrushMuted}"
@@ -203,6 +152,5 @@
                 </DataGrid>
             </Grid>
         </Border>
-
     </Grid>
 </Page>

@@ -1,13 +1,12 @@
-﻿using System;
+﻿using FleetManagement.Domain.Entities;
+using FleetManagement.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.EntityFrameworkCore;
-
-using FleetManagement.Infrastructure.Data;
-using FleetManagement.Domain.Entities;
 
 namespace FleetManagement.Desktop.Pages
 {
@@ -16,63 +15,45 @@ namespace FleetManagement.Desktop.Pages
         private readonly AppDbContext _db = new(App.DbOptions);
 
         private int? _selectedId;
-        private List<Route> _allRoutes = new();
+        private List<Route> _all = new();
 
         public RoutesPage()
         {
             InitializeComponent();
-            Loaded += async (_, __) => await LoadRoutesAsync();
+            Loaded += async (_, __) => await LoadAsync();
         }
 
-        private async Task LoadRoutesAsync()
+        private async Task LoadAsync()
         {
             try
             {
-                FormInfo.Text = "Yükleniyor...";
-
                 var list = await _db.Routes
                     .AsNoTracking()
-                    .Where(x => !x.IsDeleted)          // ✅ soft delete filtresi
+                    .Where(x => !x.IsDeleted)
                     .OrderByDescending(x => x.Id)
                     .ToListAsync();
 
-                _allRoutes = list;
-                RoutesGrid.ItemsSource = _allRoutes;
-
-                FormInfo.Text = $"Yüklendi: {_allRoutes.Count} kayıt";
+                _all = list;
+                RoutesGrid.ItemsSource = _all;
+                FilterInfo.Text = $"Toplam kayıt: {_all.Count}";
             }
             catch (Exception ex)
             {
-                FormInfo.Text = "Hata: rotalar yüklenemedi.";
+                Notify("Hata: rotalar yüklenemedi.", "Hata");
                 MessageBox.Show(ex.Message, "Hata");
             }
         }
 
-        private void RoutesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (RoutesGrid.SelectedItem is not Route r)
-                return;
-
-            _selectedId = r.Id;
-
-            CodeBox.Text = r.Code ?? "";
-            NameBox.Text = r.Name ?? "";
-            StartBox.Text = r.StartPoint ?? "";
-            EndBox.Text = r.EndPoint ?? "";
-            DescBox.Text = r.Description ?? "";
-
-            FormInfo.Text = $"Seçildi: #{r.Id}";
-        }
-
         private async void Refresh_Click(object sender, RoutedEventArgs e)
         {
-            await LoadRoutesAsync();
+            await LoadAsync();
+            Notify("Liste yenilendi.");
         }
 
         private void New_Click(object sender, RoutedEventArgs e)
         {
             ClearForm();
-            FormInfo.Text = "Yeni kayıt için form hazır.";
+            Notify("Yeni kayıt için form hazır.");
         }
 
         private async void Save_Click(object sender, RoutedEventArgs e)
@@ -82,32 +63,32 @@ namespace FleetManagement.Desktop.Pages
                 var code = (CodeBox.Text ?? "").Trim();
                 var name = (NameBox.Text ?? "").Trim();
 
-                var start = (StartBox.Text ?? "").Trim();
-                var end = (EndBox.Text ?? "").Trim();
-                var desc = (DescBox.Text ?? "").Trim();
-
-                if (string.IsNullOrWhiteSpace(code))
+                if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(name))
                 {
-                    FormInfo.Text = "Rota Kodu zorunlu.";
+                    Notify("Kod ve Rota Adı zorunludur.", "Uyarı");
                     return;
                 }
 
-                if (string.IsNullOrWhiteSpace(name))
+                var exists = await _db.Routes.AsNoTracking()
+                    .AnyAsync(x => !x.IsDeleted
+                                   && x.Code.ToLower() == code.ToLower()
+                                   && (_selectedId == null || x.Id != _selectedId.Value));
+
+                if (exists)
                 {
-                    FormInfo.Text = "Rota Adı zorunlu.";
+                    Notify("Bu kod zaten var.", "Uyarı");
                     return;
                 }
 
                 if (_selectedId is null)
                 {
-                    // INSERT
                     var entity = new Route
                     {
                         Code = code,
                         Name = name,
-                        StartPoint = string.IsNullOrWhiteSpace(start) ? null : start,
-                        EndPoint = string.IsNullOrWhiteSpace(end) ? null : end,
-                        Description = string.IsNullOrWhiteSpace(desc) ? null : desc,
+                        StartPoint = EmptyToNull(StartBox.Text),
+                        EndPoint = EmptyToNull(EndBox.Text),
+                        Description = EmptyToNull(DescBox.Text),
                         CreatedAt = DateTime.UtcNow,
                         IsDeleted = false
                     };
@@ -115,41 +96,39 @@ namespace FleetManagement.Desktop.Pages
                     _db.Routes.Add(entity);
                     await _db.SaveChangesAsync();
 
-                    FormInfo.Text = $"Kaydedildi: #{entity.Id}";
+                    Notify($"Kaydedildi: #{entity.Id}");
                 }
                 else
                 {
-                    // UPDATE
                     var entity = await _db.Routes.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
                     if (entity is null)
                     {
-                        FormInfo.Text = "Kayıt bulunamadı (yenileyin).";
+                        Notify("Kayıt bulunamadı (yenileyin).", "Uyarı");
                         return;
                     }
 
                     entity.Code = code;
                     entity.Name = name;
-                    entity.StartPoint = string.IsNullOrWhiteSpace(start) ? null : start;
-                    entity.EndPoint = string.IsNullOrWhiteSpace(end) ? null : end;
-                    entity.Description = string.IsNullOrWhiteSpace(desc) ? null : desc;
+                    entity.StartPoint = EmptyToNull(StartBox.Text);
+                    entity.EndPoint = EmptyToNull(EndBox.Text);
+                    entity.Description = EmptyToNull(DescBox.Text);
 
                     await _db.SaveChangesAsync();
 
-                    FormInfo.Text = $"Güncellendi: #{entity.Id}";
+                    Notify($"Güncellendi: #{entity.Id}");
                 }
 
-                await LoadRoutesAsync();
+                await LoadAsync();
                 ClearForm();
             }
             catch (DbUpdateException dbex)
             {
-                // Code unique index -> aynı kod girilirse buraya düşer
-                FormInfo.Text = "Hata: kayıt yapılamadı (muhtemelen Rota Kodu tekrar ediyor).";
+                Notify("Hata: kayıt yapılamadı (muhtemelen Kod tekrar ediyor).", "DB Hatası");
                 MessageBox.Show(dbex.InnerException?.Message ?? dbex.Message, "DB Hatası");
             }
             catch (Exception ex)
             {
-                FormInfo.Text = "Hata: kaydetme başarısız.";
+                Notify("Hata: kaydetme başarısız.", "Hata");
                 MessageBox.Show(ex.Message, "Hata");
             }
         }
@@ -160,7 +139,7 @@ namespace FleetManagement.Desktop.Pages
             {
                 if (_selectedId is null)
                 {
-                    FormInfo.Text = "Silmek için listeden kayıt seç.";
+                    Notify("Silmek için listeden kayıt seç.", "Uyarı");
                     return;
                 }
 
@@ -171,22 +150,21 @@ namespace FleetManagement.Desktop.Pages
                 var entity = await _db.Routes.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
                 if (entity is null)
                 {
-                    FormInfo.Text = "Kayıt bulunamadı (yenileyin).";
+                    Notify("Kayıt bulunamadı (yenileyin).", "Uyarı");
                     return;
                 }
 
-                // SOFT DELETE
                 entity.IsDeleted = true;
                 await _db.SaveChangesAsync();
 
-                FormInfo.Text = $"Silindi: #{_selectedId.Value}";
+                Notify($"Silindi: #{_selectedId.Value}");
 
-                await LoadRoutesAsync();
+                await LoadAsync();
                 ClearForm();
             }
             catch (Exception ex)
             {
-                FormInfo.Text = "Hata: silme başarısız.";
+                Notify("Hata: silme başarısız.", "Hata");
                 MessageBox.Show(ex.Message, "Hata");
             }
         }
@@ -194,35 +172,49 @@ namespace FleetManagement.Desktop.Pages
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
             ClearForm();
-            FormInfo.Text = "Form temizlendi.";
+            Notify("Temizlendi");
         }
 
-		private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
-		{
-			var q = (SearchBox.Text ?? "").Trim().ToLowerInvariant();
-			var total = _allRoutes.Count;
+        private void RoutesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (RoutesGrid.SelectedItem is not Route x)
+                return;
 
-			if (string.IsNullOrWhiteSpace(q))
-			{
-				RoutesGrid.ItemsSource = _allRoutes;
-				FilterInfo.Text = $"Toplam kayıt: {total}";
-				return;
-			}
+            _selectedId = x.Id;
 
-			var filtered = _allRoutes
-				.Where(x =>
-					(x.Code ?? "").ToLowerInvariant().Contains(q) ||
-					(x.Name ?? "").ToLowerInvariant().Contains(q) ||
-					(x.StartPoint ?? "").ToLowerInvariant().Contains(q) ||
-					(x.EndPoint ?? "").ToLowerInvariant().Contains(q) ||
-					(x.Description ?? "").ToLowerInvariant().Contains(q))
-				.ToList();
+            CodeBox.Text = x.Code ?? "";
+            NameBox.Text = x.Name ?? "";
+            StartBox.Text = x.StartPoint ?? "";
+            EndBox.Text = x.EndPoint ?? "";
+            DescBox.Text = x.Description ?? "";
+        }
 
-			RoutesGrid.ItemsSource = filtered;
-			FilterInfo.Text = $"Filtre: \"{q}\" → {filtered.Count} / {total} kayıt";
-		}
+        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var q = (SearchBox.Text ?? "").Trim().ToLowerInvariant();
+            var total = _all.Count;
 
-		private void ClearForm()
+            if (string.IsNullOrWhiteSpace(q))
+            {
+                RoutesGrid.ItemsSource = _all;
+                FilterInfo.Text = $"Toplam kayıt: {total}";
+                return;
+            }
+
+            var filtered = _all
+                .Where(x =>
+                    (x.Code ?? "").ToLowerInvariant().Contains(q) ||
+                    (x.Name ?? "").ToLowerInvariant().Contains(q) ||
+                    (x.StartPoint ?? "").ToLowerInvariant().Contains(q) ||
+                    (x.EndPoint ?? "").ToLowerInvariant().Contains(q) ||
+                    (x.Description ?? "").ToLowerInvariant().Contains(q))
+                .ToList();
+
+            RoutesGrid.ItemsSource = filtered;
+            FilterInfo.Text = $"Toplam kayıt: {filtered.Count} / {total}";
+        }
+
+        private void ClearForm()
         {
             _selectedId = null;
             RoutesGrid.SelectedItem = null;
@@ -232,6 +224,18 @@ namespace FleetManagement.Desktop.Pages
             StartBox.Text = "";
             EndBox.Text = "";
             DescBox.Text = "";
+            SearchBox.Text = "";
+        }
+
+        private static string? EmptyToNull(string? value)
+        {
+            var v = (value ?? "").Trim();
+            return string.IsNullOrWhiteSpace(v) ? null : v;
+        }
+
+        private static void Notify(string message, string title = "Bilgi")
+        {
+            MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

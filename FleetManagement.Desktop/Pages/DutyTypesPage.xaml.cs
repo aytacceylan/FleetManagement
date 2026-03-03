@@ -1,5 +1,4 @@
-﻿// VehicleGuardsPage.xaml.cs
-using FleetManagement.Domain.Entities;
+﻿using FleetManagement.Domain.Entities;
 using FleetManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,14 +10,14 @@ using System.Windows.Controls;
 
 namespace FleetManagement.Desktop.Pages
 {
-    public partial class VehicleGuardsPage : Page
+    public partial class DutyTypesPage : Page
     {
         private readonly AppDbContext _db = new(App.DbOptions);
 
         private int? _selectedId;
-        private List<VehicleGuard> _all = new();
+        private List<DutyType> _all = new();
 
-        public VehicleGuardsPage()
+        public DutyTypesPage()
         {
             InitializeComponent();
             Loaded += async (_, __) => await LoadAsync();
@@ -28,7 +27,7 @@ namespace FleetManagement.Desktop.Pages
         {
             try
             {
-                var list = await _db.VehicleGuards
+                var list = await _db.DutyTypes
                     .AsNoTracking()
                     .Where(x => !x.IsDeleted)
                     .OrderByDescending(x => x.Id)
@@ -40,74 +39,103 @@ namespace FleetManagement.Desktop.Pages
             }
             catch (Exception ex)
             {
-                Notify("Liste yüklenemedi.", "Hata");
+                Notify("Görev türleri yüklenemedi.", "Hata");
                 MessageBox.Show(ex.Message, "Hata");
             }
         }
 
         private void Grid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Grid.SelectedItem is not VehicleGuard x) return;
+            if (Grid.SelectedItem is not DutyType x) return;
 
             _selectedId = x.Id;
-            GuardNumberBox.Text = x.GuardNumber ?? "";
-            FullNameBox.Text = x.FullName ?? "";
-            PhoneBox.Text = x.PhoneNumber ?? "";
+            CodeBox.Text = x.Code ?? "";
+            NameBox.Text = x.Name ?? "";
+            DescBox.Text = x.Description ?? "";
         }
 
-        private async void Refresh_Click(object sender, RoutedEventArgs e) => await LoadAsync();
+        private async void Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            await LoadAsync();
+            Notify("Yenilendi");
+        }
 
         private void New_Click(object sender, RoutedEventArgs e)
         {
             ClearForm();
-            Notify("Yeni kayıt için hazır.");
+            Notify("Yeni kayıt için form hazır.");
         }
 
         private async void Save_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                var guardNo = (GuardNumberBox.Text ?? "").Trim();
-                var fullName = (FullNameBox.Text ?? "").Trim();
-                var phone = (PhoneBox.Text ?? "").Trim();
+                var code = EmptyToNull(CodeBox.Text);   // opsiyonel
+                var name = (NameBox.Text ?? "").Trim();
+                var desc = EmptyToNull(DescBox.Text);
 
-                // Senin isteğin: “zorunlu olmasın” -> sadece FullName istersen zorunlu yapabiliriz.
-                // Şimdilik 3'ünü de boş geçmeye izin vermeyelim; en az FullName olsun:
-                if (string.IsNullOrWhiteSpace(fullName))
+                if (string.IsNullOrWhiteSpace(name))
                 {
-                    Notify("Ad Soyad zorunlu.", "Uyarı");
+                    Notify("Görev Türü Adı zorunlu.");
                     return;
+                }
+
+                // ✅ NAME UNIQUE kontrolü (soft delete hariç)
+                var nameExists = await _db.DutyTypes
+                    .AsNoTracking()
+                    .AnyAsync(x => !x.IsDeleted
+                                   && x.Name == name
+                                   && (_selectedId == null || x.Id != _selectedId.Value));
+
+                if (nameExists)
+                {
+                    Notify("Bu Görev Türü Adı zaten var.");
+                    return;
+                }
+
+                // (Opsiyonel) ✅ Code girildiyse UNIQUE kontrolü de istersen kalsın
+                if (code is not null)
+                {
+                    var codeExists = await _db.DutyTypes
+                        .AsNoTracking()
+                        .AnyAsync(x => !x.IsDeleted
+                                       && x.Code == code
+                                       && (_selectedId == null || x.Id != _selectedId.Value));
+
+                    if (codeExists)
+                    {
+                        Notify("Bu Kod zaten var.");
+                        return;
+                    }
                 }
 
                 if (_selectedId is null)
                 {
-                    var entity = new VehicleGuard
+                    var entity = new DutyType
                     {
-                        GuardNumber = string.IsNullOrWhiteSpace(guardNo) ? "-" : guardNo,
-                        FullName = fullName,
-                        PhoneNumber = string.IsNullOrWhiteSpace(phone) ? null : phone,
+                        Code = code,
+                        Name = name,
+                        Description = desc,
                         CreatedAt = DateTime.UtcNow,
                         IsDeleted = false
                     };
 
-                    _db.VehicleGuards.Add(entity);
+                    _db.DutyTypes.Add(entity);
                     await _db.SaveChangesAsync();
-
                     Notify($"Kaydedildi: #{entity.Id}");
                 }
                 else
                 {
-                    var entity = await _db.VehicleGuards.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
+                    var entity = await _db.DutyTypes.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
                     if (entity is null)
                     {
-                        Notify("Kayıt bulunamadı (yenileyin).", "Uyarı");
+                        Notify("Kayıt bulunamadı.");
                         return;
                     }
 
-                    // GuardNumber zorunlu değil dediğin için null/boşsa "-" basalım
-                    entity.GuardNumber = string.IsNullOrWhiteSpace(guardNo) ? "-" : guardNo;
-                    entity.FullName = fullName;
-                    entity.PhoneNumber = string.IsNullOrWhiteSpace(phone) ? null : phone;
+                    entity.Code = code;
+                    entity.Name = name;
+                    entity.Description = desc;
 
                     await _db.SaveChangesAsync();
                     Notify($"Güncellendi: #{entity.Id}");
@@ -115,16 +143,16 @@ namespace FleetManagement.Desktop.Pages
 
                 await LoadAsync();
                 ClearForm();
-                SearchBox.Text = "";
             }
             catch (DbUpdateException dbex)
             {
-                Notify("Kayıt yapılamadı (kısıt/tekrar olabilir).", "DB Hatası");
+                // DB tarafında unique index varsa buraya da düşebilir
+                Notify("Hata: kayıt yapılamadı (tekrar/kısıt olabilir).", "DB Hatası");
                 MessageBox.Show(dbex.InnerException?.Message ?? dbex.Message, "DB Hatası");
             }
             catch (Exception ex)
             {
-                Notify("Kaydetme başarısız.", "Hata");
+                Notify("Hata: kaydetme başarısız.", "Hata");
                 MessageBox.Show(ex.Message, "Hata");
             }
         }
@@ -135,17 +163,17 @@ namespace FleetManagement.Desktop.Pages
             {
                 if (_selectedId is null)
                 {
-                    Notify("Silmek için listeden kayıt seç.", "Uyarı");
+                    Notify("Silmek için listeden kayıt seç.");
                     return;
                 }
 
-                var confirm = MessageBox.Show("Seçili muhafız silinsin mi?", "Onay", MessageBoxButton.YesNo);
+                var confirm = MessageBox.Show("Seçili görev türü silinsin mi?", "Onay", MessageBoxButton.YesNo);
                 if (confirm != MessageBoxResult.Yes) return;
 
-                var entity = await _db.VehicleGuards.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
+                var entity = await _db.DutyTypes.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
                 if (entity is null)
                 {
-                    Notify("Kayıt bulunamadı (yenileyin).", "Uyarı");
+                    Notify("Kayıt bulunamadı (yenileyin).");
                     return;
                 }
 
@@ -156,11 +184,10 @@ namespace FleetManagement.Desktop.Pages
 
                 await LoadAsync();
                 ClearForm();
-                SearchBox.Text = "";
             }
             catch (Exception ex)
             {
-                Notify("Silme başarısız.", "Hata");
+                Notify("Hata: silme başarısız.", "Hata");
                 MessageBox.Show(ex.Message, "Hata");
             }
         }
@@ -184,15 +211,14 @@ namespace FleetManagement.Desktop.Pages
                 return;
             }
 
-            var filtered = _all
-                .Where(x =>
-                    (x.GuardNumber ?? "").ToLowerInvariant().Contains(q) ||
-                    (x.FullName ?? "").ToLowerInvariant().Contains(q) ||
-                    (x.PhoneNumber ?? "").ToLowerInvariant().Contains(q))
+            var filtered = _all.Where(x =>
+                    (x.Code ?? "").ToLowerInvariant().Contains(q) ||
+                    (x.Name ?? "").ToLowerInvariant().Contains(q) ||
+                    (x.Description ?? "").ToLowerInvariant().Contains(q))
                 .ToList();
 
             Grid.ItemsSource = filtered;
-            FilterInfo.Text = $"Toplam kayıt: {filtered.Count} / {total}";
+            FilterInfo.Text = $"{filtered.Count} / {total} kayıt";
         }
 
         private void ClearForm()
@@ -200,9 +226,15 @@ namespace FleetManagement.Desktop.Pages
             _selectedId = null;
             Grid.SelectedItem = null;
 
-            GuardNumberBox.Text = "";
-            FullNameBox.Text = "";
-            PhoneBox.Text = "";
+            CodeBox.Text = "";
+            NameBox.Text = "";
+            DescBox.Text = "";
+        }
+
+        private static string? EmptyToNull(string? value)
+        {
+            var v = (value ?? "").Trim();
+            return string.IsNullOrWhiteSpace(v) ? null : v;
         }
 
         private static void Notify(string message, string title = "Bilgi")

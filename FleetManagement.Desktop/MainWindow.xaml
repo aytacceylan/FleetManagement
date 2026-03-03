@@ -64,7 +64,7 @@
 
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Güzergah (Rota-Route)" Tag="RoutesPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Komutanı" Tag="VehicleCommandersPage" Click="Menu_Click"/>
-                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Makam" Tag="MakamsPage" Click="Menu_Click"/>
+                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Başkanlık" Tag="DeparturesPage" Click="Menu_Click"/>
 
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Muhafızı" Tag="VehicleGuardsPage" Click="Menu_Click"/>
 

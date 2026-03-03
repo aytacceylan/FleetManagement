@@ -1,6 +1,6 @@
 ﻿namespace FleetManagement.Domain.Entities
 {
-    public class Makam : BaseEntity
+    public class Departure : BaseEntity
     {
         public string Code { get; set; } = null!;
         public string Name { get; set; } = null!;
