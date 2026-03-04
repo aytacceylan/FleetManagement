@@ -15,8 +15,8 @@ namespace FleetManagement.Domain.Entities
         public int? AssignedDriverId { get; set; }
         public Driver? AssignedDriver { get; set; }
 
-        public string? Brand { get; set; }
-        public string? Model { get; set; }
+		public string? VehicleBrand { get; set; }
+		public string? Model { get; set; }
 
 		public int? VehicleYear { get; set; }
 

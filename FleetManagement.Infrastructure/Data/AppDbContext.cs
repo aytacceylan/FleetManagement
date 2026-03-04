@@ -45,8 +45,8 @@ namespace FleetManagement.Infrastructure.Data
                 e.Property(x => x.Plate).HasMaxLength(50).IsRequired();
 
                 e.Property(x => x.InventoryNumber).HasMaxLength(50);
-                e.Property(x => x.Brand).HasMaxLength(80);
-                e.Property(x => x.Model).HasMaxLength(80);
+				e.Property(x => x.VehicleBrand).HasMaxLength(80);
+				e.Property(x => x.Model).HasMaxLength(80);
 
                 e.Property(x => x.VehicleType).HasMaxLength(80);
                 e.Property(x => x.VehicleCategory).HasMaxLength(80);

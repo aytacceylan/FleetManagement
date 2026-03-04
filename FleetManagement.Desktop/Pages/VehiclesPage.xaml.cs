@@ -42,8 +42,9 @@ namespace FleetManagement.Desktop.Pages
 		private async Task LoadLookupsAsync()
 		{
 			var types = await _db.VehicleTypes.AsNoTracking()
+				.Where(x => !x.IsDeleted)          // ✅ silinen gelmesin (madde 3)
 				.OrderBy(x => x.Name)
-				.Select(x => new LookupDisplay { Name = x.Name, Display = $"{x.Code} - {x.Name}" })
+				.Select(x => new LookupDisplay { Name = x.Name, Display = x.Name })
 				.ToListAsync();
 
 			VehicleTypeCombo.ItemsSource = types;
@@ -51,8 +52,9 @@ namespace FleetManagement.Desktop.Pages
 			VehicleTypeCombo.SelectedValuePath = "Name";
 
 			var models = await _db.VehicleModels.AsNoTracking()
+				.Where(x => !x.IsDeleted)          // ✅ silinen gelmesin (madde 3)
 				.OrderBy(x => x.Name)
-				.Select(x => new LookupDisplay { Name = x.Name, Display = $"{x.Code} - {x.Name}" })
+				.Select(x => new LookupDisplay { Name = x.Name, Display = x.Name })
 				.ToListAsync();
 
 			ModelCombo.ItemsSource = models;
@@ -60,13 +62,36 @@ namespace FleetManagement.Desktop.Pages
 			ModelCombo.SelectedValuePath = "Name";
 
 			var units = await _db.Units.AsNoTracking()
-				.OrderBy(x => x.Code)
-				.Select(x => new LookupDisplay { Name = x.Name, Display = $"{x.Code} - {x.Name}" })
+				.Where(x => !x.IsDeleted)          // ✅ silinen gelmesin (soft delete varsa)
+				.OrderBy(x => x.Name)
+				.Select(x => new LookupDisplay { Name = x.Name, Display = x.Name })
 				.ToListAsync();
 
 			UnitCombo.ItemsSource = units;
 			UnitCombo.DisplayMemberPath = "Display";
 			UnitCombo.SelectedValuePath = "Name";
+
+			// ✅ marka dolsun
+			var brands = await _db.VehicleBrands.AsNoTracking()
+				.Where(x => !x.IsDeleted)
+				.OrderBy(x => x.Name)
+				.Select(x => new LookupDisplay { Name = x.Name, Display = x.Name }) // sadece Name
+				.ToListAsync();
+
+			BrandBox.ItemsSource = brands;
+			BrandBox.DisplayMemberPath = "Display";
+			BrandBox.SelectedValuePath = "Name";
+
+
+			// ✅ Araç Yılı dolsun
+			var years = await _db.VehicleYears.AsNoTracking()
+				.Where(x => !x.IsDeleted)
+				.OrderBy(x => x.Year)
+				.Select(x => x.Year)
+				.ToListAsync();
+
+			VehicleYearBox.ItemsSource = years;
+
 		}
 
 		// ==============================
@@ -108,7 +133,7 @@ namespace FleetManagement.Desktop.Pages
 
 						// 2. kolon grubu
 						VehicleType = v.VehicleType,
-						Brand = v.Brand,
+						Brand = v.VehicleBrand,
 						Model = v.Model,
 						VehicleYear = v.VehicleYear,
 
@@ -270,7 +295,7 @@ namespace FleetManagement.Desktop.Pages
 			UnitCombo.SelectedValue = v.VehicleUnit;
 
 			VehicleTypeCombo.SelectedValue = v.VehicleType;
-			BrandBox.Text = v.Brand ?? "";
+			BrandBox.SelectedValue = v.VehicleBrand;
 			ModelCombo.SelectedValue = v.Model;
 			VehicleYearBox.Text = v.VehicleYear?.ToString() ?? "";
 
@@ -317,7 +342,8 @@ namespace FleetManagement.Desktop.Pages
 				entity.VehicleUnit = UnitCombo.SelectedValue as string;
 
 				entity.VehicleType = VehicleTypeCombo.SelectedValue as string;
-				entity.Brand = EmptyToNull(BrandBox.Text);
+				var brandValue = BrandBox.SelectedValue as string;
+				entity.VehicleBrand = EmptyToNull(brandValue ?? BrandBox.Text);
 				entity.Model = ModelCombo.SelectedValue as string;
 				entity.VehicleYear = TryParseNullableInt(VehicleYearBox.Text);
 

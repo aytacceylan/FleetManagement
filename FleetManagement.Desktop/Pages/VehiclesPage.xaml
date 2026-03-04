@@ -14,6 +14,16 @@
             <Setter Property="FontSize" Value="13"/>
         </Style>
 
+        <Style x:Key="FixDatePickerText" TargetType="{x:Type DatePicker}">
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <Style x:Key="FixCalendar" TargetType="{x:Type Calendar}">
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Background" Value="Black"/>
+        </Style>
+
         <Style x:Key="ForceComboBoxItemStyle" TargetType="ComboBoxItem" BasedOn="{x:Null}">
             <Setter Property="Foreground" Value="#111827"/>
             <Setter Property="Background" Value="White"/>
@@ -468,10 +478,13 @@
 
                             <TextBlock Text="Son Bakım Tarihi"
                                        Foreground="{StaticResource BrushMuted}"/>
-                            
-                            
+
+
                             <DatePicker x:Name="LastMaintenanceDatePicker"
-                                        Margin="0,6,0,10"/>
+                                        Margin="0,6,0,10"
+                                        Style="{StaticResource FixDatePickerText}"
+                                        CalendarStyle="{StaticResource FixCalendar}"/>
+                            
 
                             <TextBlock Text="Bakım Periyodu (Km)"
                                        Foreground="{StaticResource BrushMuted}"/>

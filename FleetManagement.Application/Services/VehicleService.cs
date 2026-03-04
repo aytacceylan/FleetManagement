@@ -22,7 +22,7 @@ public class VehicleService : IVehicleService
 		{
 			Id = vehicle.Id,
 			Plate = vehicle.Plate,
-			Brand = vehicle.Brand,
+			Brand = vehicle.VehicleBrand,
 			Model = vehicle.Model
 		};
 	}
@@ -36,7 +36,7 @@ public class VehicleService : IVehicleService
 			{
 				Id = v.Id,
 				Plate = v.Plate,
-				Brand = v.Brand,
+				Brand = v.VehicleBrand,
 				Model = v.Model
 			})
 			.ToList();
@@ -47,7 +47,7 @@ public class VehicleService : IVehicleService
 		var vehicle = new Vehicle
 		{
 			Plate = dto.Plate,
-			Brand = dto.Brand,
+			VehicleBrand = dto.Brand,
 			Model = dto.Model,
 			CreatedAt = DateTime.UtcNow
 		};
