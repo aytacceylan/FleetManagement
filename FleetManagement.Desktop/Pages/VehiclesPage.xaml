@@ -141,27 +141,15 @@
 
                         <!-- 1. Kolon -->
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Plaka"
-                                       Foreground="{StaticResource BrushMuted}"
-                                       Margin="0,8,0,0"/>
-                            <TextBox x:Name="PlateBox"
-                                     Margin="0,6,0,10"
-                                     LostFocus="PlateBox_LostFocus"/>
 
-                            <TextBlock Text="Sivil Plaka"
-                                       Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="InventoryNumberBox"
-                                     Margin="0,6,0,10"/>
-
-                            <TextBlock Text="Sürücü"
-                                       Foreground="{StaticResource BrushMuted}"/>
+                            <TextBlock Text="Sürücü" Foreground="{StaticResource BrushMuted}"/>
                             <ComboBox x:Name="AssignedDriverCombo"
-                                         Margin="0,6,0,10"
-                                         IsEditable="True"
-                                         IsReadOnly="True"
-                                         Foreground="Black"
-                                         Background="#3D5869"
-                                         BorderBrush="Black">
+                                              Margin="0,6,0,10"
+                                              IsEditable="True"
+                                              IsReadOnly="True"
+                                              Foreground="Black"
+                                              Background="#3D5869"
+                                              BorderBrush="Black">
 
                                 <ComboBox.ItemContainerStyle>
                                     <Style TargetType="ComboBoxItem">
@@ -186,6 +174,22 @@
                                 </ComboBox.ItemContainerStyle>
 
                             </ComboBox>
+
+
+
+                            <TextBlock Text="Plaka"
+                                       Foreground="{StaticResource BrushMuted}"
+                                       Margin="0,8,0,0"/>
+                            <TextBox x:Name="PlateBox"
+                                     Margin="0,6,0,10"
+                                     LostFocus="PlateBox_LostFocus"/>
+
+                            <TextBlock Text="Sivil Plaka"
+                                       Foreground="{StaticResource BrushMuted}"/>
+                            <TextBox x:Name="InventoryNumberBox"
+                                     Margin="0,6,0,10"/>
+
+                           
 
                             <TextBlock Text="Ait Olduğu Takım"
            Foreground="{StaticResource BrushMuted}"/>

@@ -22,22 +22,22 @@ namespace FleetManagement.Desktop.Pages
 		{
 			public int Id { get; set; }
 
-			// Grid kolonları (istenen sıra için)
-			public int DailyNo { get; set; }                 // Sıra No (günlük)
-			public string? Driver { get; set; }              // Sürücü
-			public string Plate { get; set; } = "";          // Plaka (zorunlu)
-			public string ExitTimeText { get; set; } = "";   // Çıkış Saati
-			public string ReturnTimeText { get; set; } = ""; // Dönüş Saati
-			public string? VehicleBrand { get; set; }        // Araç Marka
-			public string Status { get; set; } = "";         // GörevdeMi (Tamamlandı/Devam Ediyor/Başlamadı/Planlandı)
-			public string DateText { get; set; } = "";       // Tarih (date)
-			public string? Route { get; set; }               // Güzergah
-			public string? Commander { get; set; }           // Araç Komutanı
-			public string? Purpose { get; set; }             // (şimdilik burada)
-			public int? DoneKm { get; set; }                 // Yapılan Km (End-Start)
-			public string KmText => DoneKm is null ? "—" : DoneKm.Value.ToString();
+			public int DailyNo { get; set; }
+			public string? Driver { get; set; }
+			public string Plate { get; set; } = "";
+			public string ExitTimeText { get; set; } = "";
+			public string ReturnTimeText { get; set; } = "";
+			public string? VehicleBrand { get; set; }
+			public string Status { get; set; } = "";
+			public string DateText { get; set; } = "";
+			public string? Route { get; set; }
+			public string? Commander { get; set; }
+			public string? Departure { get; set; }
+			public string? KmText { get; set; }
+			public int? PassengerCount { get; set; }
+			public int? LoadAmount { get; set; }
+			public string? DutyType { get; set; }
 
-			// iç hesaplar için
 			public DateTime ExitDateTimeUtc { get; set; }
 			public DateTime? ReturnDateTimeUtc { get; set; }
 		}
@@ -54,22 +54,19 @@ namespace FleetManagement.Desktop.Pages
 			{
 				await LoadLookupsAsync();
 				await LoadAsync();
+				PrepareNewFormState();
 			};
 		}
 
 		// =========================
-		// LOOKUPS (ComboBox)
+		// LOOKUPS
 		// =========================
 		private async Task LoadLookupsAsync()
 		{
 			var vehicles = await _db.Vehicles.AsNoTracking()
 				.Where(x => !x.IsDeleted)
 				.OrderBy(x => x.Plate)
-				.Select(x => new
-				{
-					x.Id,
-					Display = x.Plate
-				})
+				.Select(x => new { x.Id, Display = x.Plate })
 				.ToListAsync();
 
 			VehicleCombo.ItemsSource = vehicles;
@@ -95,6 +92,45 @@ namespace FleetManagement.Desktop.Pages
 			CommanderCombo.ItemsSource = commanders;
 			CommanderCombo.DisplayMemberPath = "Display";
 			CommanderCombo.SelectedValuePath = "Id";
+
+			var routes = await _db.Routes.AsNoTracking()
+				.OrderBy(x => x.Name)
+				.Select(x => new { Display = x.Name })
+				.ToListAsync();
+
+			RouteCombo.ItemsSource = routes;
+			RouteCombo.DisplayMemberPath = "Display";
+			RouteCombo.SelectedValuePath = "Display";
+
+			var departures = await _db.Departures.AsNoTracking()
+				.Where(x => !x.IsDeleted)
+				.OrderBy(x => x.Name)
+				.Select(x => new { Display = x.Name })
+				.ToListAsync();
+
+			DepartureCombo.ItemsSource = departures;
+			DepartureCombo.DisplayMemberPath = "Display";
+			DepartureCombo.SelectedValuePath = "Display";
+
+			var dutyTypes = await _db.DutyTypes.AsNoTracking()
+				.Where(x => !x.IsDeleted)
+				.OrderBy(x => x.Name)
+				.Select(x => new { Display = x.Name })
+				.ToListAsync();
+
+			DutyTypeCombo.ItemsSource = dutyTypes;
+			DutyTypeCombo.DisplayMemberPath = "Display";
+			DutyTypeCombo.SelectedValuePath = "Display";
+
+			var brands = await _db.VehicleBrands.AsNoTracking()
+				.Where(x => !x.IsDeleted)
+				.OrderBy(x => x.Name)
+				.Select(x => new { Display = x.Name })
+				.ToListAsync();
+
+			VehicleBrandCombo.ItemsSource = brands;
+			VehicleBrandCombo.DisplayMemberPath = "Display";
+			VehicleBrandCombo.SelectedValuePath = "Display";
 		}
 
 		// =========================
@@ -102,91 +138,67 @@ namespace FleetManagement.Desktop.Pages
 		// =========================
 		private async Task LoadAsync()
 		{
-			try
-			{
-				var raw = await _db.VehicleMovements.AsNoTracking()
-					.Where(x => !x.IsDeleted)
-					.Include(x => x.Vehicle)
-					.Include(x => x.Driver)
-					.Include(x => x.VehicleCommander)
-					.OrderByDescending(x => x.Id)
-					.ToListAsync();
+			var raw = await _db.VehicleMovements.AsNoTracking()
+				.Where(x => !x.IsDeleted)
+				.Include(x => x.Vehicle)
+				.Include(x => x.Driver)
+				.Include(x => x.VehicleCommander)
+				.OrderByDescending(x => x.Id)
+				.ToListAsync();
 
-				// Row mapping + status + brand
-				var rows = raw.Select(m =>
+			var rows = raw.Select(m =>
+			{
+				var exitLocal = m.ExitDateTime.ToLocalTime();
+				var retLocal = m.ReturnDateTime?.ToLocalTime();
+
+				var parsed = ParseLoadOrPassengerInfo(m.LoadOrPassengerInfo);
+
+				return new MovementRow
 				{
-					var plate = m.Vehicle?.Plate ?? m.VehiclePlateText ?? "";
+					Id = m.Id,
+					Driver = m.Driver?.FullName ?? m.DriverText,
+					Plate = m.Vehicle?.Plate ?? m.VehiclePlateText ?? "",
+					ExitTimeText = exitLocal.ToString("HH:mm"),
+					ReturnTimeText = retLocal is null ? "—" : retLocal.Value.ToString("HH:mm"),
+					VehicleBrand = GetVehicleBrandSafe(m.Vehicle),
+					Status = CalcStatus(m.ExitDateTime, m.ReturnDateTime),
+					DateText = exitLocal.ToString("dd.MM.yyyy"),
+					Route = m.Route,
+					Commander = m.VehicleCommander?.FullName ?? m.CommanderText,
+					Departure = m.Purpose,
+					KmText = CalcKmText(m.StartKm, m.EndKm),
+					PassengerCount = parsed.passenger,
+					LoadAmount = parsed.load,
+					DutyType = m.Description,
 
-					// ✅ Marka alanı: burada TEK satırı projendeki property adına göre seç
-					// 1) Eğer Vehicle'da Brand varsa:
-					// var brand = m.Vehicle?.Brand;
-					// 2) Eğer Vehicle'da VehicleBrand varsa:
-					var brand = GetVehicleBrandSafe(m.Vehicle);
+					ExitDateTimeUtc = m.ExitDateTime,
+					ReturnDateTimeUtc = m.ReturnDateTime
+				};
+			}).ToList();
 
-					var exitLocal = m.ExitDateTime.ToLocalTime();
-					var retLocal = m.ReturnDateTime?.ToLocalTime();
+			ApplyDailyNumbers(rows);
 
-					var status = CalcStatus(m.ExitDateTime, m.ReturnDateTime);
-
-					int? doneKm = null;
-					if (m.StartKm is not null && m.EndKm is not null)
-					{
-						var diff = m.EndKm.Value - m.StartKm.Value;
-						if (diff >= 0) doneKm = diff;
-					}
-
-					return new MovementRow
-					{
-						Id = m.Id,
-						Driver = m.Driver?.FullName ?? m.DriverText,
-						Plate = plate,
-						ExitTimeText = exitLocal.ToString("HH:mm"),
-						ReturnTimeText = retLocal is null ? "—" : retLocal.Value.ToString("HH:mm"),
-						VehicleBrand = brand,
-						Status = status,
-						DateText = exitLocal.ToString("dd.MM.yyyy"),
-						Route = m.Route,
-						Commander = m.VehicleCommander?.FullName ?? m.CommanderText,
-						Purpose = m.Purpose,
-						DoneKm = doneKm,
-
-
-
-						ExitDateTimeUtc = m.ExitDateTime,
-						ReturnDateTimeUtc = m.ReturnDateTime
-					};
-				}).ToList();
-
-				// ✅ Günlük sıra: her gün 1..N (DB'ye alan eklemeden)
-				ApplyDailyNumbers(rows);
-
-				_all = rows;
-				MovementsGrid.ItemsSource = _all;
-				UpdateCount(_all.Count);
-			}
-			catch (Exception ex)
-			{
-				Notify("Hata: hareketler yüklenemedi.", "Hata");
-				MessageBox.Show(ex.ToString(), "Hata (detay)");
-			}
+			_all = rows;
+			MovementsGrid.ItemsSource = _all;
+			UpdateCount(_all.Count);
 		}
 
 		private static void ApplyDailyNumbers(List<MovementRow> rows)
 		{
-			// Aynı gün: ExitDateTimeUtc (local güne göre) sıralanıp 1..N
-			var groups = rows
-				.GroupBy(r => r.ExitDateTimeUtc.ToLocalTime().Date)
-				.ToList();
+			var groups = rows.GroupBy(x => x.ExitDateTimeUtc.ToLocalTime().Date).ToList();
 
-			foreach (var g in groups)
+			foreach (var group in groups)
 			{
-				var ordered = g.OrderBy(x => x.ExitDateTimeUtc).ThenBy(x => x.Id).ToList();
+				var ordered = group.OrderBy(x => x.ExitDateTimeUtc).ThenBy(x => x.Id).ToList();
 				for (int i = 0; i < ordered.Count; i++)
 					ordered[i].DailyNo = i + 1;
 			}
 		}
 
-		private void UpdateCount(int count) => FilterInfo.Text = $"Toplam kayıt: {count}";
+		private void UpdateCount(int count)
+		{
+			FilterInfo.Text = $"Toplam kayıt: {count}";
+		}
 
 		// =========================
 		// UI EVENTS
@@ -195,24 +207,24 @@ namespace FleetManagement.Desktop.Pages
 		{
 			await LoadLookupsAsync();
 			await LoadAsync();
+			PrepareNewFormState();
 			Notify("Yenilendi");
 		}
 
 		private void New_Click(object sender, RoutedEventArgs e)
 		{
 			ClearForm();
+			PrepareNewFormState();
 			Notify("Yeni kayıt için form hazır");
 		}
 
 		private void Clear_Click(object sender, RoutedEventArgs e)
 		{
 			ClearForm();
+			PrepareNewFormState();
 			Notify("Temizlendi");
 		}
 
-		// =========================
-		// SAVE
-		// =========================
 		private async void Save_Click(object sender, RoutedEventArgs e)
 		{
 			try
@@ -223,10 +235,14 @@ namespace FleetManagement.Desktop.Pages
 					return;
 				}
 
-				if (!TryBuildNullableDateTime(ReturnDatePicker, ReturnTimeBox, out var returnDtLocal, out var err2))
+				DateTime? returnDtLocal = null;
+				if (!string.IsNullOrWhiteSpace(ReturnTimeBox.Text) || ReturnDatePicker.SelectedDate is not null)
 				{
-					Notify("Dönüş zamanı hatalı: " + err2, "Uyarı");
-					return;
+					if (!TryBuildNullableDateTime(ReturnDatePicker, ReturnTimeBox, out returnDtLocal, out var err2))
+					{
+						Notify("Dönüş zamanı hatalı: " + err2, "Uyarı");
+						return;
+					}
 				}
 
 				if (returnDtLocal is not null && returnDtLocal < exitDtLocal)
@@ -235,32 +251,34 @@ namespace FleetManagement.Desktop.Pages
 					return;
 				}
 
-				// ✅ Plaka zorunlu:
 				var vehicleId = VehicleCombo.SelectedValue is int vid ? vid : (int?)null;
-				var plateFree = EmptyToNull(VehiclePlateTextBox.Text);
+				var selectedPlateText = EmptyToNull(VehicleCombo.Text);
 
-				if (vehicleId is null && string.IsNullOrWhiteSpace(plateFree))
+				if (vehicleId is null && string.IsNullOrWhiteSpace(selectedPlateText))
 				{
-					Notify("Plaka zorunlu. Araç seçin veya Serbest Plaka girin.", "Uyarı");
+					Notify("Plaka zorunlu. Listeden araç seçin.", "Uyarı");
 					return;
 				}
 
-				// ✅ Yeni görev engeli (aynı araç için açık görev varsa)
+				// Aynı araçta açık görev kontrolü
 				if (_selectedId is null && vehicleId is not null)
 				{
-					var hasOpen = await _db.VehicleMovements.AnyAsync(m =>
+					var hasOpenMovement = await _db.VehicleMovements.AnyAsync(m =>
 						!m.IsDeleted &&
 						m.VehicleId == vehicleId &&
 						m.ReturnDateTime == null);
 
-					if (hasOpen)
+					if (hasOpenMovement)
 					{
-						MessageBox.Show("Bu araç halen görevde. Yeni görev tanımlanamaz. Önce dönüş saatini girin.", "Uyarı");
+						MessageBox.Show(
+							"Bu araç halen görevde. Yeni görev tanımlanamaz. Önce dönüş saatini girin.",
+							"Uyarı",
+							MessageBoxButton.OK,
+							MessageBoxImage.Warning);
 						return;
 					}
 				}
 
-				// entity load/create
 				var entity = _selectedId is null
 					? new VehicleMovement { CreatedAt = DateTime.UtcNow, IsDeleted = false }
 					: await _db.VehicleMovements.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
@@ -271,68 +289,78 @@ namespace FleetManagement.Desktop.Pages
 					return;
 				}
 
-				// eski değerler (KM artırma için)
 				var wasOpen = entity.ReturnDateTime is null;
-				var oldStart = entity.StartKm;
-				var oldEnd = entity.EndKm;
-				var oldVehicleId = entity.VehicleId;
 
-				// FK seçilirse ID bas, seçilmezse serbest metin bas
 				entity.VehicleId = vehicleId;
 				entity.DriverId = DriverCombo.SelectedValue is int did ? did : (int?)null;
 				entity.VehicleCommanderId = CommanderCombo.SelectedValue is int cid ? cid : (int?)null;
 
-				entity.VehiclePlateText = entity.VehicleId is null ? plateFree : null;
-				entity.DriverText = entity.DriverId is null ? EmptyToNull(DriverTextBox.Text) : null;
-				entity.CommanderText = entity.VehicleCommanderId is null ? EmptyToNull(CommanderTextBox.Text) : null;
+				entity.VehiclePlateText = vehicleId is null ? selectedPlateText : null;
+				entity.DriverText = entity.DriverId is null ? EmptyToNull(DriverCombo.Text) : null;
+				entity.CommanderText = entity.VehicleCommanderId is null ? EmptyToNull(CommanderCombo.Text) : null;
 
-				// UTC sakla
-				var exitUtc = DateTime.SpecifyKind(exitDtLocal, DateTimeKind.Local).ToUniversalTime();
-				DateTime? retUtc = null;
-				if (returnDtLocal is not null)
-					retUtc = DateTime.SpecifyKind(returnDtLocal.Value, DateTimeKind.Local).ToUniversalTime();
+				entity.ExitDateTime = DateTime.SpecifyKind(exitDtLocal, DateTimeKind.Local).ToUniversalTime();
+				entity.ReturnDateTime = returnDtLocal is null
+					? null
+					: DateTime.SpecifyKind(returnDtLocal.Value, DateTimeKind.Local).ToUniversalTime();
 
-				entity.ExitDateTime = exitUtc;
-				entity.ReturnDateTime = retUtc;
+				// Mevcut entity ile geçici eşleme
+				entity.Route = EmptyToNull(RouteCombo.Text);
+				entity.Purpose = EmptyToNull(DepartureCombo.Text);      // Başkanlık
+				entity.Description = EmptyToNull(DutyTypeCombo.Text);   // Görev Türü
 
-				entity.Route = EmptyToNull(RouteBox.Text);
-				entity.Purpose = EmptyToNull(PurposeBox.Text);
-				
-				entity.LoadOrPassengerInfo = EmptyToNull(LoadOrPassengerBox.Text);
+				var passenger = TryParseNullableInt(PassengerCountBox.Text);
+				var load = TryParseNullableInt(LoadAmountBox.Text);
+				entity.LoadOrPassengerInfo = BuildLoadOrPassengerInfo(passenger, load);
 
-				entity.StartKm = TryParseNullableInt(StartKmBox.Text);
-				entity.EndKm = TryParseNullableInt(EndKmBox.Text);
+				// Yapılan KM
+				var doneKm = TryParseNullableInt(DoneKmBox.Text);
+				if (vehicleId is not null)
+				{
+					var vehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == vehicleId.Value && !v.IsDeleted);
 
-				// ✅ Yeni kayıt ekle
+					if (vehicle is not null)
+					{
+						var startKm = vehicle.VehicleKm ?? 0;
+						entity.StartKm = startKm;
+						entity.EndKm = doneKm is null ? null : startKm + doneKm.Value;
+
+						// Marka comboda gösterim amaçlı; entity'de ayrı alan yok
+						if (string.IsNullOrWhiteSpace(VehicleBrandCombo.Text))
+							VehicleBrandCombo.Text = GetVehicleBrandSafe(vehicle) ?? "";
+					}
+					else
+					{
+						entity.StartKm = null;
+						entity.EndKm = null;
+					}
+				}
+				else
+				{
+					entity.StartKm = null;
+					entity.EndKm = null;
+				}
+
 				if (_selectedId is null)
 					_db.VehicleMovements.Add(entity);
 
-				// ✅ KM otomatik artırma:
-				// Sadece "görev kapanırken" (önceden Return null iken şimdi doldu) ve araç seçili ise
-				if (wasOpen && entity.ReturnDateTime is not null && entity.VehicleId is not null)
+				// Araç KM artırma: sadece açık görev ilk kez kapanırken
+				if (wasOpen && entity.ReturnDateTime is not null && entity.VehicleId is not null && doneKm is not null && doneKm >= 0)
 				{
-					// yapılankm = End - Start (negatifse uygulama)
-					if (entity.StartKm.HasValue && entity.EndKm.HasValue)
-					{
-						var doneKm = entity.EndKm.Value - entity.StartKm.Value;
-						if (doneKm >= 0)
-						{
-							// aynı entity editlenirken yanlışlıkla iki kez eklemeyi engeller:
-							// sadece "kapanma anında" ekliyoruz (wasOpen)
-							var vehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == entity.VehicleId.Value && !v.IsDeleted);
-							if (vehicle is not null)
-							{
-								vehicle.VehicleKm = (vehicle.VehicleKm ?? 0) + doneKm;
-							}
-						}
-					}
+					var vehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == entity.VehicleId.Value && !v.IsDeleted);
+					if (vehicle is not null)
+						vehicle.VehicleKm = (vehicle.VehicleKm ?? 0) + doneKm.Value;
 				}
 
 				await _db.SaveChangesAsync();
 
-				Notify(_selectedId is null ? $"Kaydedildi: #{entity.Id}" : $"Güncellendi: #{entity.Id}");
+				Notify(_selectedId is null
+					? $"Kaydedildi: #{entity.Id}"
+					: $"Güncellendi: #{entity.Id}");
+
 				await LoadAsync();
 				ClearForm();
+				PrepareNewFormState();
 			}
 			catch (Exception ex)
 			{
@@ -341,21 +369,19 @@ namespace FleetManagement.Desktop.Pages
 			}
 		}
 
-		// =========================
-		// DELETE (soft)
-		// =========================
 		private async void Delete_Click(object sender, RoutedEventArgs e)
 		{
 			try
 			{
 				if (_selectedId is null)
 				{
-					Notify("Silmek için listeden kayıt seç.", "Uyarı");
+					Notify("Silmek için kayıt seç.", "Uyarı");
 					return;
 				}
 
 				var confirm = MessageBox.Show("Seçili hareket silinsin mi?", "Onay", MessageBoxButton.YesNo);
-				if (confirm != MessageBoxResult.Yes) return;
+				if (confirm != MessageBoxResult.Yes)
+					return;
 
 				var entity = await _db.VehicleMovements.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
 				if (entity is null)
@@ -370,6 +396,7 @@ namespace FleetManagement.Desktop.Pages
 				Notify($"Silindi: #{_selectedId.Value}");
 				await LoadAsync();
 				ClearForm();
+				PrepareNewFormState();
 			}
 			catch (Exception ex)
 			{
@@ -378,14 +405,13 @@ namespace FleetManagement.Desktop.Pages
 			}
 		}
 
-		// =========================
-		// SELECTION
-		// =========================
 		private async void MovementsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (MovementsGrid.SelectedItem is not MovementRow row) return;
+			if (MovementsGrid.SelectedItem is not MovementRow row)
+				return;
 
 			var m = await _db.VehicleMovements.AsNoTracking()
+				.Include(x => x.Vehicle)
 				.FirstOrDefaultAsync(x => x.Id == row.Id && !x.IsDeleted);
 
 			if (m is null) return;
@@ -396,31 +422,34 @@ namespace FleetManagement.Desktop.Pages
 			DriverCombo.SelectedValue = m.DriverId;
 			CommanderCombo.SelectedValue = m.VehicleCommanderId;
 
-			VehiclePlateTextBox.Text = m.VehiclePlateText ?? "";
-			DriverTextBox.Text = m.DriverText ?? "";
-			CommanderTextBox.Text = m.CommanderText ?? "";
-
 			ExitDatePicker.SelectedDate = m.ExitDateTime.ToLocalTime().Date;
 			ExitTimeBox.Text = m.ExitDateTime.ToLocalTime().ToString("HH:mm");
 
 			ReturnDatePicker.SelectedDate = m.ReturnDateTime?.ToLocalTime().Date;
-			ReturnTimeBox.Text = m.ReturnDateTime is null ? "17:00" : m.ReturnDateTime.Value.ToLocalTime().ToString("HH:mm");
+			ReturnTimeBox.Text = m.ReturnDateTime is null ? "" : m.ReturnDateTime.Value.ToLocalTime().ToString("HH:mm");
 
-			RouteBox.Text = m.Route ?? "";
-			PurposeBox.Text = m.Purpose ?? "";
-		
-			LoadOrPassengerBox.Text = m.LoadOrPassengerInfo ?? "";
+			RouteCombo.Text = m.Route ?? "";
+			DepartureCombo.Text = m.Purpose ?? "";
+			DutyTypeCombo.Text = m.Description ?? "";
 
-			StartKmBox.Text = m.StartKm?.ToString() ?? "";
-			EndKmBox.Text = m.EndKm?.ToString() ?? "";
+			var parsed = ParseLoadOrPassengerInfo(m.LoadOrPassengerInfo);
+			PassengerCountBox.Text = parsed.passenger?.ToString() ?? "";
+			LoadAmountBox.Text = parsed.load?.ToString() ?? "";
+
+			if (m.StartKm.HasValue && m.EndKm.HasValue && m.EndKm.Value >= m.StartKm.Value)
+				DoneKmBox.Text = (m.EndKm.Value - m.StartKm.Value).ToString();
+			else
+				DoneKmBox.Text = "";
+
+			VehicleBrandCombo.Text = GetVehicleBrandSafe(m.Vehicle) ?? "";
+			StatusBox.Text = CalcStatus(m.ExitDateTime, m.ReturnDateTime);
+			DailyNoBox.Text = row.DailyNo.ToString();
 		}
 
-		// =========================
-		// SEARCH
-		// =========================
 		private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			var q = (SearchBox.Text ?? "").Trim().ToLowerInvariant();
+
 			if (string.IsNullOrWhiteSpace(q))
 			{
 				MovementsGrid.ItemsSource = _all;
@@ -429,14 +458,14 @@ namespace FleetManagement.Desktop.Pages
 			}
 
 			var filtered = _all.Where(x =>
-				(x.Plate ?? "").ToLowerInvariant().Contains(q) ||
 				(x.Driver ?? "").ToLowerInvariant().Contains(q) ||
-				(x.Commander ?? "").ToLowerInvariant().Contains(q) ||
+				(x.Plate ?? "").ToLowerInvariant().Contains(q) ||
 				(x.VehicleBrand ?? "").ToLowerInvariant().Contains(q) ||
-				(x.Route ?? "").ToLowerInvariant().Contains(q) ||
-				(x.Purpose ?? "").ToLowerInvariant().Contains(q) ||
 				(x.Status ?? "").ToLowerInvariant().Contains(q) ||
-				(x.DateText ?? "").ToLowerInvariant().Contains(q))
+				(x.Route ?? "").ToLowerInvariant().Contains(q) ||
+				(x.Commander ?? "").ToLowerInvariant().Contains(q) ||
+				(x.Departure ?? "").ToLowerInvariant().Contains(q) ||
+				(x.DutyType ?? "").ToLowerInvariant().Contains(q))
 				.ToList();
 
 			MovementsGrid.ItemsSource = filtered;
@@ -454,23 +483,40 @@ namespace FleetManagement.Desktop.Pages
 			VehicleCombo.SelectedIndex = -1;
 			DriverCombo.SelectedIndex = -1;
 			CommanderCombo.SelectedIndex = -1;
+			RouteCombo.SelectedIndex = -1;
+			DepartureCombo.SelectedIndex = -1;
+			DutyTypeCombo.SelectedIndex = -1;
+			VehicleBrandCombo.SelectedIndex = -1;
 
-			VehiclePlateTextBox.Text = "";
-			DriverTextBox.Text = "";
-			CommanderTextBox.Text = "";
+			DailyNoBox.Text = "";
+			StatusBox.Text = "Başlamadı";
 
 			ExitDatePicker.SelectedDate = DateTime.Today;
 			ExitTimeBox.Text = "08:00";
 			ReturnDatePicker.SelectedDate = null;
-			ReturnTimeBox.Text = "17:00";
+			ReturnTimeBox.Text = "";
 
-			RouteBox.Text = "";
-			PurposeBox.Text = "";
-			
-			LoadOrPassengerBox.Text = "";
+			DoneKmBox.Text = "";
+			PassengerCountBox.Text = "";
+			LoadAmountBox.Text = "";
+		}
 
-			StartKmBox.Text = "";
-			EndKmBox.Text = "";
+		private void PrepareNewFormState()
+		{
+			DailyNoBox.Text = GetNextDailyNo().ToString();
+			StatusBox.Text = "Başlamadı";
+		}
+
+		private int GetNextDailyNo()
+		{
+			var today = DateTime.Today;
+
+			var max = _all
+				.Where(x => x.ExitDateTimeUtc.ToLocalTime().Date == today)
+				.Select(x => (int?)x.DailyNo)
+				.Max() ?? 0;
+
+			return max + 1;
 		}
 
 		private static string? EmptyToNull(string? value)
@@ -525,7 +571,7 @@ namespace FleetManagement.Desktop.Pages
 
 			if (!TimeSpan.TryParse(timeText, CultureInfo.InvariantCulture, out var time))
 			{
-				error = "Dönüş saat formatı geçersiz. Örnek: 17:15";
+				error = "Saat formatı geçersiz. Örnek: 17:15";
 				return false;
 			}
 
@@ -535,26 +581,71 @@ namespace FleetManagement.Desktop.Pages
 
 		private static string CalcStatus(DateTime exitUtc, DateTime? returnUtc)
 		{
-			if (returnUtc is not null) return "Tamamlandı";
+			if (returnUtc is not null)
+				return "Tamamlandı";
 
 			var exitLocal = exitUtc.ToLocalTime();
-			var nowLocal = DateTime.Now;
+			var now = DateTime.Now;
 
-			if (exitLocal.Date > nowLocal.Date) return "Planlandı";
-			if (exitLocal.Date == nowLocal.Date && exitLocal.TimeOfDay > nowLocal.TimeOfDay) return "Başlamadı";
+			if (exitLocal.Date > now.Date)
+				return "Planlandı";
+
+			if (exitLocal.Date == now.Date && exitLocal.TimeOfDay > now.TimeOfDay)
+				return "Başlamadı";
 
 			return "Devam Ediyor";
 		}
 
-		// Marka property ismi projende değiştiği için burada tek noktadan yönetiyoruz.
-		// Vehicle.Brand veya Vehicle.VehicleBrand hangisi varsa onu döndür.
 		private static string? GetVehicleBrandSafe(Vehicle? v)
 		{
 			if (v is null) return null;
 
-			// ✅ Burayı projendeki property adına göre AYARLA:
+			// Projende hangisi aktifse onu bırak:
 			// return v.Brand;
-			return v.VehicleBrand; // eğer sende VehicleBrand ise bunu: return v.VehicleBrand;
+			return v.VehicleBrand;
+		}
+
+		private static string? CalcKmText(int? startKm, int? endKm)
+		{
+			if (startKm is null || endKm is null) return "—";
+			var diff = endKm.Value - startKm.Value;
+			return diff >= 0 ? diff.ToString() : "—";
+		}
+
+		private static string? BuildLoadOrPassengerInfo(int? passenger, int? load)
+		{
+			if (passenger is null && load is null) return null;
+			return $"Yolcu:{passenger?.ToString() ?? ""};Yük:{load?.ToString() ?? ""}";
+		}
+
+		private static (int? passenger, int? load) ParseLoadOrPassengerInfo(string? text)
+		{
+			if (string.IsNullOrWhiteSpace(text))
+				return (null, null);
+
+			int? passenger = null;
+			int? load = null;
+
+			var parts = text.Split(';', StringSplitOptions.RemoveEmptyEntries);
+			foreach (var part in parts)
+			{
+				var item = part.Trim();
+
+				if (item.StartsWith("Yolcu:", StringComparison.OrdinalIgnoreCase))
+				{
+					var val = item.Substring("Yolcu:".Length).Trim();
+					if (int.TryParse(val, out var p))
+						passenger = p;
+				}
+				else if (item.StartsWith("Yük:", StringComparison.OrdinalIgnoreCase))
+				{
+					var val = item.Substring("Yük:".Length).Trim();
+					if (int.TryParse(val, out var l))
+						load = l;
+				}
+			}
+
+			return (passenger, load);
 		}
 
 		private static void Notify(string message, string title = "Bilgi")

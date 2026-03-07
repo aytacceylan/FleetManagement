@@ -4,7 +4,6 @@
       Background="{StaticResource BrushBg}">
 
     <Page.Resources>
-        <!-- TEST: Bu style kesin uygulanmalı -->
         <Style x:Key="ForceComboBoxStyle" TargetType="ComboBox" BasedOn="{x:Null}">
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Background" Value="#122B57"/>
@@ -45,7 +44,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="12"/>
-            <RowDefinition Height="260"/>
+            <RowDefinition Height="300"/>
             <RowDefinition Height="12"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -102,9 +101,9 @@
                     <Button Grid.Column="5" Content="Temizle" Width="110" Click="Clear_Click"/>
                 </Grid>
 
-                <!-- FORM CONTENT: 5 kolon, eşit dağılım, sol üstten sağ alta -->
+                <!-- FORM CONTENT -->
                 <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-                    <Grid Margin="0,2,0,0">
+                    <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="12"/>
@@ -117,37 +116,28 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+                        <!-- 1. KOLON -->
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Sıra No" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBox x:Name="DailyNoBox" Margin="0,6,0,10" IsReadOnly="True"/>
 
-                        <!-- ROW 0 -->
-                        <StackPanel Grid.Row="0" Grid.Column="0">
-                            <TextBlock Text="Araç (Plaka)" Foreground="{StaticResource BrushMuted}"/>
-                            <ComboBox x:Name="VehicleCombo"
-             Margin="0,6,0,10"
-             IsEditable="True"
-             IsReadOnly="True"
-             Foreground="Black"
-             Background="#3D5869"
-             BorderBrush="Black">
-
+                            <TextBlock Text="Sürücü" Foreground="{StaticResource BrushMuted}"/>
+                            <ComboBox x:Name="DriverCombo"
+                                      Margin="0,6,0,10"
+                                      IsEditable="True"
+                                      IsReadOnly="True"
+                                      Foreground="Black"
+                                      Background="#3D5869"
+                                      BorderBrush="Black">
                                 <ComboBox.ItemContainerStyle>
                                     <Style TargetType="ComboBoxItem">
-                                        <!-- Normal liste -->
                                         <Setter Property="Foreground" Value="Black"/>
-                                        <Setter Property="Background" Value="black"/>
-
+                                        <Setter Property="Background" Value="Black"/>
                                         <Style.Triggers>
-                                            <!-- Hover -->
                                             <Trigger Property="IsHighlighted" Value="True">
                                                 <Setter Property="Background" Value="Black"/>
                                                 <Setter Property="Foreground" Value="Black"/>
                                             </Trigger>
-
-                                            <!-- Seçili -->
                                             <Trigger Property="IsSelected" Value="True">
                                                 <Setter Property="Background" Value="Black"/>
                                                 <Setter Property="Foreground" Value="Black"/>
@@ -155,80 +145,205 @@
                                         </Style.Triggers>
                                     </Style>
                                 </ComboBox.ItemContainerStyle>
+                            </ComboBox>
 
+                            <TextBlock Text="Plaka" Foreground="{StaticResource BrushMuted}"/>
+                            <ComboBox x:Name="VehicleCombo"
+                                      Margin="0,6,0,10"
+                                      IsEditable="True"
+                                      IsReadOnly="True"
+                                      Foreground="Black"
+                                      Background="#3D5869"
+                                      BorderBrush="Black">
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Setter Property="Background" Value="Black"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsHighlighted" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
                             </ComboBox>
                         </StackPanel>
 
-                        <StackPanel Grid.Row="0" Grid.Column="2">
-                            <TextBlock Text="Sürücü" Foreground="{StaticResource BrushMuted}"/>
-                            <ComboBox x:Name="DriverCombo" Margin="0,6,0,8"/>
+                        <!-- 2. KOLON -->
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Çıkış Saati" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBox x:Name="ExitTimeBox" Margin="0,6,0,10" Text="08:00"/>
+
+                            <TextBlock Text="Dönüş Tarihi" Foreground="{StaticResource BrushMuted}"/>
+                            <DatePicker x:Name="ReturnDatePicker"
+                                        Margin="0,6,0,10"
+                                        Style="{StaticResource FixDatePickerText}"
+                                        CalendarStyle="{StaticResource FixCalendar}"/>
+
+                            <TextBlock Text="Dönüş Saati" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBox x:Name="ReturnTimeBox" Margin="0,6,0,10" Text="17:00"/>
+
+                            <TextBlock Text="Araç Marka" Foreground="{StaticResource BrushMuted}"/>
+                            <ComboBox x:Name="VehicleBrandCombo"
+                                      Margin="0,6,0,10"
+                                      IsEditable="True"
+                                      IsReadOnly="True"
+                                      Foreground="Black"
+                                      Background="#3D5869"
+                                      BorderBrush="Black">
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Setter Property="Background" Value="Black"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsHighlighted" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+                            </ComboBox>
                         </StackPanel>
 
-                        <StackPanel Grid.Row="0" Grid.Column="4">
-                            <TextBlock Text="Araç Komutanı" Foreground="{StaticResource BrushMuted}"/>
-                            <ComboBox x:Name="CommanderCombo" Margin="0,6,0,8"/>
+                        <!-- 3. KOLON -->
+                        <StackPanel Grid.Column="4">
+                            <TextBlock Text="Görev Durumu" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBox x:Name="StatusBox" Margin="0,6,0,10" IsReadOnly="True"/>
+
+                            <TextBlock Text="Tarih" Foreground="{StaticResource BrushMuted}"/>
+                            <DatePicker x:Name="ExitDatePicker"
+                                        Margin="0,6,0,10"
+                                        Style="{StaticResource FixDatePickerText}"
+                                        CalendarStyle="{StaticResource FixCalendar}"/>
+
+                            <TextBlock Text="Güzergah" Foreground="{StaticResource BrushMuted}"/>
+                            <ComboBox x:Name="RouteCombo"
+                                      Margin="0,6,0,10"
+                                      IsEditable="True"
+                                      IsReadOnly="True"
+                                      Foreground="Black"
+                                      Background="#3D5869"
+                                      BorderBrush="Black">
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Setter Property="Background" Value="Black"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsHighlighted" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+                            </ComboBox>
                         </StackPanel>
 
-                        <StackPanel Grid.Row="0" Grid.Column="6">
-                            <TextBlock Text="Çıkış Tarih" Foreground="{StaticResource BrushMuted}"/>
-                            <DatePicker x:Name="ExitDatePicker" Margin="0,6,0,8"/>
+                        <!-- 4. KOLON -->
+                        <StackPanel Grid.Column="6">
+                            <TextBlock Text="Araç Komutanı" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <ComboBox x:Name="CommanderCombo"
+                                      Margin="0,6,0,10"
+                                      IsEditable="True"
+                                      IsReadOnly="True"
+                                      Foreground="Black"
+                                      Background="#3D5869"
+                                      BorderBrush="Black">
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Setter Property="Background" Value="Black"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsHighlighted" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+                            </ComboBox>
+
+                            <TextBlock Text="Başkanlık" Foreground="{StaticResource BrushMuted}"/>
+                            <ComboBox x:Name="DepartureCombo"
+                                      Margin="0,6,0,10"
+                                      IsEditable="True"
+                                      IsReadOnly="True"
+                                      Foreground="Black"
+                                      Background="#3D5869"
+                                      BorderBrush="Black">
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Setter Property="Background" Value="Black"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsHighlighted" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+                            </ComboBox>
+
+                            <TextBlock Text="Yapılan Km." Foreground="{StaticResource BrushMuted}"/>
+                            <TextBox x:Name="DoneKmBox" Margin="0,6,0,10"/>
                         </StackPanel>
 
-                        <StackPanel Grid.Row="0" Grid.Column="8">
-                            <TextBlock Text="Çıkış Saat (HH:mm)" Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="ExitTimeBox" Margin="0,6,0,8" Text="08:00"/>
-                        </StackPanel>
+                        <!-- 5. KOLON -->
+                        <StackPanel Grid.Column="8">
+                            <TextBlock Text="Taşınan Yolcu" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBox x:Name="PassengerCountBox" Margin="0,6,0,10"/>
 
-                        <!-- ROW 1 -->
-                        <StackPanel Grid.Row="1" Grid.Column="0">
-                            <TextBlock Text="Plaka (Serbest)" Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="VehiclePlateTextBox" Margin="0,6,0,8"/>
-                        </StackPanel>
+                            <TextBlock Text="Taşınan Yük" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBox x:Name="LoadAmountBox" Margin="0,6,0,10"/>
 
-                        <StackPanel Grid.Row="1" Grid.Column="2">
-                            <TextBlock Text="Sürücü (Serbest)" Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="DriverTextBox" Margin="0,6,0,8"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="1" Grid.Column="4">
-                            <TextBlock Text="Komutan (Serbest)" Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="CommanderTextBox" Margin="0,6,0,8"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="1" Grid.Column="6">
-                            <TextBlock Text="Dönüş Tarih" Foreground="{StaticResource BrushMuted}"/>
-                            <DatePicker x:Name="ReturnDatePicker" Margin="0,6,0,8"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="1" Grid.Column="8">
-                            <TextBlock Text="Dönüş Saat (HH:mm)" Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="ReturnTimeBox" Margin="0,6,0,8" Text="17:00"/>
-                        </StackPanel>
-
-                        <!-- ROW 2 -->
-                        <StackPanel Grid.Row="2" Grid.Column="0">
-                            <TextBlock Text="Güzergah (Rota)" Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="RouteBox" Margin="0,6,0,0"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="2" Grid.Column="2">
-                            <TextBlock Text="Başkanlık / Amaç" Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="PurposeBox" Margin="0,6,0,0"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="2" Grid.Column="4">
-                            <TextBlock Text="Taşınan (Yolcu/Yük)" Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="LoadOrPassengerBox" Margin="0,6,0,0"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="2" Grid.Column="6">
-                            <TextBlock Text="Başlangıç KM" Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="StartKmBox" Margin="0,6,0,0"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="2" Grid.Column="8">
-                            <TextBlock Text="Bitiş KM" Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="EndKmBox" Margin="0,6,0,0"/>
+                            <TextBlock Text="Görev Türü" Foreground="{StaticResource BrushMuted}"/>
+                            <ComboBox x:Name="DutyTypeCombo"
+                                      Margin="0,6,0,10"
+                                      IsEditable="True"
+                                      IsReadOnly="True"
+                                      Foreground="Black"
+                                      Background="#3D5869"
+                                      BorderBrush="Black">
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Setter Property="Background" Value="Black"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsHighlighted" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="Black"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+                            </ComboBox>
                         </StackPanel>
                     </Grid>
                 </ScrollViewer>
@@ -273,7 +388,6 @@
                           SelectionMode="Single"
                           SelectionChanged="MovementsGrid_SelectionChanged">
 
-                    <!-- Kolon sırası: senin istediğin sıraya göre -->
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Sıra No" Binding="{Binding DailyNo}" Width="70"/>
                         <DataGridTextColumn Header="Sürücü" Binding="{Binding Driver}" Width="160"/>
@@ -285,22 +399,14 @@
                         <DataGridTextColumn Header="Tarih" Binding="{Binding DateText}" Width="95"/>
                         <DataGridTextColumn Header="Güzergah" Binding="{Binding Route}" Width="140"/>
                         <DataGridTextColumn Header="Araç Komutanı" Binding="{Binding Commander}" Width="160"/>
-
-                        <!-- Şimdilik Purpose alanını Başkanlık gibi kullanıyoruz -->
-                        <DataGridTextColumn Header="Başkanlık" Binding="{Binding Purpose}" Width="140"/>
-
-                        <!-- Yapılan Km: şimdilik DoneKm/KmText -->
+                        <DataGridTextColumn Header="Başkanlık" Binding="{Binding Departure}" Width="140"/>
                         <DataGridTextColumn Header="Yapılan Km" Binding="{Binding KmText}" Width="90"/>
-
-                        <!-- Yolcu/Yük: şimdilik tek alan -->
-                        <DataGridTextColumn Header="Taşınan (Y/Y)" Binding="{Binding LoadOrPassengerInfo}" Width="150"/>
-
-                        <!-- Görev Türü: şimdilik Description alanı -->
-                        <DataGridTextColumn Header="Görev Türü" Binding="{Binding Description}" Width="140"/>
+                        <DataGridTextColumn Header="Taşınan Yolcu" Binding="{Binding PassengerCount}" Width="110"/>
+                        <DataGridTextColumn Header="Taşınan Yük" Binding="{Binding LoadAmount}" Width="110"/>
+                        <DataGridTextColumn Header="Görev Türü" Binding="{Binding DutyType}" Width="140"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
         </Border>
-
     </Grid>
 </Page>
