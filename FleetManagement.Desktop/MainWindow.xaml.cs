@@ -24,7 +24,7 @@ namespace FleetManagement.Desktop
                 // =======================
                 // Ana Sayfa
                 // =======================
-                "HomePage" => new Pages.DashboardPage(),
+                "HomePage" => new Pages.HomePage(),
 
                 // =======================
                 // Faaliyet / Raporlar
