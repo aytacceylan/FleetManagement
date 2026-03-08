@@ -14,14 +14,79 @@
 
         <!-- HEADER -->
         <Border Grid.Row="0" Style="{StaticResource FmCard}">
-            <StackPanel>
-                <TextBlock Text="Ana Sayfa"
-                           FontSize="12"
-                           FontWeight="SemiBold"/>
-                <TextBlock Text="Genel durum özeti ve canlı operasyon ekranı"
-                           Margin="0,6,0,0"
-                           Foreground="{StaticResource BrushMuted}"/>
-            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Başlık -->
+                <StackPanel>
+                    <TextBlock Text="Ana Sayfa"
+                       FontSize="18"
+                       FontWeight="SemiBold"/>
+                    <TextBlock Text="Genel durum özeti ve canlı operasyon ekranı"
+                       Margin="0,6,0,0"
+                       Foreground="{StaticResource BrushMuted}"/>
+                </StackPanel>
+
+                <!-- Hazırlık Formu -->
+                <Button Grid.Column="1" Cursor="Hand"
+                Padding="14,6"
+                Click="PreparationForm_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="📄" FontSize="16" Margin="0,0,6,0" Foreground="BROWN"/>
+                        <TextBlock Text="Hazırlık Formu"/>
+                       
+                    </StackPanel>
+                </Button>
+
+                <!-- Araç Listesi -->
+                <Button Grid.Column="3"
+                Padding="14,6"
+                Click="VehicleList_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="🚗" FontSize="16" Margin="0,0,6,0" Foreground="red"/>
+                        <TextBlock Text="Araç Listesi"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Sürücü Listesi -->
+                <Button Grid.Column="5"
+                Padding="14,6"
+                Click="DriverList_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="👤" FontSize="16" Margin="0,0,6,0" Foreground="purple"/>
+                        <TextBlock Text="Sürücü Listesi"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Yenile -->
+                <Button Grid.Column="7"
+                Padding="14,6"
+                Click="Refresh_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="🔄" FontSize="16" Margin="0,0,6,0" Foreground="green"/>
+                        <TextBlock Text="Yenile"/>
+                    </StackPanel>
+                </Button>
+
+                <TextBlock Grid.Column="9"
+           x:Name="LastUpdateText"
+           VerticalAlignment="Center"
+           Foreground="{StaticResource BrushMuted}"
+           FontSize="12"
+           Text="Son Güncelleme: --:--"/>
+
+            </Grid>
         </Border>
 
         <!-- TOP CARDS -->

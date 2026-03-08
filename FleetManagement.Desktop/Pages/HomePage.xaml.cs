@@ -2,9 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
+
 
 namespace FleetManagement.Desktop.Pages
 {
@@ -61,6 +66,12 @@ namespace FleetManagement.Desktop.Pages
 			InitializeComponent();
 
 			Loaded += async (_, __) => await LoadDashboardAsync();
+			var timer = new DispatcherTimer();
+			timer.Interval = TimeSpan.FromSeconds(30);
+			timer.Tick += async (_, __) => await LoadDashboardAsync();
+			timer.Start();
+
+
 		}
 
 		private async Task LoadDashboardAsync()
@@ -74,6 +85,8 @@ namespace FleetManagement.Desktop.Pages
 			await LoadAvailableDriversAsync();
 			await LoadMaintenanceGridAsync();
 			await LoadOngoingMovementsAsync();
+
+			LastUpdateText.Text = $"Son Güncelleme: {DateTime.Now:HH:mm}";
 		}
 
 		private async Task LoadDriverSummaryAsync()
@@ -307,5 +320,48 @@ namespace FleetManagement.Desktop.Pages
 
 			OngoingMovementsGrid.ItemsSource = rows;
 		}
+
+		private void PreparationForm_Click(object sender, RoutedEventArgs e)
+		{
+			try
+			{
+				var pdfPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "ÇıkışFormu.pdf");
+
+				if (!File.Exists(pdfPath))
+				{
+					MessageBox.Show("Assets klasöründe ÇıkışFormu.pdf bulunamadı.", "Hata",
+						MessageBoxButton.OK, MessageBoxImage.Error);
+					return;
+				}
+
+				Process.Start(new ProcessStartInfo
+				{
+					FileName = pdfPath,
+					UseShellExecute = true
+				});
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Hata",
+					MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+		}
+
+		private void VehicleList_Click(object sender, RoutedEventArgs e)
+		{
+			NavigationService?.Navigate(new VehiclesPage());
+		}
+
+		private void DriverList_Click(object sender, RoutedEventArgs e)
+		{
+			NavigationService?.Navigate(new DriversPage());
+		}
+
+		private async void Refresh_Click(object sender, RoutedEventArgs e)
+		{
+			await LoadDashboardAsync();
+		}
+
+
 	}
 }

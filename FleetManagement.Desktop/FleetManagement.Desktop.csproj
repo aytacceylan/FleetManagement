@@ -8,6 +8,10 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <None Remove="Assets\ÇıkışFormu.pdf" />
+	</ItemGroup>
+
 
 	<ItemGroup>
 		<None Update="appsettings.json">
@@ -17,6 +21,9 @@
 
 	<ItemGroup>
 	  <Content Include="appsettings.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Assets\ÇıkışFormu.pdf">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	</ItemGroup>
