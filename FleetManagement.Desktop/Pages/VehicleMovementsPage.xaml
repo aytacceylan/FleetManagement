@@ -401,7 +401,16 @@
                         <DataGridTextColumn Header="Çıkış Saati" Binding="{Binding ExitTimeText}" Width="80"/>
                         <DataGridTextColumn Header="Dönüş Saati" Binding="{Binding ReturnTimeText}" Width="80"/>
                         <DataGridTextColumn Header="Araç Marka" Binding="{Binding VehicleBrand}" Width="80"/>
-                        <DataGridTextColumn Header="Durum" Binding="{Binding Status}" Width="90"/>
+                        <DataGridTemplateColumn Header="Durum" Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Status}"
+                       Foreground="{Binding StatusBrush}"
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTextColumn Header="Güzergah" Binding="{Binding Route}" Width="90"/>
                         <DataGridTextColumn Header="Araç Komutanı" Binding="{Binding Commander}" Width="90"/>
                         <DataGridTextColumn Header="Başkanlık" Binding="{Binding Departure}" Width="90"/>

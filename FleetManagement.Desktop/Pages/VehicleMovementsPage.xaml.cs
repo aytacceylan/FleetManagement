@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace FleetManagement.Desktop.Pages
 {
@@ -16,31 +17,8 @@ namespace FleetManagement.Desktop.Pages
 		private readonly AppDbContext _db = new(App.DbOptions);
 
 		private int? _selectedId;
-		private List<MovementRow> _all = new();
+		private List<VehicleMovementRow> _all = new();
 
-		private sealed class MovementRow
-		{
-			public int Id { get; set; }
-
-			public int DailyNo { get; set; }
-			public string? Driver { get; set; }
-			public string Plate { get; set; } = "";
-			public string ExitTimeText { get; set; } = "";
-			public string ReturnTimeText { get; set; } = "";
-			public string? VehicleBrand { get; set; }
-			public string Status { get; set; } = "";
-			public string DateText { get; set; } = "";
-			public string? Route { get; set; }
-			public string? Commander { get; set; }
-			public string? Departure { get; set; }
-			public string KmText { get; set; } = "—";
-			public int? PassengerCount { get; set; }
-			public int? LoadAmount { get; set; }
-			public string? DutyType { get; set; }
-
-			public DateTime ExitDateTimeUtc { get; set; }
-			public DateTime? ReturnDateTimeUtc { get; set; }
-		}
 
 		public VehicleMovementsPage()
 		{
@@ -153,7 +131,13 @@ namespace FleetManagement.Desktop.Pages
 				var returnLocal = m.ReturnDateTime?.ToLocalTime();
 				var parsed = ParseLoadOrPassengerInfo(m.LoadOrPassengerInfo);
 
-				return new MovementRow
+				var status = CalcStatus(m.ExitDateTime, m.ReturnDateTime);
+
+				int? doneKm = null;
+				if (m.StartKm.HasValue && m.EndKm.HasValue && m.EndKm.Value >= m.StartKm.Value)
+					doneKm = m.EndKm.Value - m.StartKm.Value;
+
+				return new VehicleMovementRow
 				{
 					Id = m.Id,
 					Driver = m.Driver?.FullName ?? m.DriverText,
@@ -161,15 +145,19 @@ namespace FleetManagement.Desktop.Pages
 					ExitTimeText = exitLocal.ToString("HH:mm"),
 					ReturnTimeText = returnLocal is null ? "—" : returnLocal.Value.ToString("HH:mm"),
 					VehicleBrand = GetVehicleBrandSafe(m.Vehicle),
-					Status = CalcStatus(m.ExitDateTime, m.ReturnDateTime),
+					Status = status,
+					StatusBrush = GetStatusBrush(status),
 					DateText = exitLocal.ToString("dd.MM.yyyy"),
 					Route = m.Route,
 					Commander = m.VehicleCommander?.FullName ?? m.CommanderText,
+
+					// XAML ile uyumlu alanlar
 					Departure = m.Purpose,
-					KmText = CalcKmText(m.StartKm, m.EndKm),
+					DoneKm = doneKm,
 					PassengerCount = parsed.passenger,
 					LoadAmount = parsed.load,
 					DutyType = m.Description,
+
 					ExitDateTimeUtc = m.ExitDateTime,
 					ReturnDateTimeUtc = m.ReturnDateTime
 				};
@@ -182,7 +170,7 @@ namespace FleetManagement.Desktop.Pages
 			UpdateCount(_all.Count);
 		}
 
-		private static void ApplyDailyNumbers(List<MovementRow> rows)
+		private static void ApplyDailyNumbers(List<VehicleMovementRow> rows)
 		{
 			var groups = rows
 				.GroupBy(x => x.ExitDateTimeUtc.ToLocalTime().Date)
@@ -404,7 +392,7 @@ namespace FleetManagement.Desktop.Pages
 
 		private async void MovementsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (MovementsGrid.SelectedItem is not MovementRow row)
+			if (MovementsGrid.SelectedItem is not VehicleMovementRow row)
 				return;
 
 			var m = await _db.VehicleMovements.AsNoTracking()
@@ -649,6 +637,17 @@ namespace FleetManagement.Desktop.Pages
 		private static void Notify(string message, string title = "Bilgi")
 		{
 			MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+		}
+		private static Brush GetStatusBrush(string status)
+		{
+			return status switch
+			{
+				"Devam Ediyor" => Brushes.Red,
+				"Planlandı" => Brushes.DarkOrange,
+				"Tamamlandı" => Brushes.Green,
+				"Başlamadı" => Brushes.SteelBlue,
+				_ => Brushes.Black
+			};
 		}
 	}
 }
