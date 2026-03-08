@@ -4,11 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using ClosedXML.Excel;
+
 
 namespace FleetManagement.Desktop.Pages
 {
@@ -648,6 +652,165 @@ namespace FleetManagement.Desktop.Pages
 				"Başlamadı" => Brushes.SteelBlue,
 				_ => Brushes.Black
 			};
+		}
+
+
+		//I/O
+		private void ExportDaily_Click(object sender, RoutedEventArgs e)
+		{
+			try
+			{
+				var today = DateTime.Today;
+				var now = DateTime.Now;
+
+				var rows = _all
+					.Where(x => x.ExitDateTimeUtc.ToLocalTime().Date == today)
+					.OrderBy(x => x.DailyNo)
+					.ToList();
+
+				var path = ExportRowsToExcel(rows, $"VehicleMovements_{now:yyyy-MM-dd_HH-mm}.xlsx");
+
+				Notify($"Günlük Excel export tamamlandı.\n{path}");
+			}
+			catch (Exception ex)
+			{
+				Notify("Günlük Excel export başarısız.", "Hata");
+				MessageBox.Show(ex.Message, "Hata");
+			}
+		}
+
+
+		private void ExportMonthly_Click(object sender, RoutedEventArgs e)
+		{
+			try
+			{
+				var today = DateTime.Today;
+				var now = DateTime.Now;
+
+				var rows = _all
+					.Where(x =>
+						x.ExitDateTimeUtc.ToLocalTime().Year == today.Year &&
+						x.ExitDateTimeUtc.ToLocalTime().Month == today.Month)
+					.OrderBy(x => x.ExitDateTimeUtc)
+					.ThenBy(x => x.DailyNo)
+					.ToList();
+
+				var path = ExportRowsToExcel(rows, $"VehicleMovements_{now:yyyy-MM_HH-mm}.xlsx");
+
+				Notify($"Aylık Excel export tamamlandı.\n{path}");
+			}
+			catch (Exception ex)
+			{
+				Notify("Aylık Excel export başarısız.", "Hata");
+				MessageBox.Show(ex.Message, "Hata");
+			}
+		}
+
+		private static string ExportRowsToCsv(List<VehicleMovementRow> rows, string fileName)
+		{
+			var folder = @"C:\Araç Görev Kayıt Defteri";
+			Directory.CreateDirectory(folder);
+
+			var path = Path.Combine(folder, fileName);
+
+			var sb = new StringBuilder();
+
+			sb.AppendLine("Sıra No,Sürücü,Plaka,Çıkış Saati,Dönüş Saati,Araç Marka,Durum,Tarih,Güzergah,Araç Komutanı,Başkanlık,Yapılan Km,Taşınan Yolcu,Taşınan Yük,Görev Türü");
+
+			foreach (var x in rows)
+			{
+				sb.AppendLine(string.Join(",",
+					Csv(x.DailyNo.ToString()),
+					Csv(x.Driver),
+					Csv(x.Plate),
+					Csv(x.ExitTimeText),
+					Csv(x.ReturnTimeText),
+					Csv(x.VehicleBrand),
+					Csv(x.Status),
+					Csv(x.DateText),
+					Csv(x.Route),
+					Csv(x.Commander),
+					Csv(x.Departure),
+					Csv(x.KmText),
+					Csv(x.PassengerCount?.ToString()),
+					Csv(x.LoadAmount?.ToString()),
+					Csv(x.DutyType)
+				));
+			}
+
+			File.WriteAllText(path, sb.ToString(), new UTF8Encoding(true));
+			return path;
+		}
+
+		private static string Csv(string? value)
+		{
+			var s = value ?? "";
+			s = s.Replace("\"", "\"\"");
+			return $"\"{s}\"";
+		}
+		private static string ExportRowsToExcel(List<VehicleMovementRow> rows, string fileName)
+		{
+			var folder = @"C:\FleetReports";
+			Directory.CreateDirectory(folder);
+
+			var path = Path.Combine(folder, fileName);
+
+			using var wb = new XLWorkbook();
+			var ws = wb.Worksheets.Add("Araç Hareketleri");
+
+			ws.Cell(1, 1).Value = "Sıra No";
+			ws.Cell(1, 2).Value = "Sürücü";
+			ws.Cell(1, 3).Value = "Plaka";
+			ws.Cell(1, 4).Value = "Çıkış Saati";
+			ws.Cell(1, 5).Value = "Dönüş Saati";
+			ws.Cell(1, 6).Value = "Araç Marka";
+			ws.Cell(1, 7).Value = "Durum";
+			ws.Cell(1, 8).Value = "Tarih";
+			ws.Cell(1, 9).Value = "Güzergah";
+			ws.Cell(1, 10).Value = "Araç Komutanı";
+			ws.Cell(1, 11).Value = "Başkanlık";
+			ws.Cell(1, 12).Value = "Yapılan Km";
+			ws.Cell(1, 13).Value = "Taşınan Yolcu";
+			ws.Cell(1, 14).Value = "Taşınan Yük";
+			ws.Cell(1, 15).Value = "Görev Türü";
+
+			int row = 2;
+			foreach (var x in rows)
+			{
+				ws.Cell(row, 1).Value = x.DailyNo;
+				ws.Cell(row, 2).Value = x.Driver ?? "";
+				ws.Cell(row, 3).Value = x.Plate ?? "";
+				ws.Cell(row, 4).Value = x.ExitTimeText ?? "";
+				ws.Cell(row, 5).Value = x.ReturnTimeText ?? "";
+				ws.Cell(row, 6).Value = x.VehicleBrand ?? "";
+				ws.Cell(row, 7).Value = x.Status ?? "";
+				ws.Cell(row, 8).Value = x.DateText ?? "";
+				ws.Cell(row, 9).Value = x.Route ?? "";
+				ws.Cell(row, 10).Value = x.Commander ?? "";
+				ws.Cell(row, 11).Value = x.Departure ?? "";
+				ws.Cell(row, 12).Value = x.KmText ?? "";
+				ws.Cell(row, 13).Value = x.PassengerCount?.ToString() ?? "";
+				ws.Cell(row, 14).Value = x.LoadAmount?.ToString() ?? "";
+				ws.Cell(row, 15).Value = x.DutyType ?? "";
+				row++;
+			}
+
+			var headerRange = ws.Range(1, 1, 1, 15);
+			headerRange.Style.Font.Bold = true;
+			headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+			headerRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
+			var tableRange = ws.Range(1, 1, Math.Max(row - 1, 1), 15);
+			tableRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+			tableRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+			tableRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+
+			tableRange.SetAutoFilter();
+			ws.Columns().AdjustToContents();
+			ws.SheetView.FreezeRows(1);
+
+			wb.SaveAs(path);
+			return path;
 		}
 	}
 }

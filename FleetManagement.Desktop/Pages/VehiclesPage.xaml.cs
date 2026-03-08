@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace FleetManagement.Desktop.Pages
 {
@@ -519,25 +520,32 @@ namespace FleetManagement.Desktop.Pages
 			bool overdue = false;
 			bool soon = false;
 
+			// KM bazlı bakım
 			if (intervalKm is not null && currentKm is not null && lastKm is not null)
 			{
 				var dueKm = lastKm.Value + intervalKm.Value;
 
-				if (currentKm.Value >= dueKm) overdue = true;
-				else if (currentKm.Value >= dueKm - 1000) soon = true;
+				if (currentKm.Value >= dueKm)
+					overdue = true;
+				else if (currentKm.Value >= dueKm - 1000)
+					soon = true;
 			}
 
+			// Tarih bazlı bakım
 			if (intervalMonths is not null && lastDate is not null)
 			{
 				var dueDate = lastDate.Value.Date.AddMonths(intervalMonths.Value);
-				var today = DateTime.UtcNow.Date;
+				var today = DateTime.Today;
 
-				if (today >= dueDate) overdue = true;
-				else if (today >= dueDate.AddDays(-30)) soon = true;
+				if (today >= dueDate)
+					overdue = true;
+				else if (today >= dueDate.AddDays(-30))
+					soon = true;
 			}
 
 			if (overdue) return "Gecikti";
 			if (soon) return "Yaklaşıyor";
+
 			return "Normal";
 		}
 
@@ -547,6 +555,19 @@ namespace FleetManagement.Desktop.Pages
 			// return;
 
 			MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+		}
+
+		private static Brush GetMaintenanceBrush(string status)
+		{
+			return status switch
+			{
+				"Gecikti" => Brushes.Red,
+				"Yaklaşıyor" => Brushes.DarkOrange,
+				"Normal" => Brushes.Green,
+				"Bakım Gir" => Brushes.SteelBlue,
+				"Tanımsız" => Brushes.Gray,
+				_ => Brushes.Black
+			};
 		}
 	}
 }

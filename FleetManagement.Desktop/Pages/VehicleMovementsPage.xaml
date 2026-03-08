@@ -367,6 +367,10 @@
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
                         <ColumnDefinition Width="280"/>
                     </Grid.ColumnDefinitions>
 
@@ -375,13 +379,23 @@
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
 
-                    <StackPanel Grid.Column="1">
+                    <Button Grid.Column="1"
+                            Content="Günlük Export"
+                            MinWidth="120"
+                            Click="ExportDaily_Click"/>
+
+                    <Button Grid.Column="3"
+                            Content="Aylık Export"
+                            MinWidth="120"
+                            Click="ExportMonthly_Click"/>
+
+                    <StackPanel Grid.Column="5">
                         <TextBox x:Name="SearchBox" TextChanged="SearchBox_TextChanged"/>
                         <TextBlock x:Name="FilterInfo"
-                                   Margin="0,6,0,0"
-                                   Foreground="{StaticResource BrushMuted}"
-                                   FontSize="12"
-                                   Text="Toplam kayıt: 0"/>
+                   Margin="0,6,0,0"
+                   Foreground="{StaticResource BrushMuted}"
+                   FontSize="12"
+                   Text="Toplam kayıt: 0"/>
                     </StackPanel>
                 </Grid>
 
