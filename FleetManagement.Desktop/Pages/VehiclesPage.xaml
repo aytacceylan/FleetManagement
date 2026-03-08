@@ -45,7 +45,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="12"/>
-            <RowDefinition Height="330"/>
+            <RowDefinition Height="300"/>
             <RowDefinition Height="12"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -144,7 +144,7 @@
 
                             <TextBlock Text="Sürücü" Foreground="{StaticResource BrushMuted}"/>
                             <ComboBox x:Name="AssignedDriverCombo"
-                                              Margin="0,6,0,10"
+                                              Margin="0,6,0,0"
                                               IsEditable="True"
                                               IsReadOnly="True"
                                               Foreground="Black"
@@ -179,23 +179,23 @@
 
                             <TextBlock Text="Plaka"
                                        Foreground="{StaticResource BrushMuted}"
-                                       Margin="0,8,0,0"/>
+                                       Margin="0,6,0,0"/>
                             <TextBox x:Name="PlateBox"
-                                     Margin="0,6,0,10"
+                                     Margin="0,6,0,0"
                                      LostFocus="PlateBox_LostFocus"/>
 
                             <TextBlock Text="Sivil Plaka"
                                        Foreground="{StaticResource BrushMuted}"/>
                             <TextBox x:Name="InventoryNumberBox"
-                                     Margin="0,6,0,10"/>
+                                     Margin="0,6,0,0"/>
 
-                           
+
 
                             <TextBlock Text="Ait Olduğu Takım"
            Foreground="{StaticResource BrushMuted}"/>
 
                             <ComboBox x:Name="UnitCombo"
-                                         Margin="0,6,0,10"
+                                         Margin="0,6,0,0"
                                          IsEditable="True"
                                          IsReadOnly="True"
                                          Foreground="Black"
@@ -233,9 +233,9 @@
                         <StackPanel Grid.Column="2">
                             <TextBlock Text="Araç Tipi"
                                        Foreground="{StaticResource BrushMuted}"
-                                       Margin="0,8,0,0"/>
+                                       Margin="0,6,0,0"/>
                             <ComboBox x:Name="VehicleTypeCombo"
-                                         Margin="0,6,0,10"
+                                         Margin="0,6,0,0"
                                          IsEditable="True"
                                          IsReadOnly="True"
                                          Foreground="Black"
@@ -269,7 +269,7 @@
                             <TextBlock Text="Marka"
                                        Foreground="{StaticResource BrushMuted}"/>
                             <ComboBox x:Name="BrandBox"
-                                         Margin="0,6,0,10"
+                                         Margin="0,6,0,0"
                                          IsEditable="True"
                                          IsReadOnly="True"
                                          Foreground="Black"
@@ -303,7 +303,7 @@
                             <TextBlock Text="Model"
                                        Foreground="{StaticResource BrushMuted}"/>
                             <ComboBox x:Name="ModelCombo"
-                                         Margin="0,6,0,10"
+                                         Margin="0,6,0,0"
                                          IsEditable="True"
                                          IsReadOnly="True"
                                          Foreground="Black"
@@ -337,7 +337,7 @@
                             <TextBlock Text="Araç Yılı"
                                        Foreground="{StaticResource BrushMuted}"/>
                             <ComboBox x:Name="VehicleYearBox"
-                                         Margin="0,6,0,10"
+                                         Margin="0,6,0,0"
                                          IsEditable="True"
                                          IsReadOnly="True"
                                          Foreground="Black"
@@ -373,39 +373,39 @@
                         <StackPanel Grid.Column="4">
                             <TextBlock Text="Araç Km"
                                        Foreground="{StaticResource BrushMuted}"
-                                       Margin="0,8,0,0"/>
+                                       Margin="0,6,0,0"/>
                             <TextBox x:Name="VehicleKmBox"
-                                     Margin="0,6,0,10"/>
+                                     Margin="0,6,0,0"/>
 
                             <TextBlock Text="Yolcu Kapasitesi"
                                        Foreground="{StaticResource BrushMuted}"/>
                             <TextBox x:Name="PassengerCapacityBox"
-                                     Margin="0,6,0,10"/>
+                                     Margin="0,6,0,0"/>
 
                             <TextBlock Text="Yük Kapasitesi"
                                        Foreground="{StaticResource BrushMuted}"/>
                             <TextBox x:Name="LoadCapacityBox"
-                                     Margin="0,6,0,10"/>
+                                     Margin="0,6,0,0"/>
                         </StackPanel>
 
                         <!-- 4. Kolon -->
                         <StackPanel Grid.Column="6">
                             <TextBlock Text="Motor No"
                                        Foreground="{StaticResource BrushMuted}"
-                                       Margin="0,8,0,0"/>
+                                       Margin="0,6,0,0"/>
                             <TextBox x:Name="MotorNoBox"
-                                     Margin="0,6,0,10"/>
+                                     Margin="0,6,0,0"/>
 
                             <TextBlock Text="Şase No"
                                        Foreground="{StaticResource BrushMuted}"/>
                             <TextBox x:Name="SaseNoBox"
-                                     Margin="0,6,0,10"/>
+                                     Margin="0,6,0,0"/>
 
                             <TextBlock Text="Görev"
                                        Foreground="{StaticResource BrushMuted}"/>
 
                             <ComboBox x:Name="DutyInfoBox"
-                                     Margin="0,6,0,10"
+                                     Margin="0,6,0,0"
                                      IsEditable="True"
                                      IsReadOnly="True"
                                      Foreground="Black"
@@ -440,7 +440,7 @@
                                        Foreground="{StaticResource BrushMuted}"/>
 
                             <ComboBox x:Name="MaintInfoBox"
-                                      Margin="0,6,0,10"
+                                      Margin="0,6,0,0"
                                       IsEditable="True"
                                       IsReadOnly="True"
                                       Foreground="Black"
@@ -476,29 +476,29 @@
                         <StackPanel Grid.Column="8">
                             <TextBlock Text="Son Bakım Km"
                                        Foreground="{StaticResource BrushMuted}"
-                                       Margin="0,8,0,0"/>
+                                       Margin="0,6,0,0"/>
                             <TextBox x:Name="LastMaintenanceKmBox"
-                                     Margin="0,6,0,10"/>
+                                     Margin="0,6,0,0"/>
 
                             <TextBlock Text="Son Bakım Tarihi"
                                        Foreground="{StaticResource BrushMuted}"/>
 
 
                             <DatePicker x:Name="LastMaintenanceDatePicker"
-                                        Margin="0,6,0,10"
+                                        Margin="0,6,0,0"
                                         Style="{StaticResource FixDatePickerText}"
                                         CalendarStyle="{StaticResource FixCalendar}"/>
-                            
+
 
                             <TextBlock Text="Bakım Periyodu (Km)"
                                        Foreground="{StaticResource BrushMuted}"/>
                             <TextBox x:Name="MaintenanceIntervalKmBox"
-                                     Margin="0,6,0,10"/>
+                                     Margin="0,6,0,0"/>
 
                             <TextBlock Text="Bakım Periyodu (Ay)"
                                        Foreground="{StaticResource BrushMuted}"/>
                             <TextBox x:Name="MaintenanceIntervalMonthsBox"
-                                     Margin="0,6,0,10"/>
+                                     Margin="0,6,0,0"/>
 
                         </StackPanel>
                     </Grid>
@@ -530,33 +530,28 @@
                     <DataGrid.Columns>
 
                         <!-- 1. kolon -->
-                        <DataGridTextColumn Header="Plaka" Binding="{Binding Plate}" Width="95"/>
-                        <DataGridTextColumn Header="Sivil" Binding="{Binding InventoryNumber}" Width="105"/>
-                        <DataGridTextColumn Header="Sürücü" Binding="{Binding DriverFullName}" Width="150"/>
-                        <DataGridTextColumn Header="Ait Olduğu Takım" Binding="{Binding VehicleUnit}" Width="130"/>
+                        <DataGridTextColumn Header="Plaka" Binding="{Binding Plate}" Width="60"/>
+                        <DataGridTextColumn Header="Sivil" Binding="{Binding InventoryNumber}" Width="80"/>
+                        <DataGridTextColumn Header="Sürücü" Binding="{Binding DriverFullName}" Width="120"/>
+                        <DataGridTextColumn Header="Ait Olduğu Takım" Binding="{Binding VehicleUnit}" Width="100"/>
 
                         <!-- 2. kolon -->
-                        <DataGridTextColumn Header="Tip" Binding="{Binding VehicleType}" Width="95"/>
-                        <DataGridTextColumn Header="Marka" Binding="{Binding Brand}" Width="90"/>
-                        <DataGridTextColumn Header="Model" Binding="{Binding Model}" Width="105"/>
-                        <DataGridTextColumn Header="Yıl" Binding="{Binding VehicleYear}" Width="60"/>
+                        <DataGridTextColumn Header="Tip" Binding="{Binding VehicleType}" Width="80"/>
+                        <DataGridTextColumn Header="Marka" Binding="{Binding Brand}" Width="80"/>
+                        <DataGridTextColumn Header="Model" Binding="{Binding Model}" Width="90"/>
+                        <DataGridTextColumn Header="Yıl" Binding="{Binding VehicleYear}" Width="50"/>
 
                         <!-- 3. kolon -->
-                        <DataGridTextColumn Header="Km" Binding="{Binding VehicleKm}" Width="70"/>
-
-
-
-
+                        <DataGridTextColumn Header="Km" Binding="{Binding VehicleKm}" Width="50"/>
                         <DataGridTextColumn Header="Görev" Binding="{Binding DutyStatus}" Width="80"/>
-
-                        <DataGridTemplateColumn Header="Bakım" Width="90">
+                        <DataGridTemplateColumn Header="Bakım" Width="80">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding MaintenanceStatus}"
-                       Foreground="{Binding MaintenanceBrush}"
-                       FontWeight="SemiBold"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center"/>
+                                               Foreground="{Binding MaintenanceBrush}"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -565,17 +560,17 @@
 
                         <DataGridTextColumn Header="Yolcu Kpasitesi" Binding="{Binding PassengerCapacity}" Width="60"/>
                         <DataGridTextColumn Header="Yük Kapasitesi" Binding="{Binding LoadCapacity}" Width="60"/>
-                        <DataGridTextColumn Header="Motor" Binding="{Binding MotorNo}" Width="110"/>
-                        <DataGridTextColumn Header="Şase" Binding="{Binding SaseNo}" Width="120"/>
+                        <DataGridTextColumn Header="Motor" Binding="{Binding MotorNo}" Width="60"/>
+                        <DataGridTextColumn Header="Şase" Binding="{Binding SaseNo}" Width="60"/>
 
 
                         <!-- 5. kolon -->
-                        <DataGridTextColumn Header="Son Km" Binding="{Binding LastMaintenanceKm}" Width="75"/>
+                        <DataGridTextColumn Header="Son Km" Binding="{Binding LastMaintenanceKm}" Width="60"/>
                         <DataGridTextColumn Header="Son Tarih"
                                             Binding="{Binding LastMaintenanceDate, StringFormat={}{0:yyyy-MM-dd}}"
-                                            Width="105"/>
-                        <DataGridTextColumn Header="Periyot Km" Binding="{Binding MaintenanceIntervalKm}" Width="75"/>
-                        <DataGridTextColumn Header="Periyot Ay" Binding="{Binding MaintenanceIntervalMonths}" Width="75"/>
+                                            Width="60"/>
+                        <DataGridTextColumn Header="Periyot Km" Binding="{Binding MaintenanceIntervalKm}" Width="60"/>
+                        <DataGridTextColumn Header="Periyot Ay" Binding="{Binding MaintenanceIntervalMonths}" Width="60"/>
 
                     </DataGrid.Columns>
                 </DataGrid>
