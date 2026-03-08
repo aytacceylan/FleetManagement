@@ -30,7 +30,7 @@ namespace FleetManagement.Desktop
                 // Faaliyet / Raporlar
                 // =======================
                 "VehicleDispatchPreparePage" => new Pages.VehicleMovementsPage(), // şimdilik sevk hazırlaya bağlı
-                "QueriesPage" => new Pages.PlaceholderPage("Faaliyet/Raporlar > Sorgula"),
+                "QueriesPage" => new Pages.VehicleMovementReportsPage(),
 
                 // =======================
                 // Tanımlamalar

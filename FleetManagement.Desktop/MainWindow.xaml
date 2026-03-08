@@ -36,14 +36,14 @@
                                   Style="{DynamicResource MenuExpanderStyle}"
                                   IsExpanded="True">
                             <StackPanel>
-                                <Button Style="{DynamicResource SubMenuButtonStyle}"
-                                        Content="Araç Sevk Hazırla"
-                                        Tag="VehicleDispatchPreparePage"
-                                        Click="Menu_Click"/>
 
                                 <Button Style="{DynamicResource SubMenuButtonStyle}"
                                         Content="Sorgula"
                                         Tag="QueriesPage"
+                                        Click="Menu_Click"/>
+                                <Button Style="{DynamicResource SubMenuButtonStyle}"
+                                        Content="Araç Sevk Hazırla"
+                                        Tag="VehicleDispatchPreparePage"
                                         Click="Menu_Click"/>
                             </StackPanel>
                         </Expander>
