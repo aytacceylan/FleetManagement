@@ -224,6 +224,9 @@
 
                         <!-- 3. KOLON -->
                         <StackPanel Grid.Column="4">
+                            
+                            
+                            
                             <TextBlock Text="Görev Durumu" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
                             <TextBox x:Name="StatusBox" Margin="0,6,0,10" IsReadOnly="True"/>
 
@@ -408,14 +411,15 @@
                           SelectionChanged="MovementsGrid_SelectionChanged">
 
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="S.No" Binding="{Binding DailyNo}" Width="50"/>
-                        <DataGridTextColumn Header="Sürücü" Binding="{Binding Driver}" Width="120"/>
-                        <DataGridTextColumn Header="Plaka" Binding="{Binding Plate}" Width="80"/>
-                        <DataGridTextColumn Header="Tarih" Binding="{Binding DateText}" Width="80"/>
-                        <DataGridTextColumn Header="Çıkış Saati" Binding="{Binding ExitTimeText}" Width="80"/>
-                        <DataGridTextColumn Header="Dönüş Saati" Binding="{Binding ReturnTimeText}" Width="80"/>
-                        <DataGridTextColumn Header="Araç Marka" Binding="{Binding VehicleBrand}" Width="80"/>
-                        <DataGridTemplateColumn Header="Durum" Width="120">
+                        <DataGridTextColumn Header="SEVK NO" Binding="{Binding MovementNo}" Width="120"/>
+                        <DataGridTextColumn Header="S.NO" Binding="{Binding DailyNo}" Width="50"/>
+                        <DataGridTextColumn Header="ŞOFÖR ADI" Binding="{Binding Driver}" Width="120"/>
+                        <DataGridTextColumn Header="PLAKA" Binding="{Binding Plate}" Width="80"/>
+                        <DataGridTextColumn Header="TARİH" Binding="{Binding DateText}" Width="80"/>
+                        <DataGridTextColumn Header="ÇIKIŞ SAATİ" Binding="{Binding ExitTimeText}" Width="80"/>
+                        <DataGridTextColumn Header="DÖNÜŞ SAATİ" Binding="{Binding ReturnTimeText}" Width="80"/>
+                        <DataGridTextColumn Header="CİNSİ" Binding="{Binding VehicleBrand}" Width="80"/>
+                        <DataGridTemplateColumn Header="DURUM" Width="120">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Status}"
@@ -425,13 +429,13 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="Güzergah" Binding="{Binding Route}" Width="90"/>
-                        <DataGridTextColumn Header="Araç Komutanı" Binding="{Binding Commander}" Width="90"/>
-                        <DataGridTextColumn Header="Başkanlık" Binding="{Binding Departure}" Width="90"/>
-                        <DataGridTextColumn Header="Yapılan Km" Binding="{Binding KmText}" Width="50"/>
-                        <DataGridTextColumn Header="Taşınan Yolcu" Binding="{Binding PassengerCount}" Width="50"/>
-                        <DataGridTextColumn Header="Taşınan Yük" Binding="{Binding LoadAmount}" Width="50"/>
-                        <DataGridTextColumn Header="Görev Türü" Binding="{Binding DutyType}" Width="50"/>
+                        <DataGridTextColumn Header="GİDİLECEK YER" Binding="{Binding Route}" Width="90"/>
+                        <DataGridTextColumn Header="KİME GİTTİ" Binding="{Binding Commander}" Width="90"/>
+                        <DataGridTextColumn Header="BİRLİK KISIM" Binding="{Binding Departure}" Width="90"/>
+                        <DataGridTextColumn Header="YAPILAN KM" Binding="{Binding KmText}" Width="50"/>
+                        <DataGridTextColumn Header="TAŞINAN YOLCU" Binding="{Binding PassengerCount}" Width="50"/>
+                        <DataGridTextColumn Header="TAŞINAN YÜK" Binding="{Binding LoadAmount}" Width="50"/>
+                        <DataGridTextColumn Header="ÇIKIŞ TÜRÜ" Binding="{Binding DutyType}" Width="50"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

@@ -1,4 +1,6 @@
-﻿namespace FleetManagement.Domain.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace FleetManagement.Domain.Entities
 {
 	public class VehicleMovement : BaseEntity
 	{
@@ -37,6 +39,9 @@
 		public int? StartKm { get; set; }
 		public int? EndKm { get; set; }
 
+		[NotMapped]
+		public string MovementNo => $"{MovementDate:yyyyMMdd}-{DailyNo:000}";
 
-    }
+
+	}
 }

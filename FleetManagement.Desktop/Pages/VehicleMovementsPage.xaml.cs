@@ -143,6 +143,8 @@ namespace FleetManagement.Desktop.Pages
 				return new VehicleMovementRow
 				{
 					Id = m.Id,
+					MovementNo = $"{m.MovementDate:yyyyMMdd}-{m.DailyNo:000}",
+					DailyNo = m.DailyNo,
 					Driver = m.Driver?.FullName ?? m.DriverText,
 					Plate = m.Vehicle?.Plate ?? m.VehiclePlateText ?? "",
 					ExitTimeText = exitLocal.ToString("HH:mm"),
@@ -162,7 +164,9 @@ namespace FleetManagement.Desktop.Pages
 					DutyType = m.Description,
 
 					ExitDateTimeUtc = m.ExitDateTime,
-					ReturnDateTimeUtc = m.ReturnDateTime
+					ReturnDateTimeUtc = m.ReturnDateTime,
+				
+
 				};
 			}).ToList();
 

@@ -40,5 +40,6 @@ namespace FleetManagement.Desktop.Pages
 		public int? LoadAmount { get; set; }
 		public string? DutyType { get; set; }
 
+		public string MovementNo { get; set; } = "";
 	}
 }
