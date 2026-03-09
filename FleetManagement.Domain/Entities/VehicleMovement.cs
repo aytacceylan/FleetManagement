@@ -2,8 +2,12 @@
 {
 	public class VehicleMovement : BaseEntity
 	{
-		// 🔗 Opsiyonel ilişkiler
-		public int? VehicleId { get; set; }
+
+        public DateTime MovementDate { get; set; }
+        public int DailyNo { get; set; }
+
+        // 🔗 Opsiyonel ilişkiler
+        public int? VehicleId { get; set; }
 		public Vehicle? Vehicle { get; set; }
 
 		public int? DriverId { get; set; }
@@ -32,5 +36,7 @@
 		// 🚗 KM (opsiyonel)
 		public int? StartKm { get; set; }
 		public int? EndKm { get; set; }
-	}
+
+
+    }
 }

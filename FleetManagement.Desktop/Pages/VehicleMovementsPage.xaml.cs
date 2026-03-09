@@ -28,12 +28,11 @@ namespace FleetManagement.Desktop.Pages
 		{
 			InitializeComponent();
 
-			ExitDatePicker.SelectedDate = DateTime.Today;
-			ExitTimeBox.Text = "08:00";
-			ReturnDatePicker.SelectedDate = null;
-			ReturnTimeBox.Text = "17:00";
+            SetExitNow();
+            ReturnDatePicker.SelectedDate = null;
+            ReturnTimeBox.Text = "17:00";
 
-			Loaded += async (_, __) =>
+            Loaded += async (_, __) =>
 			{
 				await LoadLookupsAsync();
 				await LoadAsync();
@@ -480,12 +479,11 @@ namespace FleetManagement.Desktop.Pages
 			DailyNoBox.Text = "";
 			StatusBox.Text = "Başlamadı";
 
-			ExitDatePicker.SelectedDate = DateTime.Today;
-			ExitTimeBox.Text = "08:00";
-			ReturnDatePicker.SelectedDate = null;
-			ReturnTimeBox.Text = "17:00";
+            SetExitNow();
+            ReturnDatePicker.SelectedDate = null;
+            ReturnTimeBox.Text = "17:00";
 
-			DoneKmBox.Text = "";
+            DoneKmBox.Text = "";
 			PassengerCountBox.Text = "";
 			LoadAmountBox.Text = "";
 		}
@@ -812,5 +810,12 @@ namespace FleetManagement.Desktop.Pages
 			wb.SaveAs(path);
 			return path;
 		}
-	}
+
+        private void SetExitNow()
+        {
+            var now = DateTime.Now;
+            ExitDatePicker.SelectedDate = now.Date;
+            ExitTimeBox.Text = now.ToString("HH:mm");
+        }
+    }
 }
