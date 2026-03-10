@@ -45,7 +45,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="12"/>
-            <RowDefinition Height="300"/>
+            <RowDefinition Height="280"/>
             <RowDefinition Height="12"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -69,15 +69,20 @@
                                Foreground="{StaticResource BrushMuted}"/>
                 </StackPanel>
 
-                <Button Grid.Column="1"
-                        Content="Yenile"
-                        MinWidth="120"
-                        Click="Refresh_Click"/>
+                <Button Grid.Column="1" MinWidth="120" Click="Refresh_Click">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="🔄" FontSize="16" Margin="0,0,6,0" Foreground="#FFFF00"/>
+                        <TextBlock Text="Yenile"/>
+                    </StackPanel>
+                </Button>
 
-                <Button Grid.Column="3"
-                        Content="Yeni Araç"
-                        MinWidth="150"
-                        Click="New_Click"/>
+                <Button Grid.Column="3" MinWidth="150" Click="New_Click">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="➕" FontSize="16" Margin="0,0,6,0" Foreground="#9ACD32"/>
+                        <TextBlock Text="Yeni Kayıt"/>
+                    </StackPanel>
+                </Button>
+
             </Grid>
         </Border>
 
@@ -107,19 +112,28 @@
                                VerticalAlignment="Center"/>
 
                     <Button Grid.Column="1"
-                            Content="Kaydet"
-                            Width="110"
-                            Click="Save_Click"/>
+                           Width="110" Click="Save_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="💾" FontSize="16" Margin="0,0,6,0" Foreground="#32CD32"/>
+                            <TextBlock Text="Kaydet"/>
+                        </StackPanel>
+                    </Button>
 
                     <Button Grid.Column="3"
-                            Content="Sil"
-                            Width="110"
-                            Click="Delete_Click"/>
+                            Width="110" Click="Delete_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="🗑" FontSize="16" Margin="0,0,6,0" Foreground="red"/>
+                            <TextBlock Text="Sil"/>
+                        </StackPanel>
+                    </Button>
 
                     <Button Grid.Column="5"
-                            Content="Temizle"
-                            Width="110"
-                            Click="Clear_Click"/>
+                            Width="110" Click="Clear_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="🧹" FontSize="16" Margin="0,0,6,0" Foreground="#00FFFF"/>
+                            <TextBlock Text="Temizle"/>
+                        </StackPanel>
+                    </Button>
                 </Grid>
 
                 <!-- FORM CONTENT -->
@@ -530,10 +544,10 @@
                     <DataGrid.Columns>
 
                         <!-- 1. kolon -->
-                        <DataGridTextColumn Header="Plaka" Binding="{Binding Plate}" Width="60"/>
-                        <DataGridTextColumn Header="Sivil" Binding="{Binding InventoryNumber}" Width="80"/>
-                        <DataGridTextColumn Header="Sürücü" Binding="{Binding DriverFullName}" Width="120"/>
-                        <DataGridTextColumn Header="Ait Olduğu Takım" Binding="{Binding VehicleUnit}" Width="100"/>
+                        <DataGridTextColumn Header="PLAKA" Binding="{Binding Plate}" Width="60"/>
+                        <DataGridTextColumn Header="SİVİL PLAKA" Binding="{Binding InventoryNumber}" Width="80"/>
+                        <DataGridTextColumn Header="ŞOFÖR ADI" Binding="{Binding DriverFullName}" Width="120"/>
+                        <DataGridTextColumn Header="BAĞLI TK/KS" Binding="{Binding VehicleUnit}" Width="100"/>
 
                         <!-- 2. kolon -->
                         <DataGridTextColumn Header="Tip" Binding="{Binding VehicleType}" Width="80"/>

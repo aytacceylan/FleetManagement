@@ -31,15 +31,19 @@
                                Foreground="{StaticResource BrushMuted}"/>
                 </StackPanel>
 
-                <Button Grid.Column="1"
-                        Content="Kılavuzu Aç"
-                        MinWidth="140"
-                        Click="OpenGuide_Click"/>
+                <Button Grid.Column="1" MinWidth="140" Click="OpenGuide_Click">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="📖" FontSize="16" Margin="0,0,6,0" Foreground="#FFFF00"/>
+                        <TextBlock Text="Kılavuzu Aç"/>
+                    </StackPanel>
+                </Button>
 
-                <Button Grid.Column="3"
-                        Content="Kılavuzu Dışa Aktar"
-                        MinWidth="170"
-                        Click="ExportGuide_Click"/>
+                <Button Grid.Column="3" Width="170" Click="ExportGuide_Click">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="📊" FontSize="16" Margin="0,0,6,0" Foreground="#9ACD32"/>
+                        <TextBlock Text="Kılavuzu Dışa Aktar"/>
+                    </StackPanel>
+                </Button>
             </Grid>
         </Border>
 
@@ -67,9 +71,31 @@
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
 
-                    <Button Grid.Column="1" Content="Kaydet" Width="110" Click="Save_Click"/>
-                    <Button Grid.Column="3" Content="Sil" Width="110" Click="Delete_Click"/>
-                    <Button Grid.Column="5" Content="Temizle" Width="110" Click="Clear_Click"/>
+                    <Button Grid.Column="1"
+                           Width="110" Click="Save_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="💾" FontSize="16" Margin="0,0,6,0" Foreground="#32CD32"/>
+                            <TextBlock Text="Kaydet"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Grid.Column="3"
+                            Width="110" Click="Delete_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="🗑" FontSize="16" Margin="0,0,6,0" Foreground="red"/>
+                            <TextBlock Text="Sil"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Grid.Column="5"
+                            Width="110" Click="Clear_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="🧹" FontSize="16" Margin="0,0,6,0" Foreground="#00FFFF"/>
+                            <TextBlock Text="Temizle"/>
+                        </StackPanel>
+                    </Button>
+                    
+                    
                 </Grid>
 
                 <!-- 2 kolon: Başlık + İçerik -->

@@ -60,14 +60,26 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Araç Hareket" FontSize="22" FontWeight="SemiBold"/>
+                    <TextBlock Text="Araç Hareket" FontSize="24" FontWeight="SemiBold"/>
                     <TextBlock Text="Araç hareket kayıtlarını oluşturun ve takip edin."
                                Margin="0,6,0,0"
                                Foreground="{StaticResource BrushMuted}"/>
                 </StackPanel>
 
-                <Button Grid.Column="1" Content="Yenile" MinWidth="120" Click="Refresh_Click"/>
-                <Button Grid.Column="3" Content="Yeni Kayıt" MinWidth="150" Click="New_Click"/>
+                <Button Grid.Column="1" MinWidth="120" Click="Refresh_Click">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="🔄" FontSize="16" Margin="0,0,6,0" Foreground="#FFFF00"/>
+                        <TextBlock Text="Yenile"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Grid.Column="3" MinWidth="150" Click="New_Click">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="➕" FontSize="16" Margin="0,0,6,0" Foreground="#9ACD32"/>
+                        <TextBlock Text="Yeni Kayıt"/>
+                    </StackPanel>
+                </Button>
+
             </Grid>
         </Border>
 
@@ -96,9 +108,30 @@
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
 
-                    <Button Grid.Column="1" Content="Kaydet" Width="110" Click="Save_Click"/>
-                    <Button Grid.Column="3" Content="Sil" Width="110" Click="Delete_Click"/>
-                    <Button Grid.Column="5" Content="Temizle" Width="110" Click="Clear_Click"/>
+                    <Button Grid.Column="1"
+                           Width="110" Click="Save_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="💾" FontSize="16" Margin="0,0,6,0" Foreground="#32CD32"/>
+                            <TextBlock Text="Kaydet"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Grid.Column="3"
+                            Width="110" Click="Delete_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="🗑" FontSize="16" Margin="0,0,6,0" Foreground="red"/>
+                            <TextBlock Text="Sil"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Grid.Column="5"
+                            Width="110" Click="Clear_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="🧹" FontSize="16" Margin="0,0,6,0" Foreground="#00FFFF"/>
+                            <TextBlock Text="Temizle"/>
+                        </StackPanel>
+                    </Button>
+                    
                 </Grid>
 
                 <!-- FORM CONTENT -->
@@ -382,15 +415,19 @@
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
 
-                    <Button Grid.Column="1"
-                            Content="Günlük Export"
-                            MinWidth="120"
-                            Click="ExportDaily_Click"/>
+                    <Button Grid.Column="1" Width="120" Click="ExportDaily_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="📊" FontSize="16" Margin="0,0,6,0" Foreground="#FFFF00"/>
+                            <TextBlock Text="Günlük Aktar"/>
+                        </StackPanel>
+                    </Button>
 
-                    <Button Grid.Column="3"
-                            Content="Aylık Export"
-                            MinWidth="120"
-                            Click="ExportMonthly_Click"/>
+                    <Button Grid.Column="3" Width="120" Click="ExportMonthly_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="📊" FontSize="16" Margin="0,0,6,0" Foreground="#FFFF00"/>
+                            <TextBlock Text="Aylık Aktar"/>
+                        </StackPanel>
+                    </Button>
 
                     <StackPanel Grid.Column="5">
                         <TextBox x:Name="SearchBox" TextChanged="SearchBox_TextChanged"/>
@@ -408,34 +445,36 @@
                           IsReadOnly="True"
                           CanUserAddRows="False"
                           SelectionMode="Single"
+                          
                           SelectionChanged="MovementsGrid_SelectionChanged">
 
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="SEVK NO" Binding="{Binding MovementNo}" Width="120"/>
+                        <DataGridTextColumn Header="SEVK NO" Binding="{Binding MovementNo}" Width="100"/>
                         <DataGridTextColumn Header="S.NO" Binding="{Binding DailyNo}" Width="50"/>
-                        <DataGridTextColumn Header="ŞOFÖR ADI" Binding="{Binding Driver}" Width="120"/>
+                        <DataGridTextColumn Header="ŞOFÖR ADI" Binding="{Binding Driver}" Width="140"/>
                         <DataGridTextColumn Header="PLAKA" Binding="{Binding Plate}" Width="80"/>
                         <DataGridTextColumn Header="TARİH" Binding="{Binding DateText}" Width="80"/>
-                        <DataGridTextColumn Header="ÇIKIŞ SAATİ" Binding="{Binding ExitTimeText}" Width="80"/>
-                        <DataGridTextColumn Header="DÖNÜŞ SAATİ" Binding="{Binding ReturnTimeText}" Width="80"/>
+
+                        <DataGridTextColumn Header="ÇIKIŞ SAATİ" Binding="{Binding ExitTimeText}" Width="90"/>
+                        <DataGridTextColumn Header="DÖNÜŞ SAATİ" Binding="{Binding ReturnTimeText}" Width="100"/>
                         <DataGridTextColumn Header="CİNSİ" Binding="{Binding VehicleBrand}" Width="80"/>
-                        <DataGridTemplateColumn Header="DURUM" Width="120">
+                        <DataGridTemplateColumn Header="DURUM" Width="100">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Status}"
-                       Foreground="{Binding StatusBrush}"
-                       FontWeight="SemiBold"
-                       VerticalAlignment="Center"/>
+                                               Foreground="{Binding StatusBrush}"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="GİDİLECEK YER" Binding="{Binding Route}" Width="90"/>
-                        <DataGridTextColumn Header="KİME GİTTİ" Binding="{Binding Commander}" Width="90"/>
-                        <DataGridTextColumn Header="BİRLİK KISIM" Binding="{Binding Departure}" Width="90"/>
-                        <DataGridTextColumn Header="YAPILAN KM" Binding="{Binding KmText}" Width="50"/>
-                        <DataGridTextColumn Header="TAŞINAN YOLCU" Binding="{Binding PassengerCount}" Width="50"/>
-                        <DataGridTextColumn Header="TAŞINAN YÜK" Binding="{Binding LoadAmount}" Width="50"/>
-                        <DataGridTextColumn Header="ÇIKIŞ TÜRÜ" Binding="{Binding DutyType}" Width="50"/>
+                        <DataGridTextColumn Header="GİDİLECEK YER" Binding="{Binding Route}" Width="100"/>
+                        <DataGridTextColumn Header="KİME GİTTİ" Binding="{Binding Commander}" Width="100"/>
+                        <DataGridTextColumn Header="EMRİNE GİRDİĞİ BRL/KS" Binding="{Binding Departure}" Width="100"/>
+                        <DataGridTextColumn Header="YAPILAN KM" Binding="{Binding KmText}" Width="90"/>
+                        <DataGridTextColumn Header="TAŞINAN YOLCU" Binding="{Binding PassengerCount}" Width="110"/>
+                        <DataGridTextColumn Header="TAŞINAN YÜK" Binding="{Binding LoadAmount}" Width="100"/>
+                        <DataGridTextColumn Header="ÇIKIŞ TÜRÜ" Binding="{Binding DutyType}" Width="100"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

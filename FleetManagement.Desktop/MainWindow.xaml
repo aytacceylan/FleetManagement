@@ -55,7 +55,7 @@
                             <StackPanel>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç" Tag="VehiclesPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Sürücü" Tag="DriversPage" Click="Menu_Click"/>
-                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Bölük Birim" Tag="UnitsPage" Click="Menu_Click"/>
+                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Ait Olduğu Takım" Tag="UnitsPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Tipi" Tag="VehicleTypesPage" Click="Menu_Click"/>
 
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Marka" Tag="VehicleBrandsPage" Click="Menu_Click"/>

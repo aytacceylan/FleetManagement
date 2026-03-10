@@ -67,9 +67,13 @@
                 </StackPanel>
 
                 <Button Grid.Column="1"
-                        Content="Temizle"
-                        MinWidth="120"
-                        Click="ClearFilters_Click"/>
+                            MinWidth="120" Click="ClearFilters_Click">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="🧹" FontSize="16" Margin="0,0,6,0" Foreground="#00FFFF"/>
+                        <TextBlock Text="Temizle"/>
+                    </StackPanel>
+                </Button>
+                
             </Grid>
         </Border>
 
@@ -97,20 +101,26 @@
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
 
-                    <Button Grid.Column="1"
-                            Content="Sorgula"
-                            Width="110"
-                            Click="Search_Click"/>
+                    <Button Grid.Column="1" Width="140" Click="Search_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="🔎" FontSize="16" Margin="0,0,6,0" Foreground="#FF6347"/>
+                            <TextBlock Text="Sorgula"/>
+                        </StackPanel>
+                    </Button>
 
-                    <Button Grid.Column="3"
-                            Content="Excel Export"
-                            Width="120"
-                            Click="ExportExcel_Click"/>
+                    <Button Grid.Column="3" Width="140" Click="ExportExcel_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="📊" FontSize="16" Margin="0,0,6,0" Foreground="#66CDAA"/>
+                            <TextBlock Text="Dışa Aktar"/>
+                        </StackPanel>
+                    </Button>
 
-                    <Button Grid.Column="5"
-                            Content="Yenile"
-                            Width="110"
-                            Click="Refresh_Click"/>
+                    <Button Grid.Column="5" MinWidth="140" Click="Refresh_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="🔄" FontSize="16" Margin="0,0,6,0" Foreground="#FFFF00"/>
+                            <TextBlock Text="Yenile"/>
+                        </StackPanel>
+                    </Button>
                 </Grid>
 
                 <Grid Grid.Row="2">

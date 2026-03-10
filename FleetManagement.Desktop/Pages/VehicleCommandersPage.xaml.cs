@@ -71,13 +71,6 @@ namespace FleetManagement.Desktop.Pages
                     return;
                 }
 
-                // ✅ DB zorunlu olduğu için şimdilik UI’da da zorunlu yapıyoruz
-                if (string.IsNullOrWhiteSpace(unitName))
-                {
-                    Notify("Birlik/Birim zorunlu (DB kısıtı var).", "Uyarı");
-                    return;
-                }
-
                 var exists = await _db.VehicleCommanders.AsNoTracking()
                     .AnyAsync(x => !x.IsDeleted
                                    && x.CommanderNumber.ToLower() == number.ToLower()
@@ -96,7 +89,7 @@ namespace FleetManagement.Desktop.Pages
                         CommanderNumber = number,
                         FullName = fullName,
                         PhoneNumber = string.IsNullOrWhiteSpace(phone) ? null : phone,
-                        UnitName = unitName,
+                        UnitName = string.IsNullOrWhiteSpace(unitName) ? null : unitName,
                         CreatedAt = DateTime.UtcNow,
                         IsDeleted = false
                     };
@@ -117,7 +110,7 @@ namespace FleetManagement.Desktop.Pages
                     entity.CommanderNumber = number;
                     entity.FullName = fullName;
                     entity.PhoneNumber = string.IsNullOrWhiteSpace(phone) ? null : phone;
-                    entity.UnitName = unitName;
+                    entity.UnitName = string.IsNullOrWhiteSpace(unitName) ? null : unitName;
 
                     await _db.SaveChangesAsync();
                     Notify($"Güncellendi: #{entity.Id}");

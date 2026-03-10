@@ -29,8 +29,20 @@
                                Foreground="{StaticResource BrushMuted}"/>
                 </StackPanel>
 
-                <Button Grid.Column="1" Content="Yenile" MinWidth="120" Click="Refresh_Click"/>
-                <Button Grid.Column="3" Content="Yeni" MinWidth="120" Click="New_Click"/>
+                <Button Grid.Column="1" MinWidth="120" Click="Refresh_Click">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="🔄" FontSize="16" Margin="0,0,6,0" Foreground="#FFFF00"/>
+                        <TextBlock Text="Yenile"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Grid.Column="3" MinWidth="150" Click="New_Click">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="➕" FontSize="16" Margin="0,0,6,0" Foreground="#9ACD32"/>
+                        <TextBlock Text="Yeni Kayıt"/>
+                    </StackPanel>
+                </Button>
+
             </Grid>
         </Border>
 
@@ -54,9 +66,31 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Text="Komutan Formu" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                    <Button Grid.Column="1" Content="Kaydet" Width="110" Click="Save_Click"/>
-                    <Button Grid.Column="3" Content="Sil" Width="110" Click="Delete_Click"/>
-                    <Button Grid.Column="5" Content="Temizle" Width="110" Click="Clear_Click"/>
+
+                    <Button Grid.Column="1"
+                           Width="110" Click="Save_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="💾" FontSize="16" Margin="0,0,6,0" Foreground="#32CD32"/>
+                            <TextBlock Text="Kaydet"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Grid.Column="3"
+                            Width="110" Click="Delete_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="🗑" FontSize="16" Margin="0,0,6,0" Foreground="red"/>
+                            <TextBlock Text="Sil"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Grid.Column="5"
+                            Width="110" Click="Clear_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="🧹" FontSize="16" Margin="0,0,6,0" Foreground="#00FFFF"/>
+                            <TextBlock Text="Temizle"/>
+                        </StackPanel>
+                    </Button>
+
                 </Grid>
 
                 <!-- 4 kolon -->
@@ -82,14 +116,17 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="4">
+                        <TextBlock Text="Birlik/Birim" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBox x:Name="UnitNameBox" Margin="0,6,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="6">
                         <TextBlock Text="Telefon" Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="PhoneBox" Margin="0,6,0,0"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Column="6">
-                        <TextBlock Text="Birlik/Birim" Foreground="{StaticResource BrushMuted}"/>
-                        <TextBox x:Name="UnitNameBox" Margin="0,6,0,0"/>
-                    </StackPanel>
+
+                    
                 </Grid>
             </Grid>
         </Border>

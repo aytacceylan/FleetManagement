@@ -59,7 +59,7 @@ namespace FleetManagement.Desktop
                 // =======================
                 // Default
                 // =======================
-                _ => new Pages.DashboardPage()
+                // _ => new Pages.DashboardPage()
             };
         }
     }
