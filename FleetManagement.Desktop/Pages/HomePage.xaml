@@ -237,7 +237,37 @@
                 </Grid>
             </Border>
 
-            <!-- 3: Bakımı Geçen / Yaklaşan -->
+            <!-- 3: Görevi Devam Eden Hareketler -->
+            <Border Grid.Row="2" Grid.Column="2" Style="{StaticResource FmCard}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="12"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Görevi Devam Eden Hareketler"
+                       Foreground="Black"
+                       FontSize="16"
+                       FontWeight="SemiBold"/>
+
+                    <DataGrid Grid.Row="2"
+                      x:Name="OngoingMovementsGrid"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      CanUserAddRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Plaka" Binding="{Binding Plate}" Width="100"/>
+                            <DataGridTextColumn Header="Sürücü" Binding="{Binding Driver}" Width="150"/>
+                            <DataGridTextColumn Header="Çıkış" Binding="{Binding ExitTime}" Width="90"/>
+                            <DataGridTextColumn Header="Güzergah" Binding="{Binding Route}" Width="140"/>
+                            <DataGridTextColumn Header="Araç Marka" Binding="{Binding VehicleBrand}" Width="120"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+
+            <!-- 4: Bakımı Geçen / Yaklaşan -->
             <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource FmCard}">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -268,35 +298,8 @@
                 </Grid>
             </Border>
 
-            <!-- 4: Görevi Devam Eden Hareketler -->
-            <Border Grid.Row="2" Grid.Column="2" Style="{StaticResource FmCard}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="12"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
 
-                    <TextBlock Text="Görevi Devam Eden Hareketler"
-                       Foreground="Black"
-                       FontSize="16"
-                       FontWeight="SemiBold"/>
-
-                    <DataGrid Grid.Row="2"
-                      x:Name="OngoingMovementsGrid"
-                      AutoGenerateColumns="False"
-                      IsReadOnly="True"
-                      CanUserAddRows="False">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Plaka" Binding="{Binding Plate}" Width="100"/>
-                            <DataGridTextColumn Header="Sürücü" Binding="{Binding Driver}" Width="150"/>
-                            <DataGridTextColumn Header="Çıkış" Binding="{Binding ExitTime}" Width="90"/>
-                            <DataGridTextColumn Header="Güzergah" Binding="{Binding Route}" Width="140"/>
-                            <DataGridTextColumn Header="Araç Marka" Binding="{Binding VehicleBrand}" Width="120"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-            </Border>
+            
         </Grid>
     </Grid>
 </Page>

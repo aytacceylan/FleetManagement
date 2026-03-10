@@ -109,8 +109,8 @@ namespace FleetManagement.Desktop.Pages
 					Plate = m.Vehicle?.Plate ?? m.VehiclePlateText ?? "",
 					ExitTimeText = exitLocal.ToString("HH:mm"),
 					ReturnTimeText = returnLocal is null ? "—" : returnLocal.Value.ToString("HH:mm"),
-					VehicleBrand = GetVehicleBrandSafe(m.Vehicle),
-					Status = status,
+                    VehicleType = m.Vehicle?.VehicleType,
+                    Status = status,
 					DateText = exitLocal.ToString("dd.MM.yyyy"),
 					Route = m.Route,
 					Commander = m.VehicleCommander?.FullName ?? m.CommanderText,
@@ -189,7 +189,7 @@ namespace FleetManagement.Desktop.Pages
 				query = query.Where(x => (x.Route ?? "").ToLowerInvariant().Contains(route));
 
 			if (!string.IsNullOrWhiteSpace(brand))
-				query = query.Where(x => (x.VehicleBrand ?? "").ToLowerInvariant().Contains(brand));
+				query = query.Where(x => (x.VehicleType ?? "").ToLowerInvariant().Contains(brand));
 
 			// Ait olduğu takım: VehicleMovementRow içinde yok.
 			// Şimdilik plaka üzerinden Vehicles tablosuna bakarak filtreliyoruz.
@@ -325,7 +325,7 @@ namespace FleetManagement.Desktop.Pages
 				ws.Cell(row, 2).Value = x.DateText ?? "";
 				ws.Cell(row, 3).Value = x.Plate ?? "";
 				ws.Cell(row, 4).Value = x.Driver ?? "";
-				ws.Cell(row, 5).Value = x.VehicleBrand ?? "";
+				ws.Cell(row, 5).Value = x.VehicleType ?? "";
 				ws.Cell(row, 6).Value = x.Route ?? "";
 				ws.Cell(row, 7).Value = x.DutyType ?? "";
 				ws.Cell(row, 8).Value = x.Departure ?? "";

@@ -110,9 +110,9 @@ namespace FleetManagement.Desktop.Pages
 				.Select(x => new { Display = x.Name })
 				.ToListAsync();
 
-			VehicleBrandCombo.ItemsSource = brands;
-			VehicleBrandCombo.DisplayMemberPath = "Display";
-			VehicleBrandCombo.SelectedValuePath = "Display";
+			VehicleTypeCombo.ItemsSource = brands;
+			VehicleTypeCombo.DisplayMemberPath = "Display";
+			VehicleTypeCombo.SelectedValuePath = "Display";
 		}
 
 		// =========================
@@ -149,8 +149,8 @@ namespace FleetManagement.Desktop.Pages
 					Plate = m.Vehicle?.Plate ?? m.VehiclePlateText ?? "",
 					ExitTimeText = exitLocal.ToString("HH:mm"),
 					ReturnTimeText = returnLocal is null ? "—" : returnLocal.Value.ToString("HH:mm"),
-					VehicleBrand = GetVehicleBrandSafe(m.Vehicle),
-					Status = status,
+                    VehicleType = m.Vehicle?.VehicleType,
+                    Status = status,
 					StatusBrush = GetStatusBrush(status),
 					DateText = exitLocal.ToString("dd.MM.yyyy"),
 					Route = m.Route,
@@ -319,8 +319,8 @@ namespace FleetManagement.Desktop.Pages
 						entity.StartKm = startKm;
 						entity.EndKm = doneKm is null ? null : startKm + doneKm.Value;
 
-						if (string.IsNullOrWhiteSpace(VehicleBrandCombo.Text))
-							VehicleBrandCombo.Text = GetVehicleBrandSafe(vehicle) ?? "";
+						if (string.IsNullOrWhiteSpace(VehicleTypeCombo.Text))
+							VehicleTypeCombo.Text = GetVehicleBrandSafe(vehicle) ?? "";
 					}
 					else
 					{
@@ -433,7 +433,7 @@ namespace FleetManagement.Desktop.Pages
 			else
 				DoneKmBox.Text = "";
 
-			VehicleBrandCombo.Text = GetVehicleBrandSafe(m.Vehicle) ?? "";
+			VehicleTypeCombo.Text = GetVehicleBrandSafe(m.Vehicle) ?? "";
 			StatusBox.Text = CalcStatus(m.ExitDateTime, m.ReturnDateTime);
 			DailyNoBox.Text = row.DailyNo.ToString();
 		}
@@ -452,7 +452,7 @@ namespace FleetManagement.Desktop.Pages
 			var filtered = _all.Where(x =>
 				(x.Driver ?? "").ToLowerInvariant().Contains(q) ||
 				(x.Plate ?? "").ToLowerInvariant().Contains(q) ||
-				(x.VehicleBrand ?? "").ToLowerInvariant().Contains(q) ||
+				(x.VehicleType ?? "").ToLowerInvariant().Contains(q) ||
 				(x.Status ?? "").ToLowerInvariant().Contains(q) ||
 				(x.Route ?? "").ToLowerInvariant().Contains(q) ||
 				(x.Commander ?? "").ToLowerInvariant().Contains(q) ||
@@ -478,7 +478,7 @@ namespace FleetManagement.Desktop.Pages
 			RouteCombo.SelectedIndex = -1;
 			DepartureCombo.SelectedIndex = -1;
 			DutyTypeCombo.SelectedIndex = -1;
-			VehicleBrandCombo.SelectedIndex = -1;
+			VehicleTypeCombo.SelectedIndex = -1;
 
 			DailyNoBox.Text = "";
 			StatusBox.Text = "Başlamadı";
@@ -570,24 +570,24 @@ namespace FleetManagement.Desktop.Pages
 			return true;
 		}
 
-		private static string CalcStatus(DateTime exitUtc, DateTime? returnUtc)
-		{
-			if (returnUtc is not null)
-				return "Tamamlandı";
+        private static string CalcStatus(DateTime exitUtc, DateTime? returnUtc)
+        {
+            if (returnUtc is not null)
+                return "Tamamlandı";
 
-			var exitLocal = exitUtc.ToLocalTime();
-			var now = DateTime.Now;
+            var exitLocal = exitUtc.ToLocalTime();
+            var now = DateTime.Now;
 
-			if (exitLocal.Date > now.Date)
-				return "Planlandı";
+            if (exitLocal.Date > now.Date)
+                return "Planlandı";
 
-			if (exitLocal.Date == now.Date && exitLocal.TimeOfDay > now.TimeOfDay)
-				return "Başlamadı";
+            if (exitLocal.Date == now.Date && exitLocal.TimeOfDay > now.TimeOfDay)
+                return "Başlamadı";
 
-			return "Devam Ediyor";
-		}
+            return "Devam Ediyor";
+        }
 
-		private static string? GetVehicleBrandSafe(Vehicle? v)
+        private static string? GetVehicleBrandSafe(Vehicle? v)
 		{
 			if (v is null) return null;
 
@@ -727,7 +727,7 @@ namespace FleetManagement.Desktop.Pages
 					Csv(x.Plate),
 					Csv(x.ExitTimeText),
 					Csv(x.ReturnTimeText),
-					Csv(x.VehicleBrand),
+					Csv(x.VehicleType),
 					Csv(x.Status),
 					Csv(x.DateText),
 					Csv(x.Route),
@@ -752,7 +752,7 @@ namespace FleetManagement.Desktop.Pages
 		}
 		private static string ExportRowsToExcel(List<VehicleMovementRow> rows, string fileName)
 		{
-			var folder = @"C:\FleetReports";
+			var folder = @"D:\Görev Kayıt Defteri";
 			Directory.CreateDirectory(folder);
 
 			var path = Path.Combine(folder, fileName);
@@ -784,7 +784,7 @@ namespace FleetManagement.Desktop.Pages
 				ws.Cell(row, 3).Value = x.Plate ?? "";
 				ws.Cell(row, 4).Value = x.ExitTimeText ?? "";
 				ws.Cell(row, 5).Value = x.ReturnTimeText ?? "";
-				ws.Cell(row, 6).Value = x.VehicleBrand ?? "";
+				ws.Cell(row, 6).Value = x.VehicleType ?? "";
 				ws.Cell(row, 7).Value = x.Status ?? "";
 				ws.Cell(row, 8).Value = x.DateText ?? "";
 				ws.Cell(row, 9).Value = x.Route ?? "";

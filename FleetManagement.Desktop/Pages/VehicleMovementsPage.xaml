@@ -205,8 +205,8 @@
                                     </Style>
                                 </ComboBox.ItemContainerStyle>
                             </ComboBox>
-                            <TextBlock Text="Araç Marka" Foreground="{StaticResource BrushMuted}"/>
-                            <ComboBox x:Name="VehicleBrandCombo"
+                            <TextBlock Text="Araç Tipi" Foreground="{StaticResource BrushMuted}"/>
+                            <ComboBox x:Name="VehicleTypeCombo"
                                       Margin="0,6,0,0"
                                       IsEditable="True"
                                       IsReadOnly="True"
@@ -457,7 +457,7 @@
 
                         <DataGridTextColumn Header="ÇIKIŞ SAATİ" Binding="{Binding ExitTimeText}" Width="90"/>
                         <DataGridTextColumn Header="DÖNÜŞ SAATİ" Binding="{Binding ReturnTimeText}" Width="100"/>
-                        <DataGridTextColumn Header="CİNSİ" Binding="{Binding VehicleBrand}" Width="80"/>
+                        <DataGridTextColumn Header="CİNSİ" Binding="{Binding VehicleType}" Width="80"/>
                         <DataGridTemplateColumn Header="DURUM" Width="100">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
