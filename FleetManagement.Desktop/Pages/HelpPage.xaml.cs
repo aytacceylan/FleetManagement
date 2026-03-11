@@ -62,6 +62,12 @@ namespace FleetManagement.Desktop.Pages
 
         private async void Refresh_Click(object sender, RoutedEventArgs e) => await LoadAsync();
 
+        private void New_Click(object sender, RoutedEventArgs e)
+        {
+            ClearForm();
+            Notify("Yeni kayıt için form hazır.");
+        }
+
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
             ClearForm();
