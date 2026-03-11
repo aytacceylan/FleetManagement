@@ -90,8 +90,13 @@ namespace FleetManagement.Infrastructure.Data
                     .HasForeignKey(x => x.VehicleCommanderId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                // daily no id uniq olsun
-                e.HasIndex(x => new { x.MovementDate, x.DailyNo }).IsUnique().HasFilter("\"IsDeleted\" = false");
+				e.HasOne(x => x.SecondDriver)
+	                .WithMany()
+	                .HasForeignKey(x => x.SecondDriverId)
+	                .OnDelete(DeleteBehavior.Restrict);
+
+				// daily no id uniq olsun
+				e.HasIndex(x => new { x.MovementDate, x.DailyNo }).IsUnique().HasFilter("\"IsDeleted\" = false");
 
 
             });

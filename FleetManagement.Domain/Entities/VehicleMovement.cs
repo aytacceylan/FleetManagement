@@ -44,6 +44,11 @@ namespace FleetManagement.Domain.Entities
 		[NotMapped]
 		public string MovementNo => $"{MovementDate:yyyyMMdd}-{DailyNo:000}";
 
+		public int? SecondDriverId { get; set; }
+		public Driver? SecondDriver { get; set; }
+
+		public string? SecondDriverText { get; set; }
+
 
 	}
 }
