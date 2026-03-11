@@ -109,7 +109,7 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Başlık" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBlock Text="BAŞLIK" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
                             <TextBox x:Name="TitleBox" Margin="0,6,0,10"/>
 
                             <TextBlock Text="Kısa Not" Foreground="{StaticResource BrushMuted}"/>
@@ -117,7 +117,7 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="Açıklama" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBlock Text="AÇIKLAMA" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
                             <TextBox x:Name="ContentBox"
                                      Margin="0,6,0,10"
                                      Height="120"
@@ -144,8 +144,9 @@
                         <ColumnDefinition Width="280"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Notlar / Kurallar"
+                    <TextBlock Text="NOTLAR / KURALLAR"
                                FontSize="16"
+                               Foreground="{StaticResource BrushMuted}"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
 
@@ -167,10 +168,10 @@
                           SelectionMode="Single"
                           SelectionChanged="Grid_SelectionChanged">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
-                        <DataGridTextColumn Header="Başlık" Binding="{Binding Title}" Width="220"/>
-                        <DataGridTextColumn Header="Açıklama" Binding="{Binding Content}" Width="*"/>
-                        <DataGridTextColumn Header="Oluşturma" Binding="{Binding CreatedAt}" Width="180"/>
+                        <DataGridTextColumn Header="NO" Binding="{Binding Id}" Width="70"/>
+                        <DataGridTextColumn Header="BAŞLIK" Binding="{Binding Title}" Width="220"/>
+                        <DataGridTextColumn Header="AÇIKLAMA" Binding="{Binding Content}" Width="*"/>
+                        <DataGridTextColumn Header="OLUŞTURMA" Binding="{Binding CreatedAt}" Width="180"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

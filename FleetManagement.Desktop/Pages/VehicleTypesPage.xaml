@@ -109,19 +109,19 @@
 
                     <!-- Kod -->
                     <StackPanel Grid.Column="0">
-                        <TextBlock Text="Kod" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBlock Text="KODE" Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="CodeBox" Margin="0,6,0,0"/>
                     </StackPanel>
 
                     <!-- Ad -->
                     <StackPanel Grid.Column="2">
-                        <TextBlock Text="Ad" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBlock Text="AD" Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="NameBox" Margin="0,6,0,0"/>
                     </StackPanel>
 
                     <!-- Açıklama (kısa) -->
                     <StackPanel Grid.Column="4">
-                        <TextBlock Text="Açıklama" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBlock Text="AÇIKLAMA" Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="DescBox" Margin="0,6,0,0"/>
                     </StackPanel>
                 </Grid>
@@ -143,7 +143,8 @@
                         <ColumnDefinition Width="260"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Araç Tipi Listesi"
+                    <TextBlock Text="ARAÇ TİPİ LİSTESİ"
+                               Foreground="{StaticResource BrushMuted}"
                                FontSize="16"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
@@ -167,9 +168,9 @@
                           SelectionChanged="Grid_SelectionChanged">
 
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Kod" Binding="{Binding Code}" Width="140"/>
-                        <DataGridTextColumn Header="Ad" Binding="{Binding Name}" Width="*"/>
-                        <DataGridTextColumn Header="Açıklama" Binding="{Binding Description}" Width="*"/>
+                        <DataGridTextColumn Header="KOD" Binding="{Binding Code}" Width="140"/>
+                        <DataGridTextColumn Header="AD" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="AÇIKLAMA" Binding="{Binding Description}" Width="*"/>
                     </DataGrid.Columns>
                 </DataGrid>
 

@@ -100,7 +100,7 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0">
-                        <TextBlock Text="Yıl" Foreground="{StaticResource BrushMuted}" />
+                        <TextBlock Text="YIL" Foreground="{StaticResource BrushMuted}" />
                         <TextBox x:Name="YearBox" Margin="0,6,0,0"/>
                     </StackPanel>
                 </Grid>
@@ -122,7 +122,9 @@
                         <ColumnDefinition Width="280"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Araç Yılı Listesi" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <TextBlock Text="ARAÇ YILI LİSTESİ" FontSize="16" 
+                               Foreground="{StaticResource BrushMuted}"
+                               FontWeight="SemiBold" VerticalAlignment="Center"/>
                     <StackPanel Grid.Column="1">
                         <TextBox x:Name="SearchBox" TextChanged="SearchBox_TextChanged"/>
                         <TextBlock x:Name="FilterInfo" Margin="0,6,0,0"
@@ -139,9 +141,9 @@
                           SelectionMode="Single"
                           SelectionChanged="Grid_SelectionChanged">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
-                        <DataGridTextColumn Header="Yıl" Binding="{Binding Year}" Width="110"/>
-                        <DataGridTextColumn Header="Oluşturma" Binding="{Binding CreatedAt}" Width="180"/>
+                        <DataGridTextColumn Header="NO" Binding="{Binding Id}" Width="70"/>
+                        <DataGridTextColumn Header="YIL" Binding="{Binding Year}" Width="110"/>
+                        <DataGridTextColumn Header="OLUŞTURMA" Binding="{Binding CreatedAt}" Width="180"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

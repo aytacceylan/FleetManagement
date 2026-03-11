@@ -104,7 +104,7 @@
             <!-- 1 -->
             <Border Grid.Column="0" Style="{StaticResource FmCard}" MinHeight="95">
                 <StackPanel>
-                    <TextBlock Text="Sürücü Durumu"
+                    <TextBlock Text="SÜRÜCÜ DURUMU"
                    FontSize="15"
                    FontWeight="SemiBold"
                    Foreground="Black"/>
@@ -120,7 +120,7 @@
             <!-- 2 -->
             <Border Grid.Column="2" Style="{StaticResource FmCard}" MinHeight="95">
                 <StackPanel>
-                    <TextBlock Text="Araç Durumu"
+                    <TextBlock Text="ARAÇ DURUMU"
                    FontSize="15"
                    FontWeight="SemiBold"
                    Foreground="black"/>
@@ -136,7 +136,7 @@
             <!-- 3 -->
             <Border Grid.Column="4" Style="{StaticResource FmCard}" MinHeight="95">
                 <StackPanel>
-                    <TextBlock Text="Bakım Özeti"
+                    <TextBlock Text="BAKIM ÖZETİ"
                    FontSize="15"
                    FontWeight="SemiBold"
                    Foreground="black"/>
@@ -152,7 +152,7 @@
             <!-- 4 -->
             <Border Grid.Column="6" Style="{StaticResource FmCard}" MinHeight="95">
                 <StackPanel>
-                    <TextBlock Text="Bugünkü Hareketler"
+                    <TextBlock Text="BUGÜNKÜ HAREKETLER"
                    FontSize="15"
                    FontWeight="SemiBold"
                    Foreground="black"/>
@@ -189,7 +189,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="Müsait Araçlar"
+                    <TextBlock Text="MÜSAİT ARAÇLAR"
                        Foreground="Black"
                        FontSize="16"
                        FontWeight="SemiBold"/>
@@ -200,10 +200,10 @@
                       IsReadOnly="True"
                       CanUserAddRows="False">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Plaka" Binding="{Binding Plate}" Width="100"/>
-                            <DataGridTextColumn Header="Araç Marka" Binding="{Binding VehicleBrand}" Width="120"/>
-                            <DataGridTextColumn Header="Takım" Binding="{Binding VehicleUnit}" Width="130"/>
-                            <DataGridTextColumn Header="Km" Binding="{Binding VehicleKm}" Width="80"/>
+                            <DataGridTextColumn Header="PLAKA" Binding="{Binding Plate}" Width="100"/>
+                            <DataGridTextColumn Header="ARAÇ MARKA" Binding="{Binding VehicleBrand}" Width="120"/>
+                            <DataGridTextColumn Header="AİT OLDUĞU TAKIM" Binding="{Binding VehicleUnit}" Width="130"/>
+                            <DataGridTextColumn Header="KM" Binding="{Binding VehicleKm}" Width="80"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -218,7 +218,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="Müsait Sürücüler"
+                    <TextBlock Text="MÜSAİT SÜRÜCÜLER"
                        Foreground="Black"
                        FontSize="16"
                        FontWeight="SemiBold"/>
@@ -229,9 +229,9 @@
                       IsReadOnly="True"
                       CanUserAddRows="False">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Sürücü" Binding="{Binding FullName}" Width="180"/>
-                            <DataGridTextColumn Header="Numara" Binding="{Binding DriverNumber}" Width="110"/>
-                            <DataGridTextColumn Header="Telefon" Binding="{Binding PhoneNumber}" Width="120"/>
+                            <DataGridTextColumn Header="SÜRÜCÜ" Binding="{Binding FullName}" Width="180"/>
+                            <DataGridTextColumn Header="SÜRÜCÜ NUMARA" Binding="{Binding DriverNumber}" Width="110"/>
+                            <DataGridTextColumn Header="TELEFON" Binding="{Binding PhoneNumber}" Width="120"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -246,7 +246,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="Görevi Devam Eden Hareketler"
+                    <TextBlock Text="GÖREVİ DEVAM EDEN HAREKETLER"
                        Foreground="Black"
                        FontSize="16"
                        FontWeight="SemiBold"/>
@@ -257,11 +257,11 @@
                       IsReadOnly="True"
                       CanUserAddRows="False">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Plaka" Binding="{Binding Plate}" Width="100"/>
-                            <DataGridTextColumn Header="Sürücü" Binding="{Binding Driver}" Width="150"/>
-                            <DataGridTextColumn Header="Çıkış" Binding="{Binding ExitTime}" Width="90"/>
-                            <DataGridTextColumn Header="Güzergah" Binding="{Binding Route}" Width="140"/>
-                            <DataGridTextColumn Header="Araç Marka" Binding="{Binding VehicleBrand}" Width="120"/>
+                            <DataGridTextColumn Header="PLAKA" Binding="{Binding Plate}" Width="100"/>
+                            <DataGridTextColumn Header="SÜRÜCÜ" Binding="{Binding Driver}" Width="150"/>
+                            <DataGridTextColumn Header="ÇIKIŞ" Binding="{Binding ExitTime}" Width="90"/>
+                            <DataGridTextColumn Header="GİDİLEN YER" Binding="{Binding Route}" Width="140"/>
+                            <DataGridTextColumn Header="ARAÇ MARKA" Binding="{Binding VehicleBrand}" Width="120"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -276,7 +276,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="Bakımı Geçen / Yaklaşan Araçlar"
+                    <TextBlock Text="BAKIMI GEÇEN / YAKLAŞAN ARAÇLAR"
                        Foreground="Black"
                        FontSize="16"
                        FontWeight="SemiBold"/>
@@ -287,12 +287,12 @@
                       IsReadOnly="True"
                       CanUserAddRows="False">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Plaka" Binding="{Binding Plate}" Width="100"/>
-                            <DataGridTextColumn Header="Araç Marka" Binding="{Binding VehicleBrand}" Width="120"/>
-                            <DataGridTextColumn Header="Mevcut Km" Binding="{Binding CurrentKm}" Width="90"/>
-                            <DataGridTextColumn Header="Son Bakım Km" Binding="{Binding LastMaintenanceKm}" Width="100"/>
-                            <DataGridTextColumn Header="Son Bakım Tarihi" Binding="{Binding LastMaintenanceDateText}" Width="110"/>
-                            <DataGridTextColumn Header="Durum" Binding="{Binding Status}" Width="120"/>
+                            <DataGridTextColumn Header="PLAKA" Binding="{Binding Plate}" Width="100"/>
+                            <DataGridTextColumn Header="ARAÇ MARKA" Binding="{Binding VehicleBrand}" Width="120"/>
+                            <DataGridTextColumn Header="MEVCUT KM" Binding="{Binding CurrentKm}" Width="90"/>
+                            <DataGridTextColumn Header="SON BAKIM KM" Binding="{Binding LastMaintenanceKm}" Width="100"/>
+                            <DataGridTextColumn Header="SON BAKIM TARİHİ" Binding="{Binding LastMaintenanceDateText}" Width="110"/>
+                            <DataGridTextColumn Header="DURUM" Binding="{Binding Status}" Width="120"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>

@@ -151,10 +151,10 @@
 
                         <!-- 1. KOLON -->
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Sıra No" Foreground="{StaticResource BrushMuted}" Margin="0,0,0,0"/>
+                            <TextBlock Text="ÇIKIŞ NU." Foreground="{StaticResource BrushMuted}" Margin="0,0,0,0"/>
                             <TextBox x:Name="DailyNoBox" Margin="0,6,0,0" IsReadOnly="True"/>
 
-                            <TextBlock Text="Sürücü" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBlock Text="SÜRÜCÜ RÜTBESİ ADI SOYADI" Foreground="{StaticResource BrushMuted}"/>
                             <ComboBox x:Name="DriverCombo"
                                       Margin="0,6,0,0"
                                       IsEditable="True"
@@ -180,7 +180,7 @@
                                 </ComboBox.ItemContainerStyle>
                             </ComboBox>
 
-                            <TextBlock Text="Plaka" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBlock Text="PLAKA" Foreground="{StaticResource BrushMuted}"/>
                             <ComboBox x:Name="VehicleCombo"
                                       Margin="0,6,0,0"
                                       IsEditable="True"
@@ -205,7 +205,7 @@
                                     </Style>
                                 </ComboBox.ItemContainerStyle>
                             </ComboBox>
-                            <TextBlock Text="Araç Tipi" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBlock Text="ARAÇ CİNSİ" Foreground="{StaticResource BrushMuted}"/>
                             <ComboBox x:Name="VehicleTypeCombo"
                                       Margin="0,6,0,0"
                                       IsEditable="True"
@@ -234,23 +234,23 @@
 
                         <!-- 2. KOLON -->
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="Çıkış Tarih" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBlock Text="ÇIKIŞ TARİHİ" Foreground="{StaticResource BrushMuted}"/>
                             <DatePicker x:Name="ExitDatePicker"
                                         Margin="0,5,0,0"
                                         Style="{StaticResource FixDatePickerText}"
                                         CalendarStyle="{StaticResource FixCalendar}"/>
 
-                            <TextBlock Text="Çıkış Saati" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBlock Text="ÇIKIŞ SAATİ" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
                             <TextBox x:Name="ExitTimeBox" Margin="0,6,0,10" Text="08:00"/>
 
-                            <TextBlock Text="Dönüş Tarihi" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBlock Text="DÖNÜŞ TARİHİ" Foreground="{StaticResource BrushMuted}"/>
                             <DatePicker x:Name="ReturnDatePicker"
                                         Margin="0,6,0,0"
                                         Style="{StaticResource FixDatePickerText}"
                                         CalendarStyle="{StaticResource FixCalendar}"/>
 
-                            <TextBlock Text="Dönüş Saati" Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="ReturnTimeBox" Margin="0,6,0,0" Text="17:00"/>
+                            <TextBlock Text="DÖNÜŞ SAATİ" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBox x:Name="ReturnTimeBox" Margin="0,6,0,0" />
 
 
                         </StackPanel>
@@ -260,11 +260,11 @@
                             
                             
                             
-                            <TextBlock Text="Görev Durumu" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBlock Text="GÖREV DURUMU" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
                             <TextBox x:Name="StatusBox" Margin="0,6,0,10" IsReadOnly="True"/>
 
 
-                            <TextBlock Text="Güzergah" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBlock Text="GİDİLECEK YER" Foreground="{StaticResource BrushMuted}"/>
                             <ComboBox x:Name="RouteCombo"
                                       Margin="0,6,0,0"
                                       IsEditable="True"
@@ -293,7 +293,7 @@
 
                         <!-- 4. KOLON -->
                         <StackPanel Grid.Column="6">
-                            <TextBlock Text="Araç Komutanı" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBlock Text="ARAÇ KOMUTANI" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
                             <ComboBox x:Name="CommanderCombo"
                                       Margin="0,6,0,0"
                                       IsEditable="True"
@@ -319,7 +319,7 @@
                                 </ComboBox.ItemContainerStyle>
                             </ComboBox>
 
-                            <TextBlock Text="Başkanlık" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBlock Text="EMRİNE GİRDİĞİ BRL./KS." Foreground="{StaticResource BrushMuted}"/>
                             <ComboBox x:Name="DepartureCombo"
                                       Margin="0,6,0,0"
                                       IsEditable="True"
@@ -351,16 +351,16 @@
                         <!-- 5. KOLON -->
                         <StackPanel Grid.Column="8">
 
-                            <TextBlock Text="Yapılan Km." Foreground="{StaticResource BrushMuted}"/>
+                            <TextBlock Text="YAPILAN KM." Foreground="{StaticResource BrushMuted}"/>
                             <TextBox x:Name="DoneKmBox" Margin="0,5,0,0"/>
                             
-                            <TextBlock Text="Taşınan Yolcu" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBlock Text="YOLCU SAYISI" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
                             <TextBox x:Name="PassengerCountBox" Margin="0,5,0,0"/>
 
-                            <TextBlock Text="Taşınan Yük" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBlock Text="YÜK MİKTARI" Foreground="{StaticResource BrushMuted}"/>
                             <TextBox x:Name="LoadAmountBox" Margin="0,5,0,0"/>
 
-                            <TextBlock Text="Görev Türü" Foreground="{StaticResource BrushMuted}"/>
+                            <TextBlock Text="ÇIKIŞ TÜRÜ" Foreground="{StaticResource BrushMuted}"/>
                             <ComboBox x:Name="DutyTypeCombo"
                                       Margin="0,5,0,0"
                                       IsEditable="True"
@@ -410,7 +410,8 @@
                         <ColumnDefinition Width="280"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Hareket Listesi"
+                    <TextBlock Text="ARAÇ HAREKET LİSTESİ"
+                               Foreground="{StaticResource BrushMuted}"
                                FontSize="16"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
@@ -450,14 +451,20 @@
 
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="SEVK NO" Binding="{Binding MovementNo}" Width="100"/>
-                        <DataGridTextColumn Header="S.NO" Binding="{Binding DailyNo}" Width="50"/>
-                        <DataGridTextColumn Header="ŞOFÖR ADI" Binding="{Binding Driver}" Width="140"/>
+                        <DataGridTextColumn Header="ÇIKIŞ NU." Binding="{Binding DailyNo}" Width="70"/>
                         <DataGridTextColumn Header="PLAKA" Binding="{Binding Plate}" Width="80"/>
+                        <DataGridTextColumn Header="SÜRÜCÜ RÜTBESİ ADI SOYADI" Binding="{Binding Driver}" Width="140"/>
+                        <DataGridTextColumn Header=" ARAÇ CİNSİ" Binding="{Binding VehicleType}" Width="90"/>
+                        <DataGridTextColumn Header="ARAÇ KOMUTANI" Binding="{Binding Commander}" Width="120"/>
+                        <DataGridTextColumn Header="EMRİNE GİRDİĞİ BRL./KS." Binding="{Binding Departure}" Width="150"/>
+                        <DataGridTextColumn Header="YOLCU SAYISI" Binding="{Binding PassengerCount}" Width="110"/>
+                        <DataGridTextColumn Header="YÜK MİKTARI" Binding="{Binding LoadAmount}" Width="100"/>
+                        <DataGridTextColumn Header="GİDİLECEK YER" Binding="{Binding Route}" Width="100"/>
                         <DataGridTextColumn Header="TARİH" Binding="{Binding DateText}" Width="80"/>
-
                         <DataGridTextColumn Header="ÇIKIŞ SAATİ" Binding="{Binding ExitTimeText}" Width="90"/>
                         <DataGridTextColumn Header="DÖNÜŞ SAATİ" Binding="{Binding ReturnTimeText}" Width="100"/>
-                        <DataGridTextColumn Header="CİNSİ" Binding="{Binding VehicleType}" Width="80"/>
+                        <DataGridTextColumn Header="YAPILAN KM" Binding="{Binding KmText}" Width="90"/>
+                        <DataGridTextColumn Header="ÇIKIŞ TÜRÜ" Binding="{Binding DutyType}" Width="100"/>
                         <DataGridTemplateColumn Header="DURUM" Width="100">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -468,13 +475,9 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="GİDİLECEK YER" Binding="{Binding Route}" Width="100"/>
-                        <DataGridTextColumn Header="KİME GİTTİ" Binding="{Binding Commander}" Width="100"/>
-                        <DataGridTextColumn Header="EMRİNE GİRDİĞİ BRL/KS" Binding="{Binding Departure}" Width="100"/>
-                        <DataGridTextColumn Header="YAPILAN KM" Binding="{Binding KmText}" Width="90"/>
-                        <DataGridTextColumn Header="TAŞINAN YOLCU" Binding="{Binding PassengerCount}" Width="110"/>
-                        <DataGridTextColumn Header="TAŞINAN YÜK" Binding="{Binding LoadAmount}" Width="100"/>
-                        <DataGridTextColumn Header="ÇIKIŞ TÜRÜ" Binding="{Binding DutyType}" Width="100"/>
+
+
+
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

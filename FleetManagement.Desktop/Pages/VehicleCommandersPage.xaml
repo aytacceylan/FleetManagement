@@ -106,22 +106,22 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0">
-                        <TextBlock Text="Komutan No" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBlock Text="KOMUTAN NO" Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="CommanderNumberBox" Margin="0,6,0,0"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="2">
-                        <TextBlock Text="Ad Soyad" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBlock Text="RÜTBE AD SOYAD" Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="FullNameBox" Margin="0,6,0,0"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="4">
-                        <TextBlock Text="Birlik/Birim" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBlock Text="BİRLİK" Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="UnitNameBox" Margin="0,6,0,0"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="6">
-                        <TextBlock Text="Telefon" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBlock Text="TELEFON" Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="PhoneBox" Margin="0,6,0,0"/>
                     </StackPanel>
 
@@ -146,7 +146,9 @@
                         <ColumnDefinition Width="280"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Komutan Listesi" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <TextBlock Text="ARAÇ KOMUTANI LİSTESİ" FontSize="16" 
+                                 Foreground="{StaticResource BrushMuted}"
+                               FontWeight="SemiBold" VerticalAlignment="Center"/>
 
                     <StackPanel Grid.Column="1">
                         <TextBox x:Name="SearchBox" TextChanged="SearchBox_TextChanged"/>
@@ -168,11 +170,11 @@
 
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
-                        <DataGridTextColumn Header="Komutan No" Binding="{Binding CommanderNumber}" Width="150"/>
-                        <DataGridTextColumn Header="Ad Soyad" Binding="{Binding FullName}" Width="*"/>
-                        <DataGridTextColumn Header="Telefon" Binding="{Binding PhoneNumber}" Width="150"/>
-                        <DataGridTextColumn Header="Birlik" Binding="{Binding UnitName}" Width="180"/>
-                        <DataGridTextColumn Header="Oluşturma" Binding="{Binding CreatedAt}" Width="180"/>
+                        <DataGridTextColumn Header="KOMUTAN NO" Binding="{Binding CommanderNumber}" Width="150"/>
+                        <DataGridTextColumn Header="RÜTBE AD SOYAD" Binding="{Binding FullName}" Width="*"/>
+                        <DataGridTextColumn Header="TELEFON" Binding="{Binding PhoneNumber}" Width="150"/>
+                        <DataGridTextColumn Header="BİRLİK" Binding="{Binding UnitName}" Width="180"/>
+                        <DataGridTextColumn Header="OLUŞTURMA" Binding="{Binding CreatedAt}" Width="180"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

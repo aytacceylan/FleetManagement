@@ -106,19 +106,19 @@
 
                         <!-- Kolon 1 -->
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Kod" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBlock Text="KOD" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
                             <TextBox x:Name="CodeBox" Margin="0,6,0,10"/>
                         </StackPanel>
 
                         <!-- Kolon 2 -->
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="Görev Türü Adı" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBlock Text="GÖREV TÜRÜ" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
                             <TextBox x:Name="NameBox" Margin="0,6,0,10"/>
                         </StackPanel>
 
                         <!-- Kolon 3 -->
                         <StackPanel Grid.Column="4">
-                            <TextBlock Text="Açıklama" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBlock Text="AÇIKLAMA" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
                             <TextBox x:Name="DescBox" Margin="0,6,0,10"
                                      MaxLength="200"
                                      Height="32"
@@ -147,7 +147,7 @@
                         <ColumnDefinition Width="280"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Görev Türü Listesi" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <TextBlock Text="GÖREV TÜRÜ LİSTESİ" FontSize="16" Foreground="{StaticResource BrushMuted}" FontWeight="SemiBold" VerticalAlignment="Center"/>
 
                     <StackPanel Grid.Column="1">
                         <TextBox x:Name="SearchBox" TextChanged="SearchBox_TextChanged"/>
@@ -167,11 +167,11 @@
                           SelectionMode="Single"
                           SelectionChanged="Grid_SelectionChanged">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
-                        <DataGridTextColumn Header="Kod" Binding="{Binding Code}" Width="140"/>
-                        <DataGridTextColumn Header="Görev Türü" Binding="{Binding Name}" Width="*"/>
-                        <DataGridTextColumn Header="Açıklama" Binding="{Binding Description}" Width="260"/>
-                        <DataGridTextColumn Header="Oluşturma" Binding="{Binding CreatedAt}" Width="180"/>
+                        <DataGridTextColumn Header="NO" Binding="{Binding Id}" Width="70"/>
+                        <DataGridTextColumn Header="KOD" Binding="{Binding Code}" Width="140"/>
+                        <DataGridTextColumn Header="GÖREV TÜRÜ" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="AÇIKLAMA" Binding="{Binding Description}" Width="260"/>
+                        <DataGridTextColumn Header="OLUŞTURMA" Binding="{Binding CreatedAt}" Width="180"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

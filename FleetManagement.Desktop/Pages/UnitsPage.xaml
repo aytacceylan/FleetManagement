@@ -113,7 +113,7 @@
 
                     <!-- Kod -->
                     <StackPanel Grid.Column="0">
-                        <TextBlock Text="Kod"
+                        <TextBlock Text="KOD"
                                    Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="CodeBox"
                                  Margin="0,6,0,0"/>
@@ -121,7 +121,7 @@
 
                     <!-- Birim Adı -->
                     <StackPanel Grid.Column="2">
-                        <TextBlock Text="Birim Adı"
+                        <TextBlock Text="TAKIM NO"
                                    Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="NameBox"
                                  Margin="0,6,0,0"/>
@@ -129,7 +129,7 @@
 
                     <!-- Üst Birlik -->
                     <StackPanel Grid.Column="4">
-                        <TextBlock Text="Üst Birlik"
+                        <TextBlock Text="BİRLİK"
                                    Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="ParentNameBox"
                                  Margin="0,6,0,0"/>
@@ -137,7 +137,7 @@
 
                     <!-- Açıklama -->
                     <StackPanel Grid.Column="6">
-                        <TextBlock Text="Açıklama"
+                        <TextBlock Text="AÇIKLAMA"
                                    Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="DescBox"
                                  Margin="0,6,0,0"/>
@@ -162,8 +162,9 @@
                         <ColumnDefinition Width="260"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Birlik Listesi"
+                    <TextBlock Text="TAKIM LİSTESİ"
                                FontSize="16"
+                               Foreground="{StaticResource BrushMuted}"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
 
@@ -187,10 +188,10 @@
                           SelectionChanged="Grid_SelectionChanged">
 
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Kod" Binding="{Binding Code}" Width="140"/>
-                        <DataGridTextColumn Header="Birim Adı" Binding="{Binding Name}" Width="*"/>
-                        <DataGridTextColumn Header="Üst Birlik" Binding="{Binding ParentName}" Width="200"/>
-                        <DataGridTextColumn Header="Açıklama" Binding="{Binding Description}" Width="*"/>
+                        <DataGridTextColumn Header="KOD" Binding="{Binding Code}" Width="140"/>
+                        <DataGridTextColumn Header="TAKIM NO" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="BİRLİK" Binding="{Binding ParentName}" Width="200"/>
+                        <DataGridTextColumn Header="AÇIKLAMA" Binding="{Binding Description}" Width="*"/>
                     </DataGrid.Columns>
 
                 </DataGrid>

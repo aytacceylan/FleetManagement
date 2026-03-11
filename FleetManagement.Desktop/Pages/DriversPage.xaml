@@ -113,7 +113,7 @@
 
                     <!-- Sürücü No -->
                     <StackPanel Grid.Column="0">
-                        <TextBlock Text="Sürücü No"
+                        <TextBlock Text="SÜRÜCÜ NO"
                                    Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="DriverNumberBox"
                                  Margin="0,6,0,0"/>
@@ -121,7 +121,7 @@
 
                     <!-- Ad Soyad -->
                     <StackPanel Grid.Column="2">
-                        <TextBlock Text="Ad Soyad"
+                        <TextBlock Text="RÜTBE AD SOYAD"
                                    Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="FullNameBox"
                                  Margin="0,6,0,0"/>
@@ -129,7 +129,7 @@
 
                     <!-- Telefon -->
                     <StackPanel Grid.Column="4">
-                        <TextBlock Text="Telefon"
+                        <TextBlock Text="TELEFON"
                                    Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="PhoneBox"
                                  Margin="0,6,0,0"/>
@@ -155,19 +155,19 @@
                         <ColumnDefinition Width="260"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Sürücü Listesi"
+                    <TextBlock Text="SÜRÜCÜ LİSTESİ"
                                FontSize="16"
-                               FontWeight="SemiBold"
+                               FontWeight="SemiBold"  Foreground="{StaticResource BrushMuted}"
                                VerticalAlignment="Center"/>
 
                     <StackPanel Grid.Column="1">
                         <TextBox x:Name="SearchBox"
                                  TextChanged="SearchBox_TextChanged"/>
 
-                        <TextBlock x:Name="FilterInfo"
+                        <TextBlock x:Name="FilterInfo" 
                                    Margin="0,6,0,0"
                                    Foreground="{StaticResource BrushMuted}"
-                                   FontSize="12"
+                                   FontSize="12" 
                                    Text="Toplam kayıt: 0"/>
                     </StackPanel>
                 </Grid>
@@ -181,9 +181,9 @@
                           SelectionChanged="DriversGrid_SelectionChanged">
 
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Sürücü No" Binding="{Binding DriverNumber}" Width="140"/>
-                        <DataGridTextColumn Header="Ad Soyad" Binding="{Binding FullName}" Width="*"/>
-                        <DataGridTextColumn Header="Telefon" Binding="{Binding PhoneNumber}" Width="160"/>
+                        <DataGridTextColumn Header="SÜRÜCÜ NO" Binding="{Binding DriverNumber}" Width="140"/>
+                        <DataGridTextColumn Header="RÜTBE AD SOYAD" Binding="{Binding FullName}" Width="*"/>
+                        <DataGridTextColumn Header="TELEFON" Binding="{Binding PhoneNumber}" Width="160"/>
                     </DataGrid.Columns>
                 </DataGrid>
 
