@@ -104,13 +104,13 @@ namespace FleetManagement.Desktop.Pages
 			DutyTypeCombo.DisplayMemberPath = "Display";
 			DutyTypeCombo.SelectedValuePath = "Display";
 
-			var brands = await _db.VehicleBrands.AsNoTracking()
+			var types = await _db.VehicleTypes.AsNoTracking()
 				.Where(x => !x.IsDeleted)
 				.OrderBy(x => x.Name)
 				.Select(x => new { Display = x.Name })
 				.ToListAsync();
 
-			VehicleTypeCombo.ItemsSource = brands;
+			VehicleTypeCombo.ItemsSource = types;
 			VehicleTypeCombo.DisplayMemberPath = "Display";
 			VehicleTypeCombo.SelectedValuePath = "Display";
 		}

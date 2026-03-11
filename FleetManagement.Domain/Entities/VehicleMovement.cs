@@ -23,8 +23,10 @@ namespace FleetManagement.Domain.Entities
 		public string? DriverText { get; set; }
 		public string? CommanderText { get; set; }
 
-		// 🕒 TARİH / SAAT
-		public DateTime ExitDateTime { get; set; }          // Kaydederken = DateTime.Now
+        //public string? VehicleType { get; set; }
+
+        // 🕒 TARİH / SAAT
+        public DateTime ExitDateTime { get; set; }          // Kaydederken = DateTime.Now
 		public DateTime? ReturnDateTime { get; set; }       // Elle girilecek (opsiyonel)
 
 		// 📍 GÖREV BİLGİLERİ (opsiyonel yapmak için ?)

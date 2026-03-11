@@ -298,9 +298,9 @@
                             </ComboBox.ItemContainerStyle>
                         </ComboBox>
 
-                        <TextBlock Text="Araç Marka"
+                        <TextBlock Text="Araç Tipi"
                                    Foreground="{StaticResource BrushMuted}"/>
-                        <ComboBox x:Name="VehicleBrandCombo"
+                        <ComboBox x:Name="VehicleTypeCombo"
                                   Margin="0,6,0,10"
                                   IsEditable="True"
                                   IsReadOnly="True"
