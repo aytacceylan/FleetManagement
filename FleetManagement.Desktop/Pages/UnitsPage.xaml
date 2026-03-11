@@ -69,7 +69,8 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Birlik Formu"
+                    <TextBlock Text="AİT OLDUĞU TAKIM FORM"
+                               Foreground="Black"
                                FontSize="16"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>

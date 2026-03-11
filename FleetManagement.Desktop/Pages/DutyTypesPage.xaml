@@ -23,7 +23,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Görev Türleri" FontSize="22" FontWeight="SemiBold"/>
+                    <TextBlock Text="GÖREV TÜRLERİ" FontSize="22" Foreground="BLACK" FontWeight="SemiBold"/>
                     <TextBlock Text="Görev türü tanımlarını görüntüleyin ve yönetin."
                                Margin="0,6,0,0"
                                Foreground="{StaticResource BrushMuted}"/>
@@ -54,6 +54,8 @@
                     <RowDefinition Height="10"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
+
+                <TextBlock Text="GÖREV TÜRLERİ FORMU" FontSize="16" Foreground="Black" FontWeight="SemiBold" VerticalAlignment="Center"/>
 
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>

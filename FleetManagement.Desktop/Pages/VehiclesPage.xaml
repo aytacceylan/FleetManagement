@@ -106,7 +106,8 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Araç Formu"
+                    <TextBlock Text="ARAÇ FORMU"
+                               Foreground="Black"
                                FontSize="16"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
@@ -205,7 +206,7 @@
 
 
 
-                            <TextBlock Text="AAİT OLDUĞU TAKIM"
+                            <TextBlock Text="AİT OLDUĞU TAKIM"
                                        Foreground="{StaticResource BrushMuted}"/>
 
                             <ComboBox x:Name="UnitCombo"
@@ -415,31 +416,27 @@
                             <TextBox x:Name="SaseNoBox"
                                      Margin="0,6,0,0"/>
 
-                            <TextBlock Text="GÖREV"
+                            <TextBlock Text="ARAÇ DURUMU"
                                        Foreground="{StaticResource BrushMuted}"/>
-
-                            <ComboBox x:Name="DutyInfoBox"
-                                     Margin="0,6,0,0"
-                                     IsEditable="True"
-                                     IsReadOnly="True"
-                                     Foreground="Black"
-                                     Background="#3D5869"
-                                     BorderBrush="Black">
+                            <ComboBox x:Name="VehicleSituationCombo"
+                                         Margin="0,6,0,0"
+                                         IsEditable="True"
+                                         IsReadOnly="True"
+                                         Foreground="Black"
+                                         Background="#3D5869"
+                                         BorderBrush="Black" SelectionChanged="VehicleSituationCombo_SelectionChanged">
 
                                 <ComboBox.ItemContainerStyle>
                                     <Style TargetType="ComboBoxItem">
-                                        <!-- Normal liste -->
                                         <Setter Property="Foreground" Value="Black"/>
-                                        <Setter Property="Background" Value="black"/>
+                                        <Setter Property="Background" Value="Black"/>
 
                                         <Style.Triggers>
-                                            <!-- Hover -->
                                             <Trigger Property="IsHighlighted" Value="True">
                                                 <Setter Property="Background" Value="Black"/>
                                                 <Setter Property="Foreground" Value="Black"/>
                                             </Trigger>
 
-                                            <!-- Seçili -->
                                             <Trigger Property="IsSelected" Value="True">
                                                 <Setter Property="Background" Value="Black"/>
                                                 <Setter Property="Foreground" Value="Black"/>
@@ -447,7 +444,6 @@
                                         </Style.Triggers>
                                     </Style>
                                 </ComboBox.ItemContainerStyle>
-
                             </ComboBox>
 
                             <TextBlock Text="BAKIM"
@@ -459,7 +455,7 @@
                                       IsReadOnly="True"
                                       Foreground="Black"
                                       Background="#3D5869"
-                                      BorderBrush="Black">
+                                      BorderBrush="Black" SelectionChanged="MaintInfoBox_SelectionChanged">
 
                                 <ComboBox.ItemContainerStyle>
                                     <Style TargetType="ComboBoxItem">

@@ -68,6 +68,9 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
+                    <TextBlock Text="EMRİNE GİRİLEN BRL./ KS. FORMU" FontSize="16" Foreground="Black" FontWeight="SemiBold" VerticalAlignment="Center"/>
+
+
                     <Button Grid.Column="1"
                            Width="110" Click="Save_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -141,8 +144,9 @@
                         <ColumnDefinition Width="280"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Departure Listesi"
+                    <TextBlock Text="EMRİNE GİRİLEN BRL./ KS.LİSTESİ"
                                FontSize="16"
+                               Foreground="Black"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
 

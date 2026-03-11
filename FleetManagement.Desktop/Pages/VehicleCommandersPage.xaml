@@ -65,7 +65,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Komutan Formu" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <TextBlock Text="ARAÇ KOMUTANI FORMU" FontSize="16" Foreground="Black" FontWeight="SemiBold" VerticalAlignment="Center"/>
 
                     <Button Grid.Column="1"
                            Width="110" Click="Save_Click">

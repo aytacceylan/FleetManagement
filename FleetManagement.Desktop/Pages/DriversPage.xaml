@@ -2,11 +2,48 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Background="{StaticResource BrushBg}">
+    <Page.Resources>
+        <!-- TEST: Bu style kesin uygulanmalı -->
+        <Style x:Key="ForceComboBoxStyle" TargetType="ComboBox" BasedOn="{x:Null}">
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Background" Value="#122B57"/>
+            <Setter Property="BorderBrush" Value="#243E70"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
 
+        <Style x:Key="FixDatePickerText" TargetType="{x:Type DatePicker}">
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Background" Value="black"/>
+        </Style>
+
+        <Style x:Key="FixCalendar" TargetType="{x:Type Calendar}">
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Background" Value="Black"/>
+        </Style>
+
+        <Style x:Key="ForceComboBoxItemStyle" TargetType="ComboBoxItem" BasedOn="{x:Null}">
+            <Setter Property="Foreground" Value="#111827"/>
+            <Setter Property="Background" Value="Black"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Style.Triggers>
+                <Trigger Property="IsHighlighted" Value="True">
+                    <Setter Property="Background" Value="#122B57"/>
+                    <Setter Property="Foreground" Value="black"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#122B57"/>
+                    <Setter Property="Foreground" Value="black"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
+    
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="12"/>
+            <RowDefinition Height="14"/>
             <RowDefinition Height="120"/>
             <RowDefinition Height="12"/>
             <RowDefinition Height="*"/>
@@ -18,7 +55,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="12"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
@@ -52,6 +89,7 @@
         <!-- FORM -->
         <Border Grid.Row="2" Style="{StaticResource FmCard}">
             <Grid Margin="4">
+                
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -70,7 +108,8 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Sürücü Formu"
+                    <TextBlock Text="SÜRÜCÜ FORMU"
+                               Foreground="Black"
                                FontSize="16"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
@@ -109,6 +148,8 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="12"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- Sürücü No -->
@@ -127,8 +168,44 @@
                                  Margin="0,6,0,0"/>
                     </StackPanel>
 
-                    <!-- Telefon -->
+                    <!-- Sürücü DURUMU -->
                     <StackPanel Grid.Column="4">
+                    <TextBlock Text="SÜRÜCÜ DURUMU"
+                                Foreground="Black"/>
+                    <ComboBox x:Name="DriverSituationCombo"
+                                          Margin="0,6,0,0"
+                                         IsEditable="True"
+                                         IsReadOnly="True"
+                                         Foreground="Black"
+                                         Background="#3D5869"
+                                         BorderBrush="Black">
+
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="ComboBoxItem">
+                                    <!-- Normal liste -->
+                                    <Setter Property="Foreground" Value="Black"/>
+                                    <Setter Property="Background" Value="black"/>
+
+                                    <Style.Triggers>
+                                        <!-- Hover -->
+                                        <Trigger Property="IsHighlighted" Value="True">
+                                            <Setter Property="Background" Value="Black"/>
+                                            <Setter Property="Foreground" Value="Black"/>
+                                        </Trigger>
+
+                                        <!-- Seçili -->
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="Black"/>
+                                            <Setter Property="Foreground" Value="Black"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                            </Style>
+                        </ComboBox.ItemContainerStyle>
+                    </ComboBox>
+                    </StackPanel>
+
+                    <!-- Telefon -->
+                    <StackPanel Grid.Column="6">
                         <TextBlock Text="TELEFON"
                                    Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="PhoneBox"
@@ -181,8 +258,9 @@
                           SelectionChanged="DriversGrid_SelectionChanged">
 
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="SÜRÜCÜ NO" Binding="{Binding DriverNumber}" Width="140"/>
+                        <DataGridTextColumn Header="SÜRÜCÜ NO" Binding="{Binding DriverNumber}" Width="120"/>
                         <DataGridTextColumn Header="RÜTBE AD SOYAD" Binding="{Binding FullName}" Width="*"/>
+                        <DataGridTextColumn Header="SÜRÜCÜ DURUMU" Binding="{Binding DriverSituation}" Width="*"/>
                         <DataGridTextColumn Header="TELEFON" Binding="{Binding PhoneNumber}" Width="160"/>
                     </DataGrid.Columns>
                 </DataGrid>

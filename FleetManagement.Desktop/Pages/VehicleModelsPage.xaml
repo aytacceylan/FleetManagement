@@ -65,6 +65,12 @@
                         <ColumnDefinition Width="10"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Text="ARAÇ MODEL FORMU"
+                               Foreground="Black"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
 
                     <Button Grid.Column="1"
                            Width="110" Click="Save_Click">

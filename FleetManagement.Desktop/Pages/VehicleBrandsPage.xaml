@@ -22,6 +22,8 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
+
+
                 <StackPanel>
                     <TextBlock Text="Markalar" FontSize="22" FontWeight="SemiBold"/>
                     <TextBlock Text="Araç marka tanımlarını görüntüleyin ve yönetin."
@@ -64,7 +66,13 @@
                         <ColumnDefinition Width="10"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                   
+
+                    <TextBlock Text="ARAÇ MARKA FORMU"
+                               Foreground="Black"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+
                     <Button Grid.Column="1"
                            Width="110" Click="Save_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">

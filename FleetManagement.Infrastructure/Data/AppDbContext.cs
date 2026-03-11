@@ -64,6 +64,7 @@ namespace FleetManagement.Infrastructure.Data
 				e.Property(x => x.VehicleYear);
 
 
+
 			});
             modelBuilder.Entity<Vehicle>().HasIndex(x => x.AssignedDriverId);
 
@@ -99,6 +100,7 @@ namespace FleetManagement.Infrastructure.Data
             modelBuilder.Entity<Driver>()
                 .HasIndex(x => x.DriverNumber)
                 .IsUnique();
+
 
             modelBuilder.Entity<VehicleCommander>()
                 .HasIndex(x => x.CommanderNumber)

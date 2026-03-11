@@ -6,6 +6,8 @@
 		public string FullName { get; set; } = null!;
 		public string PhoneNumber { get; set; } = null!;
 
+        public string? DriverSituation { get; set; }
+
         public override string ToString() => FullName;
 
     }

@@ -89,50 +89,44 @@ namespace FleetManagement.Desktop.Pages
 			LastUpdateText.Text = $"Son Güncelleme: {DateTime.Now:HH:mm}";
 		}
 
-		private async Task LoadDriverSummaryAsync()
-		{
-			var totalDrivers = await _db.Drivers.AsNoTracking()
-				.CountAsync(x => !x.IsDeleted);
+        private async Task LoadDriverSummaryAsync()
+        {
+            var drivers = await _db.Drivers.AsNoTracking()
+                .Where(x => !x.IsDeleted)
+                .ToListAsync();
 
-			var onDutyDriverIds = await _db.VehicleMovements.AsNoTracking()
-				.Where(x => !x.IsDeleted && x.ReturnDateTime == null && x.DriverId != null)
-				.Select(x => x.DriverId!.Value)
-				.Distinct()
-				.ToListAsync();
+            var total = drivers.Count;
+            var available = drivers.Count(x => x.DriverSituation == "Müsait");
+            var surus = drivers.Count(x => x.DriverSituation == "Sürüş Görevi");
+            var izin = drivers.Count(x => x.DriverSituation == "İzin");
+            var gorevlendirme = drivers.Count(x => x.DriverSituation == "Görevlendirme");
+            var ydgg = drivers.Count(x => x.DriverSituation == "YDGG");
+            var istirahat = drivers.Count(x => x.DriverSituation == "İstirahat");
+            var birlikIci = drivers.Count(x => x.DriverSituation == "Birlik İçi Görev");
+            var diger = drivers.Count(x => x.DriverSituation == "Diğer");
 
-			var onDutyCount = onDutyDriverIds.Count;
-			var availableCount = totalDrivers - onDutyCount;
+            DriverSummaryText.Text =
+                $"Toplam: {total} | Müsait: {available} | Sürüş: {surus} | İzin: {izin} | Görevl.: {gorevlendirme} | YDGG: {ydgg} | İstirahat: {istirahat} | Birlik İçi: {birlikIci} | Diğer: {diger}";
+        }
 
-			DriverSummaryText.Text = $"Toplam: {totalDrivers} | Görevde: {onDutyCount} | Müsait: {availableCount}";
-		}
+        private async Task LoadVehicleSummaryAsync()
+        {
+            var vehicles = await _db.Vehicles.AsNoTracking()
+                .Where(x => !x.IsDeleted)
+                .ToListAsync();
 
-		private async Task LoadVehicleSummaryAsync()
-		{
-			var totalVehicles = await _db.Vehicles.AsNoTracking()
-				.CountAsync(x => !x.IsDeleted);
+            var total = vehicles.Count;
+            var available = vehicles.Count(x => x.VehicleSituation == "Müsait");
+            var onDuty = vehicles.Count(x => x.VehicleSituation == "Görevde");
+            var kademe = vehicles.Count(x => x.VehicleSituation == "Kademe");
+            var servis = vehicles.Count(x => x.VehicleSituation == "Servis");
+            var fabrika = vehicles.Count(x => x.VehicleSituation == "Fabrika");
 
-			var movements = await _db.VehicleMovements.AsNoTracking()
-				.Where(x => !x.IsDeleted && x.VehicleId != null && x.ReturnDateTime == null)
-				.Include(x => x.Vehicle)
-				.ToListAsync();
+            VehicleSummaryText.Text =
+                $"Toplam: {total} | Müsait: {available} | Görevde: {onDuty} | Kademe: {kademe} | Servis: {servis} | Fabrika: {fabrika}";
+        }
 
-			var now = DateTime.UtcNow;
-
-			var ongoing = movements.Count(x => x.ExitDateTime <= now);
-			var planned = movements.Count(x => x.ExitDateTime > now);
-
-			var busyVehicleIds = movements
-				.Where(x => x.VehicleId != null)
-				.Select(x => x.VehicleId!.Value)
-				.Distinct()
-				.Count();
-
-			var available = totalVehicles - busyVehicleIds;
-
-			VehicleSummaryText.Text = $"Toplam: {totalVehicles} | Devam: {ongoing} | Planlı: {planned} | Müsait: {available}";
-		}
-
-		private async Task LoadMaintenanceSummaryAsync()
+        private async Task LoadMaintenanceSummaryAsync()
 		{
 			var vehicles = await _db.Vehicles.AsNoTracking()
 				.Where(x => !x.IsDeleted)

@@ -21,7 +21,8 @@ namespace FleetManagement.Desktop.Pages
 		public DriversPage()
 		{
 			InitializeComponent();
-			Loaded += async (_, __) => await LoadDriversAsync();
+            LoadDriverSituations();
+            Loaded += async (_, __) => await LoadDriversAsync();
 		}
 
 		private async Task LoadDriversAsync()
@@ -58,10 +59,11 @@ namespace FleetManagement.Desktop.Pages
 			DriverNumberBox.Text = d.DriverNumber ?? "";
 			FullNameBox.Text = d.FullName ?? "";
 			PhoneBox.Text = d.PhoneNumber ?? "";
+            DriverSituationCombo.Text = d.DriverSituation ?? "";
 
-			// İstersen bunu da sessiz yap:
-			// Notify($"Seçildi: #{d.Id}");
-		}
+            // İstersen bunu da sessiz yap:
+            // Notify($"Seçildi: #{d.Id}");
+        }
 
 		private async void Refresh_Click(object sender, RoutedEventArgs e)
 		{
@@ -82,8 +84,9 @@ namespace FleetManagement.Desktop.Pages
 				var driverNumber = (DriverNumberBox.Text ?? "").Trim();
 				var fullName = (FullNameBox.Text ?? "").Trim();
 				var phone = (PhoneBox.Text ?? "").Trim();
+                var situation = (DriverSituationCombo.Text ?? "").Trim();
 
-				if (string.IsNullOrWhiteSpace(driverNumber))
+                if (string.IsNullOrWhiteSpace(driverNumber))
 				{
 					Notify("Sürücü No zorunlu.", "Uyarı");
 					return;
@@ -95,14 +98,21 @@ namespace FleetManagement.Desktop.Pages
 					return;
 				}
 
-				if (_selectedId is null)
+                if (string.IsNullOrWhiteSpace(situation))
+                {
+                    Notify("Sürücü durumu zorunlu.", "Uyarı");
+                    return;
+                }
+
+                if (_selectedId is null)
 				{
 					// INSERT
 					var entity = new Driver
 					{
 						DriverNumber = driverNumber,
 						FullName = fullName,
-						PhoneNumber = phone,
+                        DriverSituation = string.IsNullOrWhiteSpace(situation) ? null : situation,
+                        PhoneNumber = phone,
 						CreatedAt = DateTime.UtcNow,
 						IsDeleted = false
 					};
@@ -124,7 +134,8 @@ namespace FleetManagement.Desktop.Pages
 
 					entity.DriverNumber = driverNumber;
 					entity.FullName = fullName;
-					entity.PhoneNumber = phone;
+                    entity.DriverSituation = string.IsNullOrWhiteSpace(situation) ? null : situation;
+                    entity.PhoneNumber = phone;
 
 					await _db.SaveChangesAsync();
 
@@ -206,7 +217,9 @@ namespace FleetManagement.Desktop.Pages
 				.Where(x =>
 					(x.DriverNumber ?? "").ToLowerInvariant().Contains(q) ||
 					(x.FullName ?? "").ToLowerInvariant().Contains(q) ||
-					(x.PhoneNumber ?? "").ToLowerInvariant().Contains(q))
+                    (x.DriverSituation ?? "").ToLowerInvariant().Contains(q) ||
+                    (x.PhoneNumber ?? "").ToLowerInvariant().Contains(q))
+
 				.ToList();
 
 			DriversGrid.ItemsSource = filtered;
@@ -222,7 +235,9 @@ namespace FleetManagement.Desktop.Pages
 			FullNameBox.Text = "";
 			PhoneBox.Text = "";
 			SearchBox.Text = "";
-		}
+            DriverSituationCombo.SelectedIndex = -1;
+            DriverSituationCombo.Text = "";
+        }
 
 		private static void Notify(string message, string title = "Bilgi")
 		{
@@ -231,5 +246,19 @@ namespace FleetManagement.Desktop.Pages
 
 			MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
 		}
-	}
+        private void LoadDriverSituations()
+        {
+            DriverSituationCombo.ItemsSource = new List<string>
+			{
+				"Müsait",
+				"Sürüş Görevi",
+				"İzin",
+				"Görevlendirme",
+				"YDGG",
+				"İstirahat",
+				"Birlik İçi Görev",
+				"Diğer"
+			};
+        }
+    }
 }
