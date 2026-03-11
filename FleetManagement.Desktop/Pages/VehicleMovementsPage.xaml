@@ -60,7 +60,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Araç Hareket" FontSize="24" FontWeight="SemiBold"/>
+                    <TextBlock Text="ARAÇ SEVK HAZIRLA" FontSize="24" Foreground="Black" FontWeight="SemiBold"/>
                     <TextBlock Text="Araç hareket kayıtlarını oluşturun ve takip edin."
                                Margin="0,6,0,0"
                                Foreground="{StaticResource BrushMuted}"/>
@@ -103,7 +103,8 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Hareket Formu"
+                    <TextBlock Text="ARAÇ SEVK HAZIRLIK FORMU"
+                               Foreground="Black"
                                FontSize="16"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>

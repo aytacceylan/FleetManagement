@@ -23,8 +23,9 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Bakım-Birlik (Unit)"
+                    <TextBlock Text="AİT OLDUĞU TAKIM"
                                FontSize="22"
+                               Foreground="Black"
                                FontWeight="SemiBold"/>
                     <TextBlock Text="Birlik tanımlarını yönetin."
                                Margin="0,6,0,0"

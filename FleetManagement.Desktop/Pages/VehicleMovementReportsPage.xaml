@@ -58,7 +58,8 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Araç Hareket Sorgulama"
+                    <TextBlock Text="SEVK SORGULAMA"
+                               Foreground="Black"
                                FontSize="22"
                                FontWeight="SemiBold"/>
                     <TextBlock Text="Tarih ve kriterlere göre araç hareket kayıtlarını sorgulayın."
@@ -96,7 +97,8 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Sorgu Filtreleri"
+                    <TextBlock Text="SORGULAMA FORMU"
+                               Foreground="Black"
                                FontSize="16"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
@@ -344,7 +346,7 @@
                         <ColumnDefinition Width="250"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="SORGU SONUÇLARI"
+                    <TextBlock Text="SORGULAMA SONUÇLARI"
                                Foreground="{StaticResource BrushMuted}"
                                FontSize="16"
                                FontWeight="SemiBold"

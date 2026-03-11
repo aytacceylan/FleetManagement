@@ -23,7 +23,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Araç Komutanları" FontSize="22" FontWeight="SemiBold"/>
+                    <TextBlock Text="ARAÇ KOMUTANI" FontSize="22" Foreground="Black" FontWeight="SemiBold"/>
                     <TextBlock Text="Araç komutanı kayıtlarını görüntüleyin ve yönetin."
                                Margin="0,6,0,0"
                                Foreground="{StaticResource BrushMuted}"/>

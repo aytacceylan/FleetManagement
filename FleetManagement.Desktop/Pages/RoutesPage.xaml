@@ -23,7 +23,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Rotalar" FontSize="22" FontWeight="SemiBold"/>
+                    <TextBlock Text="GÜZERGAHLAR" FontSize="22" Foreground="Black" FontWeight="SemiBold"/>
                     <TextBlock Text="Rota kayıtlarını görüntüleyin ve yönetin."
                                Margin="0,6,0,0"
                                Foreground="{StaticResource BrushMuted}"/>

@@ -24,7 +24,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Departures" FontSize="22" FontWeight="SemiBold"/>
+                    <TextBlock Text="EMRİNE GİRİLEN BRL./ KS." FontSize="22" Foreground="Black" FontWeight="SemiBold"/>
                     <TextBlock Text="Departure tanımlarını görüntüleyin ve yönetin."
                                Margin="0,6,0,0"
                                Foreground="{StaticResource BrushMuted}"/>

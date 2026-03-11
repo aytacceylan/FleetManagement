@@ -23,8 +23,9 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Yardım"
+                    <TextBlock Text="YARDIM"
                                FontSize="22"
+                               Foreground="Black"
                                FontWeight="SemiBold"/>
                     <TextBlock Text="Not / açıklama / kural ekleyebilir, kılavuzu açabilir veya dışa aktarabilirsiniz."
                                Margin="0,6,0,0"
@@ -67,7 +68,8 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Not / Kural Formu"
+                    <TextBlock Text="NOTLAR VE KURALLAR FORMU"
+                               Foreground="Black"
                                FontSize="16"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
