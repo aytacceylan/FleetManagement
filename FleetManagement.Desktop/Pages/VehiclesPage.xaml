@@ -61,8 +61,9 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Araçlar"
+                    <TextBlock Text="ARAÇ"
                                FontSize="22"
+                               Foreground="Black"
                                FontWeight="SemiBold"/>
                     <TextBlock Text="Araç kayıtlarını görüntüleyin ve yönetin."
                                Margin="0,6,0,0"
@@ -199,7 +200,7 @@
                                      Margin="0,6,0,0"
                                      LostFocus="PlateBox_LostFocus"/>
 
-                            <TextBlock Text="Sivil Plaka"
+                            <TextBlock Text="SİVİL PLAKA"
                                        Foreground="{StaticResource BrushMuted}"/>
                             <TextBox x:Name="InventoryNumberBox"
                                      Margin="0,6,0,0"/>
@@ -246,7 +247,7 @@
 
                         <!-- 2. Kolon -->
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="ARAÇ TİPİ"
+                            <TextBlock Text="ARAÇ CİNSİ"
                                        Foreground="{StaticResource BrushMuted}"
                                        Margin="0,6,0,0"/>
                             <ComboBox x:Name="VehicleTypeCombo"

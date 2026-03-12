@@ -23,7 +23,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="GÖREV TÜRLERİ" FontSize="22" Foreground="BLACK" FontWeight="SemiBold"/>
+                    <TextBlock Text="ÇIKIŞ TÜRLERİ" FontSize="22" Foreground="BLACK" FontWeight="SemiBold"/>
                     <TextBlock Text="Görev türü tanımlarını görüntüleyin ve yönetin."
                                Margin="0,6,0,0"
                                Foreground="{StaticResource BrushMuted}"/>
@@ -55,7 +55,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="GÖREV TÜRLERİ FORMU" FontSize="16" Foreground="Black" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <TextBlock Text="ÇIKIŞ TÜRLERİ FORMU" FontSize="16" Foreground="Black" FontWeight="SemiBold" VerticalAlignment="Center"/>
 
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
@@ -114,7 +114,7 @@
 
                         <!-- Kolon 2 -->
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="GÖREV TÜRÜ" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBlock Text="ÇIKIŞ TÜRÜ" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
                             <TextBox x:Name="NameBox" Margin="0,6,0,10"/>
                         </StackPanel>
 
@@ -149,7 +149,7 @@
                         <ColumnDefinition Width="280"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="GÖREV TÜRÜ LİSTESİ" FontSize="16" Foreground="{StaticResource BrushMuted}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <TextBlock Text="ÇIKIŞ TÜRÜ LİSTESİ" FontSize="16" Foreground="{StaticResource BrushMuted}" FontWeight="SemiBold" VerticalAlignment="Center"/>
 
                     <StackPanel Grid.Column="1">
                         <TextBox x:Name="SearchBox" TextChanged="SearchBox_TextChanged"/>
@@ -171,7 +171,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="NO" Binding="{Binding Id}" Width="70"/>
                         <DataGridTextColumn Header="KOD" Binding="{Binding Code}" Width="140"/>
-                        <DataGridTextColumn Header="GÖREV TÜRÜ" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="ÇIKIŞ TÜRÜ" Binding="{Binding Name}" Width="*"/>
                         <DataGridTextColumn Header="AÇIKLAMA" Binding="{Binding Description}" Width="260"/>
                         <DataGridTextColumn Header="OLUŞTURMA" Binding="{Binding CreatedAt}" Width="180"/>
                     </DataGrid.Columns>

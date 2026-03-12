@@ -23,7 +23,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Araç Tipleri" FontSize="22" FontWeight="SemiBold"/>
+                    <TextBlock Text="ARAÇ CİNSİ" FontSize="22" Foreground="Black" FontWeight="SemiBold"/>
                     <TextBlock Text="Araç tipi tanımlarını yönetin."
                                Margin="0,6,0,0"
                                Foreground="{StaticResource BrushMuted}"/>
@@ -66,7 +66,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="ARAÇ TİPİ FORMU"
+                    <TextBlock Text="ARAÇ CİNSİ FORMU"
                                Foreground="Black"
                                FontSize="16"
                                FontWeight="SemiBold"
@@ -144,7 +144,7 @@
                         <ColumnDefinition Width="260"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="ARAÇ TİPİ LİSTESİ"
+                    <TextBlock Text="ARAÇ CİNSİ LİSTESİ"
                                Foreground="{StaticResource BrushMuted}"
                                FontSize="16"
                                FontWeight="SemiBold"

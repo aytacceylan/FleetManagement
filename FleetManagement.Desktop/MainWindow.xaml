@@ -56,19 +56,19 @@
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç" Tag="VehiclesPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Sürücü" Tag="DriversPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Ait Olduğu Takım" Tag="UnitsPage" Click="Menu_Click"/>
-                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Tipi" Tag="VehicleTypesPage" Click="Menu_Click"/>
+                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Cinsi" Tag="VehicleTypesPage" Click="Menu_Click"/>
 
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Marka" Tag="VehicleBrandsPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Model" Tag="VehicleModelsPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Yılı" Tag="VehicleYearsPage" Click="Menu_Click"/>
 
-                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Güzergah" Tag="RoutesPage" Click="Menu_Click"/>
+                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Gidilecek Yer" Tag="RoutesPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Komutanı" Tag="VehicleCommandersPage" Click="Menu_Click"/>
-                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Başkanlık" Tag="DeparturesPage" Click="Menu_Click"/>
+                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Emrine Girilen Birlik" Tag="DeparturesPage" Click="Menu_Click"/>
 
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Muhafızı" Tag="VehicleGuardsPage" Click="Menu_Click"/>
 
-                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Görev Türü" Tag="DutyTypesPage" Click="Menu_Click"/>
+                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Çıkış Türü" Tag="DutyTypesPage" Click="Menu_Click"/>
                             </StackPanel>
                         </Expander>
 

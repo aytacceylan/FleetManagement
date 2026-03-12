@@ -23,7 +23,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Modeller" FontSize="22" FontWeight="SemiBold"/>
+                    <TextBlock Text="MODEL" FontSize="22" Foreground="BLACK" FontWeight="SemiBold"/>
                     <TextBlock Text="Araç model tanımlarını görüntüleyin ve yönetin."
                                Margin="0,6,0,0"
                                Foreground="{StaticResource BrushMuted}"/>

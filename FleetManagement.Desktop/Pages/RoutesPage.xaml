@@ -23,7 +23,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="GÜZERGAHLAR" FontSize="22" Foreground="Black" FontWeight="SemiBold"/>
+                    <TextBlock Text="GİDİLECEK YER" FontSize="22" Foreground="Black" FontWeight="SemiBold"/>
                     <TextBlock Text="Rota kayıtlarını görüntüleyin ve yönetin."
                                Margin="0,6,0,0"
                                Foreground="{StaticResource BrushMuted}"/>
@@ -66,7 +66,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="GÜZERGAH" FontSize="16" Foreground="Black" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <TextBlock Text="GİDİLECEK YER FORMU" FontSize="16" Foreground="Black" FontWeight="SemiBold" VerticalAlignment="Center"/>
 
                     <Button Grid.Column="1"
                            Width="110" Click="Save_Click">
@@ -107,12 +107,12 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0">
-                        <TextBlock Text="ROTA KODU" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBlock Text="GİDİLECEK YER KODU" Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="CodeBox" Margin="0,6,0,0"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="2">
-                        <TextBlock Text="ROTA ADI" Foreground="{StaticResource BrushMuted}"/>
+                        <TextBlock Text="GİDİLECEK YER ADI" Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="NameBox" Margin="0,6,0,0"/>
                     </StackPanel>
                     
@@ -144,7 +144,7 @@
                         <ColumnDefinition Width="280"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="ROTA LİSTESİ" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource BrushMuted}" VerticalAlignment="Center"/>
+                    <TextBlock Text="GİDİLECEK YER LİSTESİ" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource BrushMuted}" VerticalAlignment="Center"/>
 
                     <StackPanel Grid.Column="1">
                         <TextBox x:Name="SearchBox" TextChanged="SearchBox_TextChanged"/>

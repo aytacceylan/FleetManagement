@@ -60,7 +60,8 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Sürücüler"
+                    <TextBlock Text="SÜRÜCÜ"
+                               Foreground="Black"
                                FontSize="22"
                                FontWeight="SemiBold"/>
                     <TextBlock Text="Sürücü tanımlarını yönetin."

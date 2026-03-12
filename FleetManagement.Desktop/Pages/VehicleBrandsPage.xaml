@@ -25,7 +25,7 @@
 
 
                 <StackPanel>
-                    <TextBlock Text="Markalar" FontSize="22" FontWeight="SemiBold"/>
+                    <TextBlock Text="MARKA" FontSize="22" Foreground="Black" FontWeight="SemiBold"/>
                     <TextBlock Text="Araç marka tanımlarını görüntüleyin ve yönetin."
                                Margin="0,6,0,0" Foreground="{StaticResource BrushMuted}"/>
                 </StackPanel>
@@ -67,7 +67,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="ARAÇ MARKA FORMU"
+                    <TextBlock Text="MARKA FORMU"
                                Foreground="Black"
                                FontSize="16"
                                FontWeight="SemiBold"
