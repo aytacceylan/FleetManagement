@@ -138,6 +138,7 @@ namespace FleetManagement.Desktop.Pages
                         Brand = v.VehicleBrand,
                         Model = v.Model,
                         VehicleYear = v.VehicleYear,
+                        VehicleSituation = string.IsNullOrWhiteSpace(v.VehicleSituation) ? "Müsait" : v.VehicleSituation,
 
                         // 3. kolon grubu
                         VehicleKm = v.VehicleKm,

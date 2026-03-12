@@ -74,20 +74,20 @@ namespace FleetManagement.Desktop.Pages
 
 		}
 
-		private async Task LoadDashboardAsync()
-		{
-			await LoadDriverSummaryAsync();
-			await LoadVehicleSummaryAsync();
-			await LoadMaintenanceSummaryAsync();
-			await LoadTodaySummaryAsync();
+        private async Task LoadDashboardAsync()
+        {
+            await LoadDriverSummaryAsync();
+            await LoadVehicleSummaryAsync();
+            await LoadMaintenanceSummaryAsync();
+            await LoadTodaySummaryAsync();
 
-			await LoadAvailableVehiclesAsync();
-			await LoadAvailableDriversAsync();
-			await LoadMaintenanceGridAsync();
-			await LoadOngoingMovementsAsync();
+            await LoadAvailableVehiclesAsync();
+            await LoadAvailableDriversAsync();
+            await LoadMaintenanceGridAsync();
+            await LoadOngoingMovementsAsync();
 
-			LastUpdateText.Text = $"Son Güncelleme: {DateTime.Now:HH:mm}";
-		}
+            LastUpdateText.Text = $"Son Güncelleme: {DateTime.Now:HH:mm}";
+        }
 
         private async Task LoadDriverSummaryAsync()
         {
@@ -116,7 +116,7 @@ namespace FleetManagement.Desktop.Pages
                 .ToListAsync();
 
             var total = vehicles.Count;
-            var available = vehicles.Count(x => x.VehicleSituation == "Müsait");
+            var available = vehicles.Count(x => (x.VehicleSituation ?? "Müsait") == "Müsait");
             var onDuty = vehicles.Count(x => x.VehicleSituation == "Görevde");
             var kademe = vehicles.Count(x => x.VehicleSituation == "Kademe");
             var servis = vehicles.Count(x => x.VehicleSituation == "Servis");
@@ -253,7 +253,7 @@ namespace FleetManagement.Desktop.Pages
         private async Task LoadAvailableVehiclesAsync()
         {
             var rows = await _db.Vehicles.AsNoTracking()
-                .Where(x => !x.IsDeleted && x.VehicleSituation == "Müsait")
+                .Where(x => !x.IsDeleted && (x.VehicleSituation ?? "Müsait") == "Müsait")
                 .OrderBy(x => x.Plate)
                 .Select(x => new AvailableVehicleRow
                 {

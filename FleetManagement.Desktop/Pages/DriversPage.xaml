@@ -260,8 +260,8 @@
 
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="SÜRÜCÜ NO" Binding="{Binding DriverNumber}" Width="120"/>
-                        <DataGridTextColumn Header="RÜTBE AD SOYAD" Binding="{Binding FullName}" Width="*"/>
-                        <DataGridTextColumn Header="SÜRÜCÜ DURUMU" Binding="{Binding DriverSituation}" Width="*"/>
+                        <DataGridTextColumn Header="RÜTBE AD SOYAD" Binding="{Binding FullName}" Width="200"/>
+                        <DataGridTextColumn Header="SÜRÜCÜ DURUMU" Binding="{Binding DriverSituation}" Width="150"/>
                         <DataGridTextColumn Header="TELEFON" Binding="{Binding PhoneNumber}" Width="160"/>
                     </DataGrid.Columns>
                 </DataGrid>

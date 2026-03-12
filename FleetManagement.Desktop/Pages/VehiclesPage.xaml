@@ -419,6 +419,7 @@
 
                             <TextBlock Text="ARAÇ DURUMU"
                                        Foreground="{StaticResource BrushMuted}"/>
+                           
                             <ComboBox x:Name="VehicleSituationCombo"
                                          Margin="0,6,0,0"
                                          IsEditable="True"
@@ -555,11 +556,12 @@
 
                         <!-- 3. kolon -->
                         <DataGridTextColumn Header="KM" Binding="{Binding VehicleKm}" Width="50"/>
-                        <DataGridTextColumn Header="GÖREV" Binding="{Binding DutyStatus}" Width="80"/>
+                        <DataGridTextColumn Header="ARAÇ DURUMU" Binding="{Binding VehicleSituation}" Width="100"/>
+
                         <DataGridTemplateColumn Header="BAKIM" Width="80">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding MaintenanceStatus}"
+                                    <TextBlock Text="{Binding MaintInfo}"
                                                Foreground="{Binding MaintenanceBrush}"
                                                FontWeight="SemiBold"
                                                VerticalAlignment="Center"

@@ -22,7 +22,9 @@ namespace FleetManagement.Desktop.Dtos
 		public bool IsOnDuty { get; set; }
 		public string? DutyStatus { get; set; }
 
-		public string? MaintenanceStatus { get; set; }
+        public string? VehicleSituation { get; set; }
+
+        public string? MaintenanceStatus { get; set; }
 
 		// Formda var, listede sağa doğru gösterilecek
 		public string? Brand { get; set; }
@@ -34,7 +36,7 @@ namespace FleetManagement.Desktop.Dtos
 
 		public string? SaseNo { get; set; }
 		public int? LoadCapacity { get; set; }
-		public string? VehicleSituation { get; set; }
+	
 
 		// bakım hesabı için (gridde göstermeyeceğiz)
 		public int? MaintenanceIntervalKm { get; set; }
