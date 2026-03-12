@@ -169,12 +169,12 @@
                           SelectionChanged="CommandersGrid_SelectionChanged">
 
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="70"/>
-                        <DataGridTextColumn Header="KOMUTAN NO" Binding="{Binding CommanderNumber}" Width="150"/>
-                        <DataGridTextColumn Header="RÜTBE AD SOYAD" Binding="{Binding FullName}" Width="*"/>
-                        <DataGridTextColumn Header="TELEFON" Binding="{Binding PhoneNumber}" Width="150"/>
-                        <DataGridTextColumn Header="BİRLİK" Binding="{Binding UnitName}" Width="180"/>
-                        <DataGridTextColumn Header="OLUŞTURMA" Binding="{Binding CreatedAt}" Width="180"/>
+                        <DataGridTextColumn Header="Id" Binding="{Binding Id}" Width="50"/>
+                        <DataGridTextColumn Header="KOMUTAN NO" Binding="{Binding CommanderNumber}" Width="80"/>
+                        <DataGridTextColumn Header="RÜTBE AD SOYAD" Binding="{Binding FullName}" Width="200"/>
+                        <DataGridTextColumn Header="TELEFON" Binding="{Binding PhoneNumber}" Width="120"/>
+                        <DataGridTextColumn Header="BİRLİK" Binding="{Binding UnitName}" Width="200"/>
+                        <DataGridTextColumn Header="OLUŞTURMA" Binding="{Binding CreatedAt}" Width="200"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

@@ -169,9 +169,9 @@
                           SelectionChanged="Grid_SelectionChanged">
 
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="KOD" Binding="{Binding Code}" Width="140"/>
-                        <DataGridTextColumn Header="AD" Binding="{Binding Name}" Width="*"/>
-                        <DataGridTextColumn Header="AÇIKLAMA" Binding="{Binding Description}" Width="*"/>
+                        <DataGridTextColumn Header="KOD" Binding="{Binding Code}" Width="50"/>
+                        <DataGridTextColumn Header="AD" Binding="{Binding Name}" Width="180"/>
+                        <DataGridTextColumn Header="AÇIKLAMA" Binding="{Binding Description}" Width="120"/>
                     </DataGrid.Columns>
                 </DataGrid>
 

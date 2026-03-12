@@ -190,10 +190,10 @@
                           SelectionChanged="Grid_SelectionChanged">
 
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="KOD" Binding="{Binding Code}" Width="140"/>
-                        <DataGridTextColumn Header="TAKIM NO" Binding="{Binding Name}" Width="*"/>
-                        <DataGridTextColumn Header="BİRLİK" Binding="{Binding ParentName}" Width="200"/>
-                        <DataGridTextColumn Header="AÇIKLAMA" Binding="{Binding Description}" Width="*"/>
+                        <DataGridTextColumn Header="KOD" Binding="{Binding Code}" Width="50"/>
+                        <DataGridTextColumn Header="TAKIM NO" Binding="{Binding Name}" Width="180"/>
+                        <DataGridTextColumn Header="BİRLİK" Binding="{Binding ParentName}" Width="180"/>
+                        <DataGridTextColumn Header="AÇIKLAMA" Binding="{Binding Description}" Width="180"/>
                     </DataGrid.Columns>
 
                 </DataGrid>

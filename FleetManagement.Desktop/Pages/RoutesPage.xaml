@@ -165,10 +165,10 @@
                           SelectionChanged="RoutesGrid_SelectionChanged">
 
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="NO" Binding="{Binding Id}" Width="70"/>
-                        <DataGridTextColumn Header="KOD" Binding="{Binding Code}" Width="140"/>
-                        <DataGridTextColumn Header="ROTA ADI" Binding="{Binding Name}" Width="*"/>
-                        <DataGridTextColumn Header="OLUŞTURMA" Binding="{Binding CreatedAt}" Width="180"/>
+                        <DataGridTextColumn Header="NO" Binding="{Binding Id}" Width="50"/>
+                        <DataGridTextColumn Header="KOD" Binding="{Binding Code}" Width="80"/>
+                        <DataGridTextColumn Header="ROTA ADI" Binding="{Binding Name}" Width="200"/>
+                        <DataGridTextColumn Header="OLUŞTURMA" Binding="{Binding CreatedAt}" Width="200"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

@@ -169,10 +169,10 @@
                           SelectionMode="Single"
                           SelectionChanged="Grid_SelectionChanged">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="NO" Binding="{Binding Id}" Width="70"/>
-                        <DataGridTextColumn Header="KOD" Binding="{Binding Code}" Width="140"/>
-                        <DataGridTextColumn Header="ÇIKIŞ TÜRÜ" Binding="{Binding Name}" Width="*"/>
-                        <DataGridTextColumn Header="AÇIKLAMA" Binding="{Binding Description}" Width="260"/>
+                        <DataGridTextColumn Header="NO" Binding="{Binding Id}" Width="50"/>
+                        <DataGridTextColumn Header="KOD" Binding="{Binding Code}" Width="80"/>
+                        <DataGridTextColumn Header="ÇIKIŞ TÜRÜ" Binding="{Binding Name}" Width="120"/>
+                        <DataGridTextColumn Header="AÇIKLAMA" Binding="{Binding Description}" Width="200"/>
                         <DataGridTextColumn Header="OLUŞTURMA" Binding="{Binding CreatedAt}" Width="180"/>
                     </DataGrid.Columns>
                 </DataGrid>

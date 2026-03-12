@@ -367,17 +367,17 @@
                           CanUserAddRows="False"
                           SelectionMode="Single">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="S.NO" Binding="{Binding DailyNo}" Width="70"/>
+                        <DataGridTextColumn Header="S.NO" Binding="{Binding DailyNo}" Width="50"/>
                         <DataGridTextColumn Header="TARİH" Binding="{Binding DateText}" Width="95"/>
-                        <DataGridTextColumn Header="PLAKA" Binding="{Binding Plate}" Width="110"/>
+                        <DataGridTextColumn Header="PLAKA" Binding="{Binding Plate}" Width="100"/>
                         <DataGridTextColumn Header="SÜRÜCÜ" Binding="{Binding Driver}" Width="150"/>
-                        <DataGridTextColumn Header="ARAÇ MARKA" Binding="{Binding VehicleBrand}" Width="120"/>
-                        <DataGridTextColumn Header="GİDİLEN YER" Binding="{Binding Route}" Width="140"/>
-                        <DataGridTextColumn Header="GÖREV TÜTÜ" Binding="{Binding DutyType}" Width="130"/>
-                        <DataGridTextColumn Header="EMRİNE GİRİLEN BRL/KS" Binding="{Binding Departure}" Width="130"/>
-                        <DataGridTextColumn Header="DURUM" Binding="{Binding Status}" Width="120"/>
-                        <DataGridTextColumn Header="YAPILAN KM" Binding="{Binding KmText}" Width="90"/>
-                        <DataGridTextColumn Header="TAŞINAN YOLCU" Binding="{Binding PassengerCount}" Width="110"/>
+                        <DataGridTextColumn Header="ARAÇ MARKA" Binding="{Binding VehicleBrand}" Width="100"/>
+                        <DataGridTextColumn Header="GİDİLEN YER" Binding="{Binding Route}" Width="110"/>
+                        <DataGridTextColumn Header="GÖREV TÜTÜ" Binding="{Binding DutyType}" Width="80"/>
+                        <DataGridTextColumn Header="EMRİNE GİRİLEN BRL/KS" Binding="{Binding Departure}" Width="120"/>
+                        <DataGridTextColumn Header="DURUM" Binding="{Binding Status}" Width="100"/>
+                        <DataGridTextColumn Header="YAPILAN KM" Binding="{Binding KmText}" Width="80"/>
+                        <DataGridTextColumn Header="TAŞINAN YOLCU" Binding="{Binding PassengerCount}" Width="100"/>
                         <DataGridTextColumn Header="TAŞINAN YÜK" Binding="{Binding LoadAmount}" Width="110"/>
                     </DataGrid.Columns>
                 </DataGrid>
