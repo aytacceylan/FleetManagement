@@ -139,6 +139,11 @@ namespace FleetManagement.Desktop.Pages
                 var parsed = ParseLoadOrPassengerInfo(m.LoadOrPassengerInfo);
 
                 var status = CalcStatus(m.ExitDateTime, m.ReturnDateTime);
+                var dateForNo = m.MovementDate == default
+                                ? m.ExitDateTime.ToLocalTime().Date
+                                : m.MovementDate.ToLocalTime().Date;
+
+
 
                 int? doneKm = null;
                 if (m.StartKm.HasValue && m.EndKm.HasValue && m.EndKm.Value >= m.StartKm.Value)
@@ -147,6 +152,7 @@ namespace FleetManagement.Desktop.Pages
                 return new VehicleMovementRow
                 {
                     Id = m.Id,
+
                     MovementNo = $"{m.MovementDate:yyyyMMdd}-{m.DailyNo:000}",
                     DailyNo = m.DailyNo,
                     Driver = m.Driver?.FullName ?? m.DriverText,
@@ -172,29 +178,11 @@ namespace FleetManagement.Desktop.Pages
                 };
             }).ToList();
 
-            ApplyDailyNumbers(rows);
+            
 
             _all = rows;
             MovementsGrid.ItemsSource = _all;
             UpdateCount(_all.Count);
-        }
-
-        private static void ApplyDailyNumbers(List<VehicleMovementRow> rows)
-        {
-            var groups = rows
-                .GroupBy(x => x.ExitDateTimeUtc.ToLocalTime().Date)
-                .ToList();
-
-            foreach (var group in groups)
-            {
-                var ordered = group
-                    .OrderBy(x => x.ExitDateTimeUtc)
-                    .ThenBy(x => x.Id)
-                    .ToList();
-
-                for (int i = 0; i < ordered.Count; i++)
-                    ordered[i].DailyNo = i + 1;
-            }
         }
 
         private void UpdateCount(int count)
@@ -341,6 +329,24 @@ namespace FleetManagement.Desktop.Pages
                     return;
                 }
 
+                if (_selectedId is null)
+                {
+                    var localDate = exitDtLocal.Date;
+                    var localTomorrow = localDate.AddDays(1);
+
+                    var startUtc = DateTime.SpecifyKind(localDate, DateTimeKind.Local).ToUniversalTime();
+                    var endUtc = DateTime.SpecifyKind(localTomorrow, DateTimeKind.Local).ToUniversalTime();
+
+                    var nextDailyNo = (await _db.VehicleMovements
+                        .Where(x => !x.IsDeleted &&
+                                    x.MovementDate >= startUtc &&
+                                    x.MovementDate < endUtc)
+                        .MaxAsync(x => (int?)x.DailyNo) ?? 0) + 1;
+
+                    entity.MovementDate = startUtc;
+                    entity.DailyNo = nextDailyNo;
+                }
+
                 var wasOpen = entity.ReturnDateTime is null;
 
                 entity.VehicleId = vehicleId;
@@ -406,6 +412,7 @@ namespace FleetManagement.Desktop.Pages
                             if (doneKm is not null && doneKm >= 0)
                                 vehicle.VehicleKm = (vehicle.VehicleKm ?? 0) + doneKm.Value;
 
+                            // Görev dönüşünde, araç görevdeyse müsaite çek
                             if (NormalizeVehicleSituation(vehicle.VehicleSituation) == "Görevde")
                                 vehicle.VehicleSituation = "Müsait";
                         }
@@ -414,15 +421,21 @@ namespace FleetManagement.Desktop.Pages
                     if (entity.DriverId is not null)
                     {
                         var driver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == entity.DriverId.Value && !d.IsDeleted);
-                        if (driver is not null && NormalizeDriverSituation(driver.DriverSituation) == "Sürüş Görevi")
-                            driver.DriverSituation = "Müsait";
+                        if (driver is not null)
+                        {
+                            if (NormalizeDriverSituation(driver.DriverSituation) == "Sürüş Görevi")
+                                driver.DriverSituation = "Müsait";
+                        }
                     }
 
                     if (entity.SecondDriverId is not null)
                     {
                         var secondDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == entity.SecondDriverId.Value && !d.IsDeleted);
-                        if (secondDriver is not null && NormalizeDriverSituation(secondDriver.DriverSituation) == "Sürüş Görevi")
-                            secondDriver.DriverSituation = "Müsait";
+                        if (secondDriver is not null)
+                        {
+                            if (NormalizeDriverSituation(secondDriver.DriverSituation) == "Sürüş Görevi")
+                                secondDriver.DriverSituation = "Müsait";
+                        }
                     }
                 }
 
@@ -593,22 +606,22 @@ namespace FleetManagement.Desktop.Pages
             LoadAmountBox.Text = "";
         }
 
-        private void PrepareNewFormState()
+        private async void PrepareNewFormState()
         {
-            DailyNoBox.Text = GetNextDailyNo().ToString();
-            StatusBox.Text = "Planlandı";
-        }
+            var localToday = DateTime.Today;
+            var localTomorrow = localToday.AddDays(1);
 
-        private int GetNextDailyNo()
-        {
-            var today = DateTime.Today;
+            var startUtc = DateTime.SpecifyKind(localToday, DateTimeKind.Local).ToUniversalTime();
+            var endUtc = DateTime.SpecifyKind(localTomorrow, DateTimeKind.Local).ToUniversalTime();
 
-            var max = _all
-                .Where(x => x.ExitDateTimeUtc.ToLocalTime().Date == today)
-                .Select(x => (int?)x.DailyNo)
-                .Max() ?? 0;
+            var nextDailyNo = (await _db.VehicleMovements
+                .Where(x => !x.IsDeleted &&
+                            x.MovementDate >= startUtc &&
+                            x.MovementDate < endUtc)
+                .MaxAsync(x => (int?)x.DailyNo) ?? 0) + 1;
 
-            return max + 1;
+            DailyNoBox.Text = nextDailyNo.ToString();
+            StatusBox.Text = "";
         }
 
         private static string? EmptyToNull(string? value)
