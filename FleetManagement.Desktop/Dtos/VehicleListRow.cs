@@ -19,15 +19,13 @@ namespace FleetManagement.Desktop.Dtos
 		public int? VehicleKm { get; set; }
 		public string? VehicleUnit { get; set; }
 
-		public bool IsOnDuty { get; set; }
-		public string? DutyStatus { get; set; }
-
         public string? VehicleSituation { get; set; }
 
-        public string? MaintenanceStatus { get; set; }
+        public Brush VehicleSituationBrush { get; set; } = Brushes.Black;
 
-		// Formda var, listede sağa doğru gösterilecek
-		public string? Brand { get; set; }
+
+        // Formda var, listede sağa doğru gösterilecek
+        public string? Brand { get; set; }
 
 		public int? VehicleYear { get; set; }
 
@@ -36,10 +34,12 @@ namespace FleetManagement.Desktop.Dtos
 
 		public string? SaseNo { get; set; }
 		public int? LoadCapacity { get; set; }
-	
 
-		// bakım hesabı için (gridde göstermeyeceğiz)
-		public int? MaintenanceIntervalKm { get; set; }
+
+        // bakım hesabı için (gridde göstermeyeceğiz)
+
+        public string? MaintenanceStatus { get; set; }
+        public int? MaintenanceIntervalKm { get; set; }
 		public int? MaintenanceIntervalMonths { get; set; }
 		public int? LastMaintenanceKm { get; set; }
 		public DateTime? LastMaintenanceDate { get; set; }

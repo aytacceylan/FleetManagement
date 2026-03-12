@@ -157,8 +157,6 @@ namespace FleetManagement.Desktop.Pages
 
                         // computed later
                         DriverFullName = null,
-                        DutyStatus = null,
-                        IsOnDuty = false,
                         MaintenanceStatus = null
                     })
                     .ToListAsync();
@@ -166,8 +164,6 @@ namespace FleetManagement.Desktop.Pages
                 // Computed fields
                 foreach (var r in list)
                 {
-                    r.DutyStatus = await GetDutyStatusAsync(r.Id);
-                    r.IsOnDuty = r.DutyStatus == "Görevde";
 
                     r.DriverFullName = await GetDriverNameForListAsync(r.Id);
 
@@ -177,14 +173,17 @@ namespace FleetManagement.Desktop.Pages
                         r.MaintenanceIntervalMonths,
                         r.LastMaintenanceKm,
                         r.LastMaintenanceDate);
+                        r.MaintenanceBrush = GetMaintenanceBrush(r.MaintenanceStatus);
+                        r.VehicleSituationBrush = GetVehicleSituationBrush(r.VehicleSituation);
                 }
 
                 _allVehicles = list;
                 VehiclesGrid.ItemsSource = _allVehicles;
 
                 // Notify($"Yüklendi: {_allVehicles.Count} kayıt"); // istersen aç
-               
-                MaintInfoBox.Text = "";
+
+                MaintInfoBox.Text = "—";
+                MaintInfoBox.Foreground = Brushes.Black;
             }
             catch (Exception ex)
             {
@@ -193,14 +192,6 @@ namespace FleetManagement.Desktop.Pages
             }
         }
 
-        private async Task<string> GetDutyStatusAsync(int vehicleId)
-        {
-            var onDuty = await _db.VehicleMovements
-                .AsNoTracking()
-                .AnyAsync(m => m.VehicleId == vehicleId && m.ReturnDateTime == null);
-
-            return onDuty ? "Görevde" : "Müsait";
-        }
 
         private async Task<string?> GetDriverNameForListAsync(int vehicleId)
         {
@@ -474,8 +465,9 @@ namespace FleetManagement.Desktop.Pages
             VehicleSituationCombo.SelectedIndex = -1;
             VehicleSituationCombo.Text = "";
 
-            
-            MaintInfoBox.Text = "";
+
+            MaintInfoBox.Text = "—";
+            MaintInfoBox.Foreground = Brushes.Black;
 
             LastMaintenanceKmBox.Text = "";
             LastMaintenanceDatePicker.SelectedDate = null;
@@ -494,6 +486,7 @@ namespace FleetManagement.Desktop.Pages
             );
 
             MaintInfoBox.Text = string.IsNullOrWhiteSpace(maint) ? "—" : maint;
+            MaintInfoBox.Foreground = GetMaintenanceBrush(maint);
         }
 
         // ==============================
@@ -565,7 +558,7 @@ namespace FleetManagement.Desktop.Pages
             MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private static Brush GetMaintenanceBrush(string status)
+        private static Brush GetMaintenanceBrush(string? status)
         {
             return status switch
             {
@@ -604,5 +597,19 @@ namespace FleetManagement.Desktop.Pages
         {
 
         }
+        private static Brush GetVehicleSituationBrush(string? status)
+        {
+            return status switch
+            {
+                "Müsait" => Brushes.Green,
+                "Görevde" => Brushes.Red,
+                "Kademe" => Brushes.DarkOrange,
+                "Servis" => Brushes.MediumPurple,
+                "Fabrika" => Brushes.SteelBlue,
+                _ => Brushes.Black
+            };
+        }
+
+
     }
 }

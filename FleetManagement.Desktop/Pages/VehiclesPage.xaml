@@ -448,40 +448,11 @@
                                 </ComboBox.ItemContainerStyle>
                             </ComboBox>
 
-                            <TextBlock Text="BAKIM"
-                                       Foreground="{StaticResource BrushMuted}"/>
-
-                            <ComboBox x:Name="MaintInfoBox"
-                                      Margin="0,6,0,0"
-                                      IsEditable="True"
-                                      IsReadOnly="True"
-                                      Foreground="Black"
-                                      Background="#3D5869"
-                                      BorderBrush="Black" SelectionChanged="MaintInfoBox_SelectionChanged">
-
-                                <ComboBox.ItemContainerStyle>
-                                    <Style TargetType="ComboBoxItem">
-                                        <!-- Normal liste -->
-                                        <Setter Property="Foreground" Value="Black"/>
-                                        <Setter Property="Background" Value="black"/>
-
-                                        <Style.Triggers>
-                                            <!-- Hover -->
-                                            <Trigger Property="IsHighlighted" Value="True">
-                                                <Setter Property="Background" Value="Black"/>
-                                                <Setter Property="Foreground" Value="Black"/>
-                                            </Trigger>
-
-                                            <!-- Seçili -->
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter Property="Background" Value="Black"/>
-                                                <Setter Property="Foreground" Value="Black"/>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ComboBox.ItemContainerStyle>
-
-                            </ComboBox>
+                            <TextBlock Text="BAKIM DURUMU" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBlock x:Name="MaintInfoBox"
+                                       Margin="0,6,0,0"
+                                       FontWeight="SemiBold"
+                                       Text="—"/>
                         </StackPanel>
 
                         <!-- 5. Kolon -->
@@ -556,12 +527,22 @@
 
                         <!-- 3. kolon -->
                         <DataGridTextColumn Header="KM" Binding="{Binding VehicleKm}" Width="50"/>
-                        <DataGridTextColumn Header="ARAÇ DURUMU" Binding="{Binding VehicleSituation}" Width="100"/>
-
-                        <DataGridTemplateColumn Header="BAKIM" Width="80">
+                        <DataGridTemplateColumn Header="ARAÇ DURUMU" Width="110">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding MaintInfo}"
+                                    <TextBlock Text="{Binding VehicleSituation}"
+                                               Foreground="{Binding VehicleSituationBrush}"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="BAKIM DURUMU" Width="110">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MaintenanceStatus}"
                                                Foreground="{Binding MaintenanceBrush}"
                                                FontWeight="SemiBold"
                                                VerticalAlignment="Center"

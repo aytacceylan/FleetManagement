@@ -28,7 +28,8 @@ namespace FleetManagement.Desktop.Pages
 
             SetExitNow();
             ReturnDatePicker.SelectedDate = null;
-            ReturnTimeBox.Text = "17:00";
+            ReturnTimeBox.Text = "";
+            UpdateReturnHighlight();
 
             Loaded += async (_, __) =>
             {
@@ -514,7 +515,8 @@ namespace FleetManagement.Desktop.Pages
             ExitTimeBox.Text = m.ExitDateTime.ToLocalTime().ToString("HH:mm");
 
             ReturnDatePicker.SelectedDate = m.ReturnDateTime?.ToLocalTime().Date;
-            ReturnTimeBox.Text = m.ReturnDateTime is null ? "17:00" : m.ReturnDateTime.Value.ToLocalTime().ToString("HH:mm");
+            ReturnTimeBox.Text = m.ReturnDateTime is null ? "" : m.ReturnDateTime.Value.ToLocalTime().ToString("HH:mm");
+            UpdateReturnHighlight();
 
             RouteCombo.Text = m.Route ?? "";
             DepartureCombo.Text = m.Purpose ?? "";
@@ -583,7 +585,8 @@ namespace FleetManagement.Desktop.Pages
 
             SetExitNow();
             ReturnDatePicker.SelectedDate = null;
-            ReturnTimeBox.Text = "17:00";
+            ReturnTimeBox.Text = "";
+            UpdateReturnHighlight();
 
             DoneKmBox.Text = "";
             PassengerCountBox.Text = "";
@@ -944,6 +947,36 @@ namespace FleetManagement.Desktop.Pages
             var now = DateTime.Now;
             ExitDatePicker.SelectedDate = now.Date;
             ExitTimeBox.Text = now.ToString("HH:mm");
+        }
+
+        private void UpdateReturnHighlight()
+        {
+            var isReturnEmpty =
+                ReturnDatePicker.SelectedDate == null &&
+                string.IsNullOrWhiteSpace(ReturnTimeBox.Text);
+
+            if (isReturnEmpty)
+            {
+                ReturnDatePicker.Background = new SolidColorBrush(Color.FromRgb(255, 249, 196)); // açık sarı
+                ReturnTimeBox.Background = new SolidColorBrush(Color.FromRgb(255, 249, 196));
+            }
+            else
+            {
+                ReturnDatePicker.Background = Brushes.White;
+                ReturnTimeBox.Background = Brushes.White;
+            }
+
+
+        }
+
+        private void ReturnDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateReturnHighlight();
+        }
+
+        private void ReturnTimeBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            UpdateReturnHighlight();
         }
     }
 }

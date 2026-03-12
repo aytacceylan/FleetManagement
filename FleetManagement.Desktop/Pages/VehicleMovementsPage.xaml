@@ -372,9 +372,10 @@
                             
                             <TextBlock Text="DÖNÜŞ TARİHİ" Foreground="{StaticResource BrushMuted}"/>
                             <DatePicker x:Name="ReturnDatePicker"
-                                        Margin="0,6,0,0"
-                                        Style="{StaticResource FixDatePickerText}"
-                                        CalendarStyle="{StaticResource FixCalendar}"/>
+            Margin="0,6,0,0"
+            Style="{StaticResource FixDatePickerText}"
+            CalendarStyle="{StaticResource FixCalendar}"
+            SelectedDateChanged="ReturnDatePicker_SelectedDateChanged"/>
 
                         </StackPanel>
 
@@ -383,7 +384,9 @@
 
 
                             <TextBlock Text="DÖNÜŞ SAATİ" Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="ReturnTimeBox" Margin="0,6,0,0" />
+                            <TextBox x:Name="ReturnTimeBox"
+                                     Margin="0,6,0,0"
+                                     TextChanged="ReturnTimeBox_TextChanged"/>
 
                             <TextBlock Text="YAPILAN KM." Foreground="{StaticResource BrushMuted}"/>
                             <TextBox x:Name="DoneKmBox" Margin="0,5,0,0"/>
