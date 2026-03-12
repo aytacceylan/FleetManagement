@@ -244,8 +244,10 @@ namespace FleetManagement.Infrastructure.Data
                 // ✅ Code: sadece aktif + Code doluysa uniq
                 e.HasIndex(x => x.Code)
                  .IsUnique()
-                 .HasFilter("\"IsDeleted\" = false AND \"Code\" IS NOT NULL");
+                 .HasFilter("\"IsDeleted\" = false "); // .HasFilter("\"IsDeleted\" = false AND \"Code\" IS NOT NULL");
             });
+
+            
 
             modelBuilder.Entity<HelpNote>(e =>
             {

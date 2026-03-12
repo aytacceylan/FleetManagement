@@ -134,7 +134,9 @@ namespace FleetManagement.Desktop.Pages
 
 					entity.DriverNumber = driverNumber;
 					entity.FullName = fullName;
-                    entity.DriverSituation = string.IsNullOrWhiteSpace(situation) ? null : situation;
+                    entity.DriverSituation = string.IsNullOrWhiteSpace(situation)
+										 ? "Müsait"
+										 : situation;
                     entity.PhoneNumber = phone;
 
 					await _db.SaveChangesAsync();

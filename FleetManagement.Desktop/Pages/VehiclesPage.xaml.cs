@@ -361,7 +361,9 @@ namespace FleetManagement.Desktop.Pages
 
                 var dt = LastMaintenanceDatePicker.SelectedDate?.Date;
                 entity.LastMaintenanceDate = dt is null ? null : DateTime.SpecifyKind(dt.Value, DateTimeKind.Utc);
-                entity.VehicleSituation = EmptyToNull(VehicleSituationCombo.Text);
+                entity.VehicleSituation = string.IsNullOrWhiteSpace(VehicleSituationCombo.Text)
+                    ? "Müsait"
+                    : VehicleSituationCombo.Text.Trim();
 
 
                 entity.MaintenanceIntervalKm = TryParseNullableInt(MaintenanceIntervalKmBox.Text);

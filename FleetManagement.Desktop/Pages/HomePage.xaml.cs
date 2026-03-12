@@ -97,16 +97,16 @@ namespace FleetManagement.Desktop.Pages
 
             var total = drivers.Count;
             var available = drivers.Count(x => x.DriverSituation == "Müsait");
-            var surus = drivers.Count(x => x.DriverSituation == "Sürüş Görevi");
-            var izin = drivers.Count(x => x.DriverSituation == "İzin");
-            var gorevlendirme = drivers.Count(x => x.DriverSituation == "Görevlendirme");
+            var driving = drivers.Count(x => x.DriverSituation == "Sürüş Görevi");
+            var leave = drivers.Count(x => x.DriverSituation == "İzin");
+            var assignment = drivers.Count(x => x.DriverSituation == "Görevlendirme");
             var ydgg = drivers.Count(x => x.DriverSituation == "YDGG");
-            var istirahat = drivers.Count(x => x.DriverSituation == "İstirahat");
-            var birlikIci = drivers.Count(x => x.DriverSituation == "Birlik İçi Görev");
-            var diger = drivers.Count(x => x.DriverSituation == "Diğer");
+            var rest = drivers.Count(x => x.DriverSituation == "İstirahat");
+            var internalDuty = drivers.Count(x => x.DriverSituation == "Birlik İçi Görev");
+            var other = drivers.Count(x => x.DriverSituation == "Diğer");
 
             DriverSummaryText.Text =
-                $"Toplam: {total} | Müsait: {available} | Sürüş: {surus} | İzin: {izin} | Görevl.: {gorevlendirme} | YDGG: {ydgg} | İstirahat: {istirahat} | Birlik İçi: {birlikIci} | Diğer: {diger}";
+                $"Toplam: {total} | Müsait: {available} | Sürüş: {driving} | İzin: {leave} | Görevl.: {assignment} | YDGG: {ydgg} | İstirahat: {rest} | Birlik İçi: {internalDuty} | Diğer: {other}";
         }
 
         private async Task LoadVehicleSummaryAsync()
@@ -250,52 +250,40 @@ namespace FleetManagement.Desktop.Pages
 		}
 
 
-		private async Task LoadAvailableVehiclesAsync()
-		{
-			var busyVehicleIds = await _db.VehicleMovements.AsNoTracking()
-				.Where(x => !x.IsDeleted && x.ReturnDateTime == null && x.VehicleId != null)
-				.Select(x => x.VehicleId!.Value)
-				.Distinct()
-				.ToListAsync();
+        private async Task LoadAvailableVehiclesAsync()
+        {
+            var rows = await _db.Vehicles.AsNoTracking()
+                .Where(x => !x.IsDeleted && x.VehicleSituation == "Müsait")
+                .OrderBy(x => x.Plate)
+                .Select(x => new AvailableVehicleRow
+                {
+                    Plate = x.Plate,
+                    VehicleBrand = x.VehicleBrand,
+                    VehicleUnit = x.VehicleUnit,
+                    VehicleKm = x.VehicleKm
+                })
+                .ToListAsync();
 
-			var rows = await _db.Vehicles.AsNoTracking()
-				.Where(x => !x.IsDeleted && !busyVehicleIds.Contains(x.Id))
-				.OrderBy(x => x.Plate)
-				.Select(x => new AvailableVehicleRow
-				{
-					Plate = x.Plate,
-					VehicleBrand = x.VehicleBrand,
-					VehicleUnit = x.VehicleUnit,
-					VehicleKm = x.VehicleKm
-				})
-				.ToListAsync();
+            AvailableVehiclesGrid.ItemsSource = rows;
+        }
 
-			AvailableVehiclesGrid.ItemsSource = rows;
-		}
+        private async Task LoadAvailableDriversAsync()
+        {
+            var rows = await _db.Drivers.AsNoTracking()
+                .Where(x => !x.IsDeleted && x.DriverSituation == "Müsait")
+                .OrderBy(x => x.FullName)
+                .Select(x => new AvailableDriverRow
+                {
+                    FullName = x.FullName,
+                    DriverNumber = x.DriverNumber,
+                    PhoneNumber = x.PhoneNumber
+                })
+                .ToListAsync();
 
-		private async Task LoadAvailableDriversAsync()
-		{
-			var busyDriverIds = await _db.VehicleMovements.AsNoTracking()
-				.Where(x => !x.IsDeleted && x.ReturnDateTime == null && x.DriverId != null)
-				.Select(x => x.DriverId!.Value)
-				.Distinct()
-				.ToListAsync();
+            AvailableDriversGrid.ItemsSource = rows;
+        }
 
-			var rows = await _db.Drivers.AsNoTracking()
-				.Where(x => !x.IsDeleted && !busyDriverIds.Contains(x.Id))
-				.OrderBy(x => x.FullName)
-				.Select(x => new AvailableDriverRow
-				{
-					FullName = x.FullName,
-					DriverNumber = x.DriverNumber,
-					PhoneNumber = x.PhoneNumber
-				})
-				.ToListAsync();
-
-			AvailableDriversGrid.ItemsSource = rows;
-		}
-
-		private async Task LoadOngoingMovementsAsync()
+        private async Task LoadOngoingMovementsAsync()
 		{
 			var rows = await _db.VehicleMovements.AsNoTracking()
 				.Where(x => !x.IsDeleted && x.ReturnDateTime == null)
@@ -319,11 +307,11 @@ namespace FleetManagement.Desktop.Pages
 		{
 			try
 			{
-				var pdfPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "ÇıkışFormu.pdf");
+				var pdfPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "FORM 110.pdf");
 
 				if (!File.Exists(pdfPath))
 				{
-					MessageBox.Show("Assets klasöründe ÇıkışFormu.pdf bulunamadı.", "Hata",
+					MessageBox.Show("Assets klasöründe FORM 110.pdf bulunamadı.", "Hata",
 						MessageBoxButton.OK, MessageBoxImage.Error);
 					return;
 				}

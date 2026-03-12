@@ -13,6 +13,7 @@ namespace FleetManagement.Desktop.Pages
 
         public string? Driver { get; set; }
 
+        public string? SecondDriver { get; set; }public VehicleMovementRow() { }
         public string Plate { get; set; } = "";
 
         public string ExitTimeText { get; set; } = "";

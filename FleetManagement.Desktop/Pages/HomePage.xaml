@@ -113,7 +113,7 @@
                    Foreground="Black"
                    FontSize="13"
                    TextWrapping="Wrap"
-                   Text="Toplam: 0 | Görevde: 0 | Müsait: 0"/>
+                   Text="Toplam: 0 | Müsait: 0 | Sürüş: 0 | İzin: 0 | Görevl.: 0 | YDGG: 0 | İstirahat: 0 | Birlik İçi: 0 | Diğer: 0"/>
                 </StackPanel>
             </Border>
 
@@ -129,7 +129,7 @@
                    Foreground="black"
                    FontSize="13"
                    TextWrapping="Wrap"
-                   Text="Toplam: 0 | Devam: 0 | Planlı: 0 | Müsait: 0"/>
+                   Text="Toplam: 0 | Müsait: 0 | Görevde: 0 | Kademe: 0 | Servis: 0 | Fabrika: 0"/>
                 </StackPanel>
             </Border>
 
