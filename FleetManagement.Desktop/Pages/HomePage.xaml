@@ -3,6 +3,47 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Background="{StaticResource BrushBg}">
 
+
+    <Page.Resources>
+
+        <!-- Belge Merkezi Menü Stili -->
+
+        <Style x:Key="FmTopMenuItemStyle" TargetType="MenuItem">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#122B57"/>
+            <Setter Property="Padding" Value="14,6"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Style.Triggers>
+                <Trigger Property="IsHighlighted" Value="True">
+                    <Setter Property="Background" Value="#1E3A8A"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="FmMenuItemStyle" TargetType="MenuItem">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#122B57"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsHighlighted" Value="True">
+                    <Setter Property="Background" Value="#1E3A8A"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        
+
+    </Page.Resources>
+
+
+
+
     <Grid Margin="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -49,18 +90,47 @@
                 <!-- Butonlar -->
                 <WrapPanel Grid.Row="2" ItemHeight="38" Orientation="Horizontal">
 
-                    <Menu Background="#00008B" BorderThickness="0" Margin="0,0,8,6">
+                    <Menu Background="#122B57"
+                          BorderBrush="#243E70"
+                          BorderThickness="1"
+                          Margin="0,0,8,6"
+                          Foreground="White">
+
                         <MenuItem Header="📚 Belge Merkezi"
-                              Padding="14,6"
-                              FontSize="13">
-                            <MenuItem Header="📄 FORM 110" Background="#A52A2A" Click="Form110_Click"/>
-                            <MenuItem Header="📊 EL SENEDİ ÖRNEĞİ" Background="#A52A2A" Click="PromissoryNote_Click"/>
+                                  Padding="14,6"
+                                  FontSize="12"
+                                  FontWeight="SemiBold"
+                                  Background="#122B57"
+                                  Foreground="White">
+
+                            <MenuItem Header="📄 FORM 110"
+                  Style="{StaticResource FmMenuItemStyle}"
+                  Click="Form110_Click"/>
+
+                            <MenuItem Header="📊 EL SENEDİ ÖRNEĞİ"
+                  Style="{StaticResource FmMenuItemStyle}"
+                  Click="PromissoryNote_Click"/>
+
                             <Separator/>
-                            <MenuItem Header="📖 SÜRÜCÜ TALİMATI" Background="#A52A2A" Click="DriverInstruction_Click"/>
-                            <MenuItem Header="📖 ARAÇ KOMUTANI TALİMATI" Background="#A52A2A" Click="CommanderInstruction_Click"/>
-                            <MenuItem Header="📖 KATLI GARAJ DEVAMLI TALİMATI" Background="#A52A2A" Click="GarageInstruction_Click"/>
-                            <MenuItem Header="📄 MESAİ DIŞINDA ARAÇ TALEP FORMU" Background="#A52A2A" Click="AfterHoursRequestForm_Click"/>
+
+                            <MenuItem Header="📖 SÜRÜCÜ TALİMATI"
+                  Style="{StaticResource FmMenuItemStyle}"
+                  Click="DriverInstruction_Click"/>
+
+                            <MenuItem Header="📖 ARAÇ KOMUTANI TALİMATI"
+                  Style="{StaticResource FmMenuItemStyle}"
+                  Click="CommanderInstruction_Click"/>
+
+                            <MenuItem Header="📖 KATLI GARAJ DEVAMLI TALİMATI"
+                  Style="{StaticResource FmMenuItemStyle}"
+                  Click="GarageInstruction_Click"/>
+
+                            <MenuItem Header="📄 MESAİ DIŞINDA ARAÇ TALEP FORMU"
+                  Style="{StaticResource FmMenuItemStyle}"
+                  Click="AfterHoursRequestForm_Click"/>
+
                         </MenuItem>
+
                     </Menu>
 
                     <Button MinWidth="130" Margin="0,0,8,8" Padding="14,6" Click="VehicleList_Click">

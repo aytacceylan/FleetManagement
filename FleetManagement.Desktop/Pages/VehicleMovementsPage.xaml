@@ -385,6 +385,7 @@
 
                             <TextBlock Text="DÖNÜŞ SAATİ" Foreground="{StaticResource BrushMuted}"/>
                             <TextBox x:Name="ReturnTimeBox"
+                                     Foreground="Brown"
                                      Margin="0,6,0,0"
                                      TextChanged="ReturnTimeBox_TextChanged"/>
 
