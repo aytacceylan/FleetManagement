@@ -426,7 +426,7 @@
                                          IsReadOnly="True"
                                          Foreground="Black"
                                          Background="#3D5869"
-                                         BorderBrush="Black" SelectionChanged="VehicleSituationCombo_SelectionChanged">
+                                         >
 
                                 <ComboBox.ItemContainerStyle>
                                     <Style TargetType="ComboBoxItem">
@@ -448,11 +448,14 @@
                                 </ComboBox.ItemContainerStyle>
                             </ComboBox>
 
-                            <TextBlock Text="BAKIM DURUMU" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBlock Text="BAKIM DURUMU"
+           Foreground="{StaticResource BrushMuted}"
+           Margin="0,8,0,0"/>
                             <TextBlock x:Name="MaintInfoBox"
-                                       Margin="0,6,0,0"
-                                       FontWeight="SemiBold"
-                                       Text="—"/>
+           Margin="0,6,0,0"
+           FontWeight="SemiBold"
+           Text="—"/>
+
                         </StackPanel>
 
                         <!-- 5. Kolon -->
@@ -531,10 +534,10 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding VehicleSituation}"
-                                               Foreground="{Binding VehicleSituationBrush}"
-                                               FontWeight="SemiBold"
-                                               VerticalAlignment="Center"
-                                               HorizontalAlignment="Center"/>
+                       Foreground="{Binding VehicleSituationBrush}"
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -543,10 +546,10 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding MaintenanceStatus}"
-                                               Foreground="{Binding MaintenanceBrush}"
-                                               FontWeight="SemiBold"
-                                               VerticalAlignment="Center"
-                                               HorizontalAlignment="Center"/>
+                       Foreground="{Binding MaintenanceBrush}"
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

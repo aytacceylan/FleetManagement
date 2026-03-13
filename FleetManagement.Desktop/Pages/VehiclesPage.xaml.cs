@@ -117,8 +117,6 @@ namespace FleetManagement.Desktop.Pages
         {
             try
             {
-                // Notify("Yükleniyor..."); // çok spam olmasın diye kapalı
-
                 var list = await _db.Vehicles
                     .AsNoTracking()
                     .Where(v => !v.IsDeleted)
@@ -161,10 +159,8 @@ namespace FleetManagement.Desktop.Pages
                     })
                     .ToListAsync();
 
-                // Computed fields
                 foreach (var r in list)
                 {
-
                     r.DriverFullName = await GetDriverNameForListAsync(r.Id);
 
                     r.MaintenanceStatus = CalcMaintenanceStatus(
@@ -173,14 +169,13 @@ namespace FleetManagement.Desktop.Pages
                         r.MaintenanceIntervalMonths,
                         r.LastMaintenanceKm,
                         r.LastMaintenanceDate);
-                        r.MaintenanceBrush = GetMaintenanceBrush(r.MaintenanceStatus);
-                        r.VehicleSituationBrush = GetVehicleSituationBrush(r.VehicleSituation);
+
+                    r.MaintenanceBrush = GetMaintenanceBrush(r.MaintenanceStatus);
+                    r.VehicleSituationBrush = GetVehicleSituationBrush(r.VehicleSituation);
                 }
 
                 _allVehicles = list;
                 VehiclesGrid.ItemsSource = _allVehicles;
-
-                // Notify($"Yüklendi: {_allVehicles.Count} kayıt"); // istersen aç
 
                 MaintInfoBox.Text = "—";
                 MaintInfoBox.Foreground = Brushes.Black;
@@ -292,6 +287,7 @@ namespace FleetManagement.Desktop.Pages
             BrandBox.SelectedValue = v.VehicleBrand;
             ModelCombo.SelectedValue = v.Model;
             VehicleYearBox.Text = v.VehicleYear?.ToString() ?? "";
+            VehicleSituationCombo.Text = v.VehicleSituation ?? "Müsait";
 
             VehicleKmBox.Text = v.VehicleKm?.ToString() ?? "";
             PassengerCapacityBox.Text = v.PassengerCapacity?.ToString() ?? "";
@@ -299,7 +295,7 @@ namespace FleetManagement.Desktop.Pages
 
             MotorNoBox.Text = v.MotorNo ?? "";
             SaseNoBox.Text = v.SaseNo ?? "";
-            VehicleSituationCombo.Text = v.VehicleSituation ?? "";
+           
 
             LastMaintenanceKmBox.Text = v.LastMaintenanceKm?.ToString() ?? "";
             LastMaintenanceDatePicker.SelectedDate = v.LastMaintenanceDate?.Date;
@@ -454,6 +450,8 @@ namespace FleetManagement.Desktop.Pages
             BrandBox.Text = "";
             ModelCombo.SelectedIndex = -1;
             VehicleYearBox.Text = "";
+            VehicleSituationCombo.SelectedIndex = -1;
+            VehicleSituationCombo.Text = "";
 
             VehicleKmBox.Text = "";
             PassengerCapacityBox.Text = "";
@@ -462,17 +460,13 @@ namespace FleetManagement.Desktop.Pages
             MotorNoBox.Text = "";
             SaseNoBox.Text = "";
 
-            VehicleSituationCombo.SelectedIndex = -1;
-            VehicleSituationCombo.Text = "";
-
-
-            MaintInfoBox.Text = "—";
-            MaintInfoBox.Foreground = Brushes.Black;
-
             LastMaintenanceKmBox.Text = "";
             LastMaintenanceDatePicker.SelectedDate = null;
             MaintenanceIntervalKmBox.Text = "";
             MaintenanceIntervalMonthsBox.Text = "";
+
+            MaintInfoBox.Text = "—";
+            MaintInfoBox.Foreground = Brushes.Black;
         }
 
         private async Task RefreshDutyAndMaintenanceAsync(Vehicle v)
@@ -487,6 +481,8 @@ namespace FleetManagement.Desktop.Pages
 
             MaintInfoBox.Text = string.IsNullOrWhiteSpace(maint) ? "—" : maint;
             MaintInfoBox.Foreground = GetMaintenanceBrush(maint);
+
+            await Task.CompletedTask;
         }
 
         // ==============================
@@ -571,32 +567,19 @@ namespace FleetManagement.Desktop.Pages
             };
         }
 
-        private void DutyInfoBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-        private void MaintInfoBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
+        
         private void LoadVehicleSituations()
         {
             VehicleSituationCombo.ItemsSource = new List<string>
             {
                 "Müsait",
                 "Görevde",
-                "Kademe",
                 "Servis",
+                "Kademe",
                 "Fabrika"
             };
         }
 
-        private void VehicleSituationCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
         private static Brush GetVehicleSituationBrush(string? status)
         {
             return status switch

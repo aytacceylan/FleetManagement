@@ -47,8 +47,6 @@ namespace FleetManagement.Desktop
 				"RoutesPage" => new Pages.RoutesPage(),
                 "VehicleCommandersPage" => new Pages.VehicleCommandersPage(),
                 "DeparturesPage" => new Pages.DeparturesPage(),
-
-                "VehicleGuardsPage" => new Pages.VehicleGuardsPage(),
                 "DutyTypesPage" => new Pages.DutyTypesPage(),
 
                 // =======================

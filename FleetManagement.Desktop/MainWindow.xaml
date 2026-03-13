@@ -66,8 +66,6 @@
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Komutanı" Tag="VehicleCommandersPage" Click="Menu_Click"/>
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Emrine Girilen Birlik" Tag="DeparturesPage" Click="Menu_Click"/>
 
-                                <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Araç Muhafızı" Tag="VehicleGuardsPage" Click="Menu_Click"/>
-
                                 <Button Style="{DynamicResource SubMenuButtonStyle}" Content="Çıkış Türü" Tag="DutyTypesPage" Click="Menu_Click"/>
                             </StackPanel>
                         </Expander>
