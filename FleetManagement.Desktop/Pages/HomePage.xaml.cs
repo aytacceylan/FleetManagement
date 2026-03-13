@@ -344,6 +344,60 @@ namespace FleetManagement.Desktop.Pages
 			await LoadDashboardAsync();
 		}
 
+        private void OpenAssetFile(string fileName)
+        {
+            try
+            {
+                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", fileName);
 
-	}
+                if (!File.Exists(path))
+                {
+                    MessageBox.Show($"Dosya bulunamadı:\n{path}", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = path,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Dosya Açma Hatası", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void Form110_Click(object sender, RoutedEventArgs e)
+        {
+            OpenAssetFile("FORM 110.pdf");
+        }
+
+        private void PromissoryNote_Click(object sender, RoutedEventArgs e)
+        {
+            OpenAssetFile("EL SENEDİ ÖRNEĞİ.xlsx");
+        }
+
+        private void DriverInstruction_Click(object sender, RoutedEventArgs e)
+        {
+            OpenAssetFile("SÜRÜCÜ TALİMATI.pdf");
+        }
+
+        private void CommanderInstruction_Click(object sender, RoutedEventArgs e)
+        {
+            OpenAssetFile("ARAÇ KOMUTANI TALİMATI.pdf");
+        }
+
+        private void GarageInstruction_Click(object sender, RoutedEventArgs e)
+        {
+            OpenAssetFile("KATLI GARAJ DEVAMLI TALİMATI.pdf");
+        }
+
+        private void AfterHoursRequestForm_Click(object sender, RoutedEventArgs e)
+        {
+            OpenAssetFile("MESAİ DIŞINDA ARAÇ TALEP FORMU.pdf");
+        }
+
+
+    }
 }

@@ -15,77 +15,101 @@
         <!-- HEADER -->
         <Border Grid.Row="0" Style="{StaticResource FmCard}">
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="10"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="10"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="10"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="20"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
                 <!-- Başlık -->
-                <StackPanel>
-                    <TextBlock Text="Ana Sayfa"
-                       FontSize="18"
-                       FontWeight="SemiBold"/>
-                    <TextBlock Text="Genel durum özeti ve canlı operasyon ekranı"
-                       Margin="0,6,0,0"
-                       Foreground="{StaticResource BrushMuted}"/>
-                </StackPanel>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-                <!-- Hazırlık Formu -->
-                <Button Grid.Column="1" MinWidth="130" Cursor="Hand"
-                Padding="14,6"
-                Click="PreparationForm_Click">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock Text="📄" FontSize="16" Margin="0,0,6,0" Foreground="BROWN"/>
-                        <TextBlock Text="Hazırlık Formu"/>
-                       
+                    <StackPanel>
+                        <TextBlock Text="Ana Sayfa"
+                           FontSize="18"
+                           FontWeight="SemiBold"/>
+                        <TextBlock Text="Genel durum özeti ve canlı operasyon ekranı"
+                           Margin="0,6,0,0"
+                           Foreground="{StaticResource BrushMuted}"/>
                     </StackPanel>
-                </Button>
 
-                <!-- Araç Listesi -->
-                <Button Grid.Column="3" MinWidth="130"
-                Padding="14,6"
-                Click="VehicleList_Click">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock Text="🚗" FontSize="16" Margin="0,0,6,0" Foreground="red"/>
-                        <TextBlock Text="Araç Listesi"/>
-                    </StackPanel>
-                </Button>
+                    <TextBlock Grid.Column="1"
+                       x:Name="LastUpdateText"
+                       VerticalAlignment="Center"
+                       Foreground="{StaticResource BrushMuted}"
+                       FontSize="12"
+                       Text="Son Güncelleme: --:--"/>
+                </Grid>
 
-                <!-- Sürücü Listesi -->
-                <Button Grid.Column="5" MinWidth="130"
-                Padding="14,6"
-                Click="DriverList_Click">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock Text="👤" FontSize="16" Margin="0,0,6,0" Foreground="purple"/>
-                        <TextBlock Text="Sürücü Listesi"/>
-                    </StackPanel>
-                </Button>
+                <!-- Butonlar -->
+                <WrapPanel Grid.Row="2" ItemHeight="38" Orientation="Horizontal">
+                    <Button MinWidth="135" Margin="0,0,8,8" Padding="14,6" Click="Form110_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="📄" FontSize="16" Margin="0,0,6,0" Foreground="Brown"/>
+                            <TextBlock Text="FORM 110"/>
+                        </StackPanel>
+                    </Button>
 
-                <!-- Yenile -->
-                <Button Grid.Column="7" MinWidth="130"
-                Padding="14,6"
-                Click="Refresh_Click">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock Text="🔄" FontSize="16" Margin="0,0,6,0" Foreground="#FFFF00"/>
-                        <TextBlock Text="Yenile"/>
-                    </StackPanel>
-                </Button>
+                    <Button MinWidth="160" Margin="0,0,8,8" Padding="14,6" Click="PromissoryNote_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="📊" FontSize="16" Margin="0,0,6,0" Foreground="#2E8B57"/>
+                            <TextBlock Text="EL SENEDİ ÖRNEĞİ"/>
+                        </StackPanel>
+                    </Button>
 
-                <TextBlock Grid.Column="9"
-           x:Name="LastUpdateText"
-           VerticalAlignment="Center"
-           Foreground="{StaticResource BrushMuted}"
-           FontSize="12"
-           Text="Son Güncelleme: --:--"/>
+                    <Button MinWidth="165" Margin="0,0,8,8" Padding="14,6" Click="DriverInstruction_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="📖" FontSize="16" Margin="0,0,6,0" Foreground="#8B4513"/>
+                            <TextBlock Text="SÜRÜCÜ TALİMATI"/>
+                        </StackPanel>
+                    </Button>
 
+                    <Button MinWidth="200" Margin="0,0,8,8" Padding="14,6" Click="CommanderInstruction_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="📖" FontSize="16" Margin="0,0,6,0" Foreground="#8B4513"/>
+                            <TextBlock Text="ARAÇ KOMUTANI TALİMATI"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button MinWidth="220" Margin="0,0,8,8" Padding="14,6" Click="GarageInstruction_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="📖" FontSize="16" Margin="0,0,6,0" Foreground="#8B4513"/>
+                            <TextBlock Text="KATLI GARAJ DEVAMLI TALİMATI"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button MinWidth="230" Margin="0,0,8,8" Padding="14,6" Click="AfterHoursRequestForm_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="📄" FontSize="16" Margin="0,0,6,0" Foreground="#A0522D"/>
+                            <TextBlock Text="MESAİ DIŞINDA ARAÇ TALEP FORMU"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button MinWidth="130" Margin="0,0,8,8" Padding="14,6" Click="VehicleList_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="🚗" FontSize="16" Margin="0,0,6,0" Foreground="Red"/>
+                            <TextBlock Text="Araç Listesi"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button MinWidth="130" Margin="0,0,8,8" Padding="14,6" Click="DriverList_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="👤" FontSize="16" Margin="0,0,6,0" Foreground="Purple"/>
+                            <TextBlock Text="Sürücü Listesi"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button MinWidth="130" Margin="0,0,8,8" Padding="14,6" Click="Refresh_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="🔄" FontSize="16" Margin="0,0,6,0" Foreground="#CCCC00"/>
+                            <TextBlock Text="Yenile"/>
+                        </StackPanel>
+                    </Button>
+                </WrapPanel>
             </Grid>
         </Border>
 
