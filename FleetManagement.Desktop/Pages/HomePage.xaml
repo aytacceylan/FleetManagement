@@ -29,7 +29,8 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel>
-                        <TextBlock Text="Ana Sayfa"
+                        <TextBlock Text="ANA SAYFA"
+                           Foreground="Black"        
                            FontSize="18"
                            FontWeight="SemiBold"/>
                         <TextBlock Text="Genel durum özeti ve canlı operasyon ekranı"
@@ -47,47 +48,20 @@
 
                 <!-- Butonlar -->
                 <WrapPanel Grid.Row="2" ItemHeight="38" Orientation="Horizontal">
-                    <Button MinWidth="135" Margin="0,0,8,8" Padding="14,6" Click="Form110_Click">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="📄" FontSize="16" Margin="0,0,6,0" Foreground="Brown"/>
-                            <TextBlock Text="FORM 110"/>
-                        </StackPanel>
-                    </Button>
 
-                    <Button MinWidth="160" Margin="0,0,8,8" Padding="14,6" Click="PromissoryNote_Click">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="📊" FontSize="16" Margin="0,0,6,0" Foreground="#2E8B57"/>
-                            <TextBlock Text="EL SENEDİ ÖRNEĞİ"/>
-                        </StackPanel>
-                    </Button>
-
-                    <Button MinWidth="165" Margin="0,0,8,8" Padding="14,6" Click="DriverInstruction_Click">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="📖" FontSize="16" Margin="0,0,6,0" Foreground="#8B4513"/>
-                            <TextBlock Text="SÜRÜCÜ TALİMATI"/>
-                        </StackPanel>
-                    </Button>
-
-                    <Button MinWidth="200" Margin="0,0,8,8" Padding="14,6" Click="CommanderInstruction_Click">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="📖" FontSize="16" Margin="0,0,6,0" Foreground="#8B4513"/>
-                            <TextBlock Text="ARAÇ KOMUTANI TALİMATI"/>
-                        </StackPanel>
-                    </Button>
-
-                    <Button MinWidth="220" Margin="0,0,8,8" Padding="14,6" Click="GarageInstruction_Click">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="📖" FontSize="16" Margin="0,0,6,0" Foreground="#8B4513"/>
-                            <TextBlock Text="KATLI GARAJ DEVAMLI TALİMATI"/>
-                        </StackPanel>
-                    </Button>
-
-                    <Button MinWidth="230" Margin="0,0,8,8" Padding="14,6" Click="AfterHoursRequestForm_Click">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="📄" FontSize="16" Margin="0,0,6,0" Foreground="#A0522D"/>
-                            <TextBlock Text="MESAİ DIŞINDA ARAÇ TALEP FORMU"/>
-                        </StackPanel>
-                    </Button>
+                    <Menu Background="#00008B" BorderThickness="0" Margin="0,0,8,6">
+                        <MenuItem Header="📚 Belge Merkezi"
+                              Padding="14,6"
+                              FontSize="13">
+                            <MenuItem Header="📄 FORM 110" Background="#A52A2A" Click="Form110_Click"/>
+                            <MenuItem Header="📊 EL SENEDİ ÖRNEĞİ" Background="#A52A2A" Click="PromissoryNote_Click"/>
+                            <Separator/>
+                            <MenuItem Header="📖 SÜRÜCÜ TALİMATI" Background="#A52A2A" Click="DriverInstruction_Click"/>
+                            <MenuItem Header="📖 ARAÇ KOMUTANI TALİMATI" Background="#A52A2A" Click="CommanderInstruction_Click"/>
+                            <MenuItem Header="📖 KATLI GARAJ DEVAMLI TALİMATI" Background="#A52A2A" Click="GarageInstruction_Click"/>
+                            <MenuItem Header="📄 MESAİ DIŞINDA ARAÇ TALEP FORMU" Background="#A52A2A" Click="AfterHoursRequestForm_Click"/>
+                        </MenuItem>
+                    </Menu>
 
                     <Button MinWidth="130" Margin="0,0,8,8" Padding="14,6" Click="VehicleList_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
