@@ -209,273 +209,342 @@ namespace FleetManagement.Desktop.Pages
 			Notify("Temizlendi");
 		}
 
-        private async void Save_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (!TryBuildDateTime(ExitDatePicker, ExitTimeBox, out var exitDtLocal, out var err1))
-                {
-                    Notify("Çıkış zamanı hatalı: " + err1, "Uyarı");
-                    return;
-                }
+		private async void Save_Click(object sender, RoutedEventArgs e)
+		{
+			try
+			{
+				if (!TryBuildDateTime(ExitDatePicker, ExitTimeBox, out var exitDtLocal, out var err1))
+				{
+					Notify("Çıkış zamanı hatalı: " + err1, "Uyarı");
+					return;
+				}
 
-                if (!TryBuildNullableDateTime(ReturnDatePicker, ReturnTimeBox, out var returnDtLocal, out var err2))
-                {
-                    Notify("Dönüş zamanı hatalı: " + err2, "Uyarı");
-                    return;
-                }
+				if (!TryBuildNullableDateTime(ReturnDatePicker, ReturnTimeBox, out var returnDtLocal, out var err2))
+				{
+					Notify("Dönüş zamanı hatalı: " + err2, "Uyarı");
+					return;
+				}
 
-                if (returnDtLocal is not null && returnDtLocal < exitDtLocal)
-                {
-                    Notify("Dönüş zamanı çıkıştan önce olamaz.", "Uyarı");
-                    return;
-                }
+				if (returnDtLocal is not null && returnDtLocal < exitDtLocal)
+				{
+					Notify("Dönüş zamanı çıkıştan önce olamaz.", "Uyarı");
+					return;
+				}
 
-                var vehicleId = VehicleCombo.SelectedValue is int vid ? vid : (int?)null;
-                var plateText = EmptyToNull(VehicleCombo.Text);
+				var vehicleId = VehicleCombo.SelectedValue is int vid ? vid : (int?)null;
+				var plateText = EmptyToNull(VehicleCombo.Text);
 
-                if (vehicleId is null && string.IsNullOrWhiteSpace(plateText))
-                {
-                    Notify("Plaka zorunlu. Listeden araç seçin.", "Uyarı");
-                    return;
-                }
+				if (vehicleId is null && string.IsNullOrWhiteSpace(plateText))
+				{
+					Notify("Plaka zorunlu. Listeden araç seçin.", "Uyarı");
+					return;
+				}
 
-                if (DriverCombo.SelectedValue is not int didValue)
-                {
-                    Notify("Sürücü seçimi zorunlu.", "Uyarı");
-                    return;
-                }
+				if (DriverCombo.SelectedValue is not int didValue)
+				{
+					Notify("Sürücü seçimi zorunlu.", "Uyarı");
+					return;
+				}
 
-                Driver? selectedDriver = null;
-                Driver? selectedSecondDriver = null;
-                Vehicle? selectedVehicle = null;
+				Driver? selectedDriver = null;
+				Driver? selectedSecondDriver = null;
+				Vehicle? selectedVehicle = null;
 
-                if (vehicleId is not null)
-                {
-                    selectedVehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == vehicleId.Value && !v.IsDeleted);
+				if (vehicleId is not null)
+				{
+					selectedVehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == vehicleId.Value && !v.IsDeleted);
 
-                    if (selectedVehicle is null)
-                    {
-                        Notify("Araç bulunamadı.", "Uyarı");
-                        return;
-                    }
+					if (selectedVehicle is null)
+					{
+						Notify("Araç bulunamadı.", "Uyarı");
+						return;
+					}
 
-                    if (_selectedId is null && IsVehicleBlockedForDispatch(selectedVehicle.VehicleSituation))
-                    {
-                        Notify($"Bu araç sevke uygun değil. Araç durumu: {NormalizeVehicleSituation(selectedVehicle.VehicleSituation)}", "Uyarı");
-                        return;
-                    }
-                }
+					if (_selectedId is null && IsVehicleBlockedForDispatch(selectedVehicle.VehicleSituation))
+					{
+						Notify($"Bu araç sevke uygun değil. Araç durumu: {NormalizeVehicleSituation(selectedVehicle.VehicleSituation)}", "Uyarı");
+						return;
+					}
+				}
 
-                selectedDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == didValue && !d.IsDeleted);
+				selectedDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == didValue && !d.IsDeleted);
 
-                if (selectedDriver is null)
-                {
-                    Notify("Sürücü bulunamadı.", "Uyarı");
-                    return;
-                }
+				if (selectedDriver is null)
+				{
+					Notify("Sürücü bulunamadı.", "Uyarı");
+					return;
+				}
 
-                if (_selectedId is null && IsDriverBlockedForDispatch(selectedDriver.DriverSituation))
-                {
-                    Notify($"Bu sürücü sevke uygun değil. Sürücü durumu: {NormalizeDriverSituation(selectedDriver.DriverSituation)}", "Uyarı");
-                    return;
-                }
+				if (_selectedId is null && IsDriverBlockedForDispatch(selectedDriver.DriverSituation))
+				{
+					Notify($"Bu sürücü sevke uygun değil. Sürücü durumu: {NormalizeDriverSituation(selectedDriver.DriverSituation)}", "Uyarı");
+					return;
+				}
 
-                if (SecondDriverCombo.SelectedValue is int secondDidValue)
-                {
-                    if (secondDidValue == didValue)
-                    {
-                        Notify("1. sürücü ile 2. sürücü aynı kişi olamaz.", "Uyarı");
-                        return;
-                    }
+				if (SecondDriverCombo.SelectedValue is int secondDidValue)
+				{
+					if (secondDidValue == didValue)
+					{
+						Notify("1. sürücü ile 2. sürücü aynı kişi olamaz.", "Uyarı");
+						return;
+					}
 
-                    selectedSecondDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == secondDidValue && !d.IsDeleted);
+					selectedSecondDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == secondDidValue && !d.IsDeleted);
 
-                    if (selectedSecondDriver is null)
-                    {
-                        Notify("2. sürücü bulunamadı.", "Uyarı");
-                        return;
-                    }
+					if (selectedSecondDriver is null)
+					{
+						Notify("2. sürücü bulunamadı.", "Uyarı");
+						return;
+					}
 
-                    if (_selectedId is null && IsDriverBlockedForDispatch(selectedSecondDriver.DriverSituation))
-                    {
-                        Notify($"2. sürücü sevke uygun değil. Sürücü durumu: {NormalizeDriverSituation(selectedSecondDriver.DriverSituation)}", "Uyarı");
-                        return;
-                    }
-                }
+					if (_selectedId is null && IsDriverBlockedForDispatch(selectedSecondDriver.DriverSituation))
+					{
+						Notify($"2. sürücü sevke uygun değil. Sürücü durumu: {NormalizeDriverSituation(selectedSecondDriver.DriverSituation)}", "Uyarı");
+						return;
+					}
+				}
 
-                if (_selectedId is null && vehicleId is not null)
-                {
-                    var hasOpenMovement = await _db.VehicleMovements.AnyAsync(m =>
-                        !m.IsDeleted &&
-                        m.VehicleId == vehicleId &&
-                        m.ReturnDateTime == null);
+				if (_selectedId is null && vehicleId is not null)
+				{
+					var hasOpenMovement = await _db.VehicleMovements.AnyAsync(m =>
+						!m.IsDeleted &&
+						m.VehicleId == vehicleId &&
+						m.ReturnDateTime == null);
 
-                    if (hasOpenMovement)
-                    {
-                        MessageBox.Show(
-                            "Bu araç halen görevde. Yeni görev tanımlanamaz. Önce dönüş saatini girin.",
-                            "Uyarı",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Warning);
-                        return;
-                    }
-                }
+					if (hasOpenMovement)
+					{
+						MessageBox.Show(
+							"Bu araç halen görevde. Yeni görev tanımlanamaz. Önce dönüş saatini girin.",
+							"Uyarı",
+							MessageBoxButton.OK,
+							MessageBoxImage.Warning);
+						return;
+					}
+				}
 
-                var entity = _selectedId is null
-                    ? new VehicleMovement { CreatedAt = DateTime.UtcNow, IsDeleted = false }
-                    : await _db.VehicleMovements.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
+				var entity = _selectedId is null
+					? new VehicleMovement { CreatedAt = DateTime.UtcNow, IsDeleted = false }
+					: await _db.VehicleMovements.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
 
-                if (entity is null)
-                {
-                    Notify("Kayıt bulunamadı.", "Uyarı");
-                    return;
-                }
+				if (entity is null)
+				{
+					Notify("Kayıt bulunamadı.", "Uyarı");
+					return;
+				}
 
-                if (_selectedId is null)
-                {
-                    var localDate = exitDtLocal.Date;
-                    var localTomorrow = localDate.AddDays(1);
+				// ESKİ değerleri sakla
+				var oldVehicleId = entity.VehicleId;
+				var oldDriverId = entity.DriverId;
+				var oldSecondDriverId = entity.SecondDriverId;
+				var wasOpen = entity.ReturnDateTime is null;
 
-                    var startUtc = DateTime.SpecifyKind(localDate, DateTimeKind.Local).ToUniversalTime();
-                    var endUtc = DateTime.SpecifyKind(localTomorrow, DateTimeKind.Local).ToUniversalTime();
+				if (_selectedId is null)
+				{
+					var localDate = exitDtLocal.Date;
+					var localTomorrow = localDate.AddDays(1);
 
-                    var nextDailyNo = (await _db.VehicleMovements
-                        .Where(x => !x.IsDeleted &&
-                                    x.MovementDate >= startUtc &&
-                                    x.MovementDate < endUtc)
-                        .MaxAsync(x => (int?)x.DailyNo) ?? 0) + 1;
+					var startUtc = DateTime.SpecifyKind(localDate, DateTimeKind.Local).ToUniversalTime();
+					var endUtc = DateTime.SpecifyKind(localTomorrow, DateTimeKind.Local).ToUniversalTime();
 
-                    entity.MovementDate = startUtc;
-                    entity.DailyNo = nextDailyNo;
-                }
+					var nextDailyNo = (await _db.VehicleMovements
+						.Where(x => !x.IsDeleted &&
+									x.MovementDate >= startUtc &&
+									x.MovementDate < endUtc)
+						.MaxAsync(x => (int?)x.DailyNo) ?? 0) + 1;
 
-                var wasOpen = entity.ReturnDateTime is null;
+					entity.MovementDate = startUtc;
+					entity.DailyNo = nextDailyNo;
+				}
 
-                entity.VehicleId = vehicleId;
-                entity.DriverId = didValue;
-                entity.SecondDriverId = SecondDriverCombo.SelectedValue is int sdid ? sdid : (int?)null;
-                entity.VehicleCommanderId = CommanderCombo.SelectedValue is int cid ? cid : (int?)null;
+				entity.VehicleId = vehicleId;
+				entity.DriverId = didValue;
+				entity.SecondDriverId = SecondDriverCombo.SelectedValue is int sdid ? sdid : (int?)null;
+				entity.VehicleCommanderId = CommanderCombo.SelectedValue is int cid ? cid : (int?)null;
 
-                entity.VehiclePlateText = vehicleId is null ? plateText : null;
-                entity.DriverText = null;
-                entity.SecondDriverText = entity.SecondDriverId is null ? EmptyToNull(SecondDriverCombo.Text) : null;
-                entity.CommanderText = entity.VehicleCommanderId is null ? EmptyToNull(CommanderCombo.Text) : null;
+				entity.VehiclePlateText = vehicleId is null ? plateText : null;
+				entity.DriverText = null;
+				entity.SecondDriverText = entity.SecondDriverId is null ? EmptyToNull(SecondDriverCombo.Text) : null;
+				entity.CommanderText = entity.VehicleCommanderId is null ? EmptyToNull(CommanderCombo.Text) : null;
 
-                entity.ExitDateTime = DateTime.SpecifyKind(exitDtLocal, DateTimeKind.Local).ToUniversalTime();
-                entity.ReturnDateTime = returnDtLocal is null
-                    ? null
-                    : DateTime.SpecifyKind(returnDtLocal.Value, DateTimeKind.Local).ToUniversalTime();
+				entity.ExitDateTime = DateTime.SpecifyKind(exitDtLocal, DateTimeKind.Local).ToUniversalTime();
+				entity.ReturnDateTime = returnDtLocal is null
+					? null
+					: DateTime.SpecifyKind(returnDtLocal.Value, DateTimeKind.Local).ToUniversalTime();
 
-                entity.Route = EmptyToNull(RouteCombo.Text);
-                entity.Purpose = EmptyToNull(DepartureCombo.Text);
-                entity.Description = EmptyToNull(DutyTypeCombo.Text);
+				entity.Route = EmptyToNull(RouteCombo.Text);
+				entity.Purpose = EmptyToNull(DepartureCombo.Text);
+				entity.Description = EmptyToNull(DutyTypeCombo.Text);
 
-                var passenger = TryParseNullableInt(PassengerCountBox.Text);
-                var load = TryParseNullableInt(LoadAmountBox.Text);
-                entity.LoadOrPassengerInfo = BuildLoadOrPassengerInfo(passenger, load);
+				var passenger = TryParseNullableInt(PassengerCountBox.Text);
+				var load = TryParseNullableInt(LoadAmountBox.Text);
+				entity.LoadOrPassengerInfo = BuildLoadOrPassengerInfo(passenger, load);
 
-                var doneKm = TryParseNullableInt(DoneKmBox.Text);
+				var doneKm = TryParseNullableInt(DoneKmBox.Text);
 
-                if (vehicleId is not null)
-                {
-                    var vehicle = selectedVehicle ?? await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == vehicleId.Value && !v.IsDeleted);
+				if (vehicleId is not null)
+				{
+					var vehicle = selectedVehicle ?? await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == vehicleId.Value && !v.IsDeleted);
 
-                    if (vehicle is not null)
-                    {
-                        if (_selectedId is null)
-                        {
-                            // Yeni görev: başlangıç km aracın o anki km’sidir
-                            entity.StartKm = vehicle.VehicleKm ?? 0;
-                        }
-                        else if (entity.StartKm is null)
-                        {
-                            // Eski kayıtta boşsa bir kez doldur
-                            entity.StartKm = vehicle.VehicleKm ?? 0;
-                        }
+					if (vehicle is not null)
+					{
+						if (_selectedId is null)
+						{
+							entity.StartKm = vehicle.VehicleKm ?? 0;
+						}
+						else if (entity.StartKm is null)
+						{
+							entity.StartKm = vehicle.VehicleKm ?? 0;
+						}
 
-                        entity.EndKm = doneKm is null
-                            ? null
-                            : entity.StartKm.GetValueOrDefault() + doneKm.Value;
+						entity.EndKm = doneKm is null
+							? null
+							: entity.StartKm.GetValueOrDefault() + doneKm.Value;
 
-                        if (string.IsNullOrWhiteSpace(VehicleTypeCombo.Text))
-                            VehicleTypeCombo.Text = vehicle.VehicleType ?? "";
-                    }
-                    else
-                    {
-                        entity.StartKm = null;
-                        entity.EndKm = null;
-                    }
-                }
-                else
-                {
-                    entity.StartKm = null;
-                    entity.EndKm = null;
-                }
+						if (string.IsNullOrWhiteSpace(VehicleTypeCombo.Text))
+							VehicleTypeCombo.Text = vehicle.VehicleType ?? "";
+					}
+					else
+					{
+						entity.StartKm = null;
+						entity.EndKm = null;
+					}
+				}
+				else
+				{
+					entity.StartKm = null;
+					entity.EndKm = null;
+				}
 
-                if (_selectedId is null)
-                    _db.VehicleMovements.Add(entity);
+				if (_selectedId is null)
+					_db.VehicleMovements.Add(entity);
 
-                if (_selectedId is null)
-                {
-                    if (selectedVehicle is not null)
-                        selectedVehicle.VehicleSituation = "Görevde";
+				// =========================
+				// DURUM GÜNCELLEME BLOĞU
+				// =========================
 
-                    if (selectedDriver is not null)
-                        selectedDriver.DriverSituation = "Sürüş Görevi";
+				var isNowOpen = entity.ReturnDateTime is null;
 
-                    if (selectedSecondDriver is not null)
-                        selectedSecondDriver.DriverSituation = "Sürüş Görevi";
-                }
+				// 1) Yeni kayıt açıldıysa
+				if (_selectedId is null && isNowOpen)
+				{
+					if (selectedVehicle is not null)
+						selectedVehicle.VehicleSituation = "Görevde";
 
-                if (wasOpen && entity.ReturnDateTime is not null)
-                {
-                    if (entity.VehicleId is not null)
-                    {
-                        var vehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == entity.VehicleId.Value && !v.IsDeleted);
-                        if (vehicle is not null)
-                        {
-                            if (entity.EndKm.HasValue)
-                                vehicle.VehicleKm = entity.EndKm.Value;
+					if (selectedDriver is not null)
+						selectedDriver.DriverSituation = "Sürüş Görevi";
 
-                            if (NormalizeVehicleSituation(vehicle.VehicleSituation) == "Görevde")
-                                vehicle.VehicleSituation = "Müsait";
-                        }
-                    }
+					if (selectedSecondDriver is not null)
+						selectedSecondDriver.DriverSituation = "Sürüş Görevi";
+				}
 
-                    if (entity.DriverId is not null)
-                    {
-                        var driver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == entity.DriverId.Value && !d.IsDeleted);
-                        if (driver is not null && NormalizeDriverSituation(driver.DriverSituation) == "Sürüş Görevi")
-                            driver.DriverSituation = "Müsait";
-                    }
+				// 2) Mevcut açık kayıt düzenleniyorsa ve sürücü/araç değiştiyse
+				if (_selectedId is not null && wasOpen && isNowOpen)
+				{
+					// Eski araç değiştiyse eskiyi müsait yap
+					if (oldVehicleId != entity.VehicleId && oldVehicleId is not null)
+					{
+						var oldVehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == oldVehicleId.Value && !v.IsDeleted);
+						if (oldVehicle is not null && NormalizeVehicleSituation(oldVehicle.VehicleSituation) == "Görevde")
+							oldVehicle.VehicleSituation = "Müsait";
+					}
 
-                    if (entity.SecondDriverId is not null)
-                    {
-                        var secondDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == entity.SecondDriverId.Value && !d.IsDeleted);
-                        if (secondDriver is not null && NormalizeDriverSituation(secondDriver.DriverSituation) == "Sürüş Görevi")
-                            secondDriver.DriverSituation = "Müsait";
-                    }
-                }
+					// Yeni araç varsa görevde yap
+					if (entity.VehicleId is not null)
+					{
+						var newVehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == entity.VehicleId.Value && !v.IsDeleted);
+						if (newVehicle is not null)
+							newVehicle.VehicleSituation = "Görevde";
+					}
 
-                await _db.SaveChangesAsync();
+					// Eski 1. sürücü değiştiyse eskiyi müsait yap
+					if (oldDriverId != entity.DriverId && oldDriverId is not null)
+					{
+						var oldDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == oldDriverId.Value && !d.IsDeleted);
+						if (oldDriver is not null && NormalizeDriverSituation(oldDriver.DriverSituation) == "Sürüş Görevi")
+							oldDriver.DriverSituation = "Müsait";
+					}
 
-                Notify(_selectedId is null
-                    ? $"Kaydedildi: #{entity.Id}"
-                    : $"Güncellendi: #{entity.Id}");
+					// Yeni 1. sürücüyü görevde yap
+					if (entity.DriverId is not null)
+					{
+						var newDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == entity.DriverId.Value && !d.IsDeleted);
+						if (newDriver is not null)
+							newDriver.DriverSituation = "Sürüş Görevi";
+					}
 
-                await LoadAsync();
-                ClearForm();
-                PrepareNewFormState();
-            }
-            catch (Exception ex)
-            {
-                Notify("Hata: kaydetme başarısız.", "Hata");
-                MessageBox.Show(ex.ToString(), "Hata (detay)");
-            }
-        }
+					// Eski 2. sürücü değiştiyse eskiyi müsait yap
+					if (oldSecondDriverId != entity.SecondDriverId && oldSecondDriverId is not null)
+					{
+						var oldSecondDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == oldSecondDriverId.Value && !d.IsDeleted);
+						if (oldSecondDriver is not null && NormalizeDriverSituation(oldSecondDriver.DriverSituation) == "Sürüş Görevi")
+							oldSecondDriver.DriverSituation = "Müsait";
+					}
 
-        private async void Delete_Click(object sender, RoutedEventArgs e)
+					// Yeni 2. sürücüyü görevde yap
+					if (entity.SecondDriverId is not null)
+					{
+						var newSecondDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == entity.SecondDriverId.Value && !d.IsDeleted);
+						if (newSecondDriver is not null)
+							newSecondDriver.DriverSituation = "Sürüş Görevi";
+					}
+				}
+
+				// 3) Açık kayıt kapatılıyorsa
+				if (wasOpen && !isNowOpen)
+				{
+					if (entity.VehicleId is not null)
+					{
+						var vehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == entity.VehicleId.Value && !v.IsDeleted);
+						if (vehicle is not null)
+						{
+							if (NormalizeVehicleSituation(vehicle.VehicleSituation) == "Görevde")
+								vehicle.VehicleSituation = "Müsait";
+						}
+					}
+
+					if (entity.DriverId is not null)
+					{
+						var driver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == entity.DriverId.Value && !d.IsDeleted);
+						if (driver is not null && NormalizeDriverSituation(driver.DriverSituation) == "Sürüş Görevi")
+							driver.DriverSituation = "Müsait";
+					}
+
+					if (entity.SecondDriverId is not null)
+					{
+						var secondDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == entity.SecondDriverId.Value && !d.IsDeleted);
+						if (secondDriver is not null && NormalizeDriverSituation(secondDriver.DriverSituation) == "Sürüş Görevi")
+							secondDriver.DriverSituation = "Müsait";
+					}
+				}
+
+				// 4) Kayıt kapalıysa araç km her zaman son EndKm'ye eşitlensin
+				if (entity.VehicleId is not null && entity.ReturnDateTime is not null)
+				{
+					var vehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == entity.VehicleId.Value && !v.IsDeleted);
+					if (vehicle is not null && entity.EndKm.HasValue)
+					{
+						vehicle.VehicleKm = entity.EndKm.Value;
+					}
+				}
+
+				await _db.SaveChangesAsync();
+
+				Notify(_selectedId is null
+					? $"Kaydedildi: #{entity.Id}"
+					: $"Güncellendi: #{entity.Id}");
+
+				await LoadAsync();
+				ClearForm();
+				PrepareNewFormState();
+			}
+			catch (Exception ex)
+			{
+				Notify("Hata: kaydetme başarısız.", "Hata");
+				MessageBox.Show(ex.ToString(), "Hata (detay)");
+			}
+		}
+
+		private async void Delete_Click(object sender, RoutedEventArgs e)
 		{
 			try
 			{
