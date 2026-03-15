@@ -39,7 +39,7 @@ namespace FleetManagement.Desktop.Pages
 			}
 			catch (Exception ex)
 			{
-				Notify("Hata: markalar yüklenemedi.", "Hata");
+				Notify("Hata: Markalar yüklenemedi.", "Hata");
 				MessageBox.Show(ex.Message, "Hata");
 			}
 		}
@@ -66,7 +66,7 @@ namespace FleetManagement.Desktop.Pages
 
 				if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(name))
 				{
-					Notify("Kod ve Ad zorunludur.", "Uyarı");
+					Notify("Kod ve Marka Adı zorunludur.", "Uyarı");
 					return;
 				}
 

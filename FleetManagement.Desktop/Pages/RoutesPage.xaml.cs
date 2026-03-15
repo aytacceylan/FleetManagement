@@ -65,7 +65,7 @@ namespace FleetManagement.Desktop.Pages
 
                 if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(name))
                 {
-                    Notify("Kod ve Rota Adı zorunludur.", "Uyarı");
+                    Notify("Kod ve Gidilecek Yer Adı zorunludur.", "Uyarı");
                     return;
                 }
 
@@ -139,7 +139,7 @@ namespace FleetManagement.Desktop.Pages
                     return;
                 }
 
-                var confirm = MessageBox.Show("Seçili rota silinsin mi?", "Onay", MessageBoxButton.YesNo);
+                var confirm = MessageBox.Show("Seçili gidilecek yer silinsin mi?", "Onay", MessageBoxButton.YesNo);
                 if (confirm != MessageBoxResult.Yes)
                     return;
 

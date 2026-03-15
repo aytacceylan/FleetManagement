@@ -46,7 +46,7 @@ namespace FleetManagement.Desktop.Pages
             }
             catch (Exception ex)
             {
-                Notify("Hata: yardım notları yüklenemedi.", "Hata");
+                Notify("Hata: Yardım/Uyarı notları yüklenemedi.", "Hata");
                 MessageBox.Show(ex.Message, "Hata");
             }
         }

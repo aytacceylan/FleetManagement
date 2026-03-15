@@ -75,7 +75,7 @@ namespace FleetManagement.Desktop.Pages
 
                 if (string.IsNullOrWhiteSpace(name))
                 {
-                    Notify("Departure adı zorunlu.", "Uyarı");
+                    Notify("Emrine Girilen Brl./Ks. adı zorunlu.", "Uyarı");
                     return;
                 }
 

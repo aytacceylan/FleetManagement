@@ -38,7 +38,7 @@ namespace FleetManagement.Desktop.Pages
 			}
 			catch (Exception ex)
 			{
-				Notify("Hata: birlikler yüklenemedi.", "Hata");
+				Notify("Hata: Ait Olduğu Takım yüklenemedi.", "Hata");
 				MessageBox.Show(ex.Message, "Hata");
 			}
 		}
@@ -66,7 +66,7 @@ namespace FleetManagement.Desktop.Pages
 
 				if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(name))
 				{
-					Notify("Kod ve Ad zorunludur.", "Uyarı");
+					Notify("Kod ve Ait Olduğu Takım zorunludur.", "Uyarı");
 					return;
 				}
 
