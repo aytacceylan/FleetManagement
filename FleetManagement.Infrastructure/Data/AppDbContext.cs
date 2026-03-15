@@ -48,11 +48,15 @@ namespace FleetManagement.Infrastructure.Data
 
 				e.Property(x => x.VehicleYear);
 
-				// Plate aktif sistemde tekil
-				e.HasIndex(x => x.Plate).IsUnique();
+				// sadece aktif araçlarda plaka unique olsun
+				e.HasIndex(x => x.Plate)
+					.IsUnique()
+					.HasFilter("\"IsDeleted\" = false");
 
-				// InventoryNumber da tekil kalsın istiyorsan bu şekilde devam
-				e.HasIndex(x => x.InventoryNumber).IsUnique();
+				// envanter no doluysa ve aktifse unique olsun
+				e.HasIndex(x => x.InventoryNumber)
+					.IsUnique()
+					.HasFilter("\"IsDeleted\" = false AND \"InventoryNumber\" IS NOT NULL");
 
 				e.HasOne(v => v.AssignedDriver)
 					.WithMany()

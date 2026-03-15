@@ -497,78 +497,101 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="10"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0"
-                           Text="ARAÇ LİSTESİ"
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0"
+                       Text="ARAÇ LİSTESİ"
+                       Foreground="Black"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center"/>
+
+                    <StackPanel Grid.Column="1"
+                        Orientation="Vertical"
+                        HorizontalAlignment="Right">
+                        <TextBox x:Name="SearchBox"
+                         Width="240"
+                         Height="30"
+                         TextChanged="SearchBox_TextChanged"
+                         ToolTip="Plaka, sivil plaka, sürücü, marka, model ara"/>
+
+                        <TextBlock x:Name="FilterInfo"
+                           Margin="0,6,0,0"
                            Foreground="{StaticResource BrushMuted}"
-                           FontSize="16"
-                           FontWeight="SemiBold"/>
+                           FontSize="12"
+                           Text="Toplam kayıt: 0"/>
+                    </StackPanel>
+                </Grid>
 
                 <DataGrid Grid.Row="2"
-                          x:Name="VehiclesGrid"
-                          AutoGenerateColumns="False"
-                          IsReadOnly="True"
-                          SelectionMode="Single"
-                          SelectionChanged="VehiclesGrid_SelectionChanged">
-
+                  x:Name="VehiclesGrid"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  SelectionChanged="VehiclesGrid_SelectionChanged"
+                  Margin="0,0,0,0">
                     <DataGrid.Columns>
 
                         <!-- 1. kolon -->
-                        <DataGridTextColumn Header="PLAKA" Binding="{Binding Plate}" Width="60"/>
-                        <DataGridTextColumn Header="SİVİL PLAKA" Binding="{Binding InventoryNumber}" Width="80"/>
-                        <DataGridTextColumn Header="SÜRÜCÜ ADI" Binding="{Binding DriverFullName}" Width="120"/>
-                        <DataGridTextColumn Header="AİT OLDUĞU TAKIM" Binding="{Binding VehicleUnit}" Width="100"/>
+                        <DataGridTextColumn Header="PLAKA" Binding="{Binding Plate}" Width="80"/>
+                        <DataGridTextColumn Header="SİVİL PLAKA" Binding="{Binding InventoryNumber}" Width="100"/>
+                        <DataGridTextColumn Header="SÜRÜCÜ ADI" Binding="{Binding DriverFullName}" Width="140"/>
+                        <DataGridTextColumn Header="AİT OLDUĞU TAKIM" Binding="{Binding VehicleUnit}" Width="130"/>
 
                         <!-- 2. kolon -->
-                        <DataGridTextColumn Header="TİP" Binding="{Binding VehicleType}" Width="80"/>
-                        <DataGridTextColumn Header="MARKA" Binding="{Binding Brand}" Width="80"/>
-                        <DataGridTextColumn Header="MODEL" Binding="{Binding Model}" Width="90"/>
-                        <DataGridTextColumn Header="YIL" Binding="{Binding VehicleYear}" Width="50"/>
+                        <DataGridTextColumn Header="TİP" Binding="{Binding VehicleType}" Width="90"/>
+                        <DataGridTextColumn Header="MARKA" Binding="{Binding Brand}" Width="90"/>
+                        <DataGridTextColumn Header="MODEL" Binding="{Binding Model}" Width="100"/>
+                        <DataGridTextColumn Header="YIL" Binding="{Binding VehicleYear}" Width="70"/>
 
                         <!-- 3. kolon -->
-                        <DataGridTextColumn Header="KM" Binding="{Binding VehicleKm}" Width="50"/>
-                        <DataGridTemplateColumn Header="ARAÇ DURUMU" Width="110">
+                        <DataGridTextColumn Header="KM" Binding="{Binding VehicleKm}" Width="80"/>
+
+                        <DataGridTemplateColumn Header="ARAÇ DURUMU" Width="120">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding VehicleSituation}"
-                       Foreground="{Binding VehicleSituationBrush}"
-                       FontWeight="SemiBold"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center"/>
+                                       Foreground="{Binding VehicleSituationBrush}"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTemplateColumn Header="BAKIM DURUMU" Width="110">
+                        <DataGridTemplateColumn Header="BAKIM DURUMU" Width="120">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding MaintenanceStatus}"
-                       Foreground="{Binding MaintenanceBrush}"
-                       FontWeight="SemiBold"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center"/>
+                                       Foreground="{Binding MaintenanceBrush}"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
                         <!-- 4. kolon -->
-
-                        <DataGridTextColumn Header="YOLCU KAPASİTESİ" Binding="{Binding PassengerCapacity}" Width="60"/>
-                        <DataGridTextColumn Header="YÜK KAPASİTESİ" Binding="{Binding LoadCapacity}" Width="60"/>
-                        <DataGridTextColumn Header="MOTOR NO" Binding="{Binding MotorNo}" Width="60"/>
-                        <DataGridTextColumn Header="ŞASE NO" Binding="{Binding SaseNo}" Width="60"/>
-
+                        <DataGridTextColumn Header="YOLCU KAPASİTESİ" Binding="{Binding PassengerCapacity}" Width="110"/>
+                        <DataGridTextColumn Header="YÜK KAPASİTESİ" Binding="{Binding LoadCapacity}" Width="110"/>
+                        <DataGridTextColumn Header="MOTOR NO" Binding="{Binding MotorNo}" Width="120"/>
+                        <DataGridTextColumn Header="ŞASE NO" Binding="{Binding SaseNo}" Width="140"/>
 
                         <!-- 5. kolon -->
-                        <DataGridTextColumn Header="SON KM" Binding="{Binding LastMaintenanceKm}" Width="60"/>
+                        <DataGridTextColumn Header="SON KM" Binding="{Binding LastMaintenanceKm}" Width="90"/>
                         <DataGridTextColumn Header="SON BAKIM TARİHİ"
-                                            Binding="{Binding LastMaintenanceDate, StringFormat={}{0:yyyy-MM-dd}}"
-                                            Width="60"/>
-                        <DataGridTextColumn Header="BAKIM PERİYOT KM" Binding="{Binding MaintenanceIntervalKm}" Width="60"/>
-                        <DataGridTextColumn Header="PERİYOT AY" Binding="{Binding MaintenanceIntervalMonths}" Width="60"/>
+                                    Binding="{Binding LastMaintenanceDate, StringFormat={}{0:yyyy-MM-dd}}"
+                                    Width="120"/>
+                        <DataGridTextColumn Header="BAKIM PERİYOT KM" Binding="{Binding MaintenanceIntervalKm}" Width="130"/>
+                        <DataGridTextColumn Header="PERİYOT AY" Binding="{Binding MaintenanceIntervalMonths}" Width="100"/>
 
                     </DataGrid.Columns>
                 </DataGrid>

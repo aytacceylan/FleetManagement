@@ -1,9 +1,11 @@
-﻿using FleetManagement.Desktop.Dtos;
+﻿using DocumentFormat.OpenXml.Office2013.Drawing.ChartStyle;
+using FleetManagement.Desktop.Dtos;
 using FleetManagement.Domain.Entities;
 using FleetManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -176,8 +178,9 @@ namespace FleetManagement.Desktop.Pages
 
                 _allVehicles = list;
                 VehiclesGrid.ItemsSource = _allVehicles;
+				FilterInfo.Text = $"Toplam kayıt: {_allVehicles.Count}";
 
-                MaintInfoBox.Text = "—";
+				MaintInfoBox.Text = "—";
                 MaintInfoBox.Foreground = Brushes.Black;
             }
             catch (Exception ex)
@@ -593,6 +596,36 @@ namespace FleetManagement.Desktop.Pages
             };
         }
 
+		private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			var q = (SearchBox.Text ?? "").Trim().ToLowerInvariant();
+			var total = _allVehicles.Count;
 
-    }
+			if (string.IsNullOrWhiteSpace(q))
+			{
+				VehiclesGrid.ItemsSource = _allVehicles;
+				FilterInfo.Text = $"Toplam kayıt: {total}";
+				return;
+			}
+
+			var filtered = _allVehicles
+				.Where(x =>
+					(x.Plate ?? "").ToLowerInvariant().Contains(q) ||
+					(x.InventoryNumber ?? "").ToLowerInvariant().Contains(q) ||
+					(x.VehicleUnit ?? "").ToLowerInvariant().Contains(q) ||
+					(x.VehicleType ?? "").ToLowerInvariant().Contains(q) ||
+					(x.Brand ?? "").ToLowerInvariant().Contains(q) ||
+					(x.Model ?? "").ToLowerInvariant().Contains(q) ||
+					(x.DriverFullName ?? "").ToLowerInvariant().Contains(q) ||
+					(x.VehicleSituation ?? "").ToLowerInvariant().Contains(q) ||
+					(x.MotorNo ?? "").ToLowerInvariant().Contains(q) ||
+					(x.SaseNo ?? "").ToLowerInvariant().Contains(q)
+				)
+				.ToList();
+
+			VehiclesGrid.ItemsSource = filtered;
+			FilterInfo.Text = $"Toplam kayıt: {filtered.Count} / {total}";
+		}
+
+	}
 }
