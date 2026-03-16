@@ -343,7 +343,9 @@
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="250"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Text="SORGULAMA SONUÇLARI"
@@ -352,12 +354,29 @@
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
 
-                    <TextBlock Grid.Column="1"
-                               x:Name="ResultInfoText"
-                               HorizontalAlignment="Right"
-                               VerticalAlignment="Center"
-                               Foreground="{StaticResource BrushMuted}"
-                               Text="Toplam kayıt: 0"/>
+                    <!-- EXPORT BUTONU -->
+                    <Button Grid.Column="1"
+            Width="140"
+            Click="ExportExcel_Click">
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="📊"
+                       FontSize="16"
+                       Margin="0,0,6,0"
+                       Foreground="#66CDAA"/>
+                            <TextBlock Text="Seçiliyi Aktar" />
+                        </StackPanel>
+
+                    </Button>
+
+                    <!-- SONUÇ SAYISI -->
+                    <TextBlock Grid.Column="3"
+               x:Name="ResultInfoText"
+               HorizontalAlignment="Right"
+               VerticalAlignment="Center"
+               Foreground="{StaticResource BrushMuted}"
+               Text="Toplam kayıt: 0"/>
+
                 </Grid>
 
                 <DataGrid x:Name="ResultsGrid"
@@ -365,7 +384,8 @@
                           AutoGenerateColumns="False"
                           IsReadOnly="True"
                           CanUserAddRows="False"
-                          SelectionMode="Single">
+                          SelectionMode="Extended">
+                    
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="S.NO" Binding="{Binding DailyNo}" Width="50"/>
                         <DataGridTextColumn Header="TARİH" Binding="{Binding DateText}" Width="95"/>
