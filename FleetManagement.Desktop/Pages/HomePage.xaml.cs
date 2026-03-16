@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 
@@ -32,9 +33,15 @@ namespace FleetManagement.Desktop.Pages
 			public string? VehicleBrand { get; set; }
 			public int? CurrentKm { get; set; }
 			public int? LastMaintenanceKm { get; set; }
-			public string? LastMaintenanceDateText { get; set; }
-			public string Status { get; set; } = "";
-		}
+
+            public string? VehicleSituationText { get; set; }
+            public Brush? VehicleSituationBrush { get; set; }
+
+
+            public string? LastMaintenanceDateText { get; set; }
+            public string? Status { get; set; }
+            public Brush? StatusBrush { get; set; }
+        }
 
 
 		private sealed class AvailableVehicleRow
@@ -194,13 +201,23 @@ namespace FleetManagement.Desktop.Pages
 				{
 					rows.Add(new MaintenanceRow
 					{
-						Plate = v.Plate,
-						VehicleBrand = v.VehicleBrand,
-						CurrentKm = v.VehicleKm,
-						LastMaintenanceKm = v.LastMaintenanceKm,
-						LastMaintenanceDateText = v.LastMaintenanceDate?.ToLocalTime().ToString("dd.MM.yyyy"),
-						Status = status
-					});
+                        Plate = v.Plate,
+                        VehicleBrand = v.VehicleBrand,
+                        CurrentKm = v.VehicleKm,
+                        LastMaintenanceKm = v.LastMaintenanceKm,
+
+                        VehicleSituationText = string.IsNullOrWhiteSpace(v.VehicleSituation)
+											? "Müsait"
+											: v.VehicleSituation,
+
+                        VehicleSituationBrush = GetVehicleSituationBrush(
+											 string.IsNullOrWhiteSpace(v.VehicleSituation) ? "Müsait" : v.VehicleSituation),
+
+                        LastMaintenanceDateText = v.LastMaintenanceDate?.ToString("dd.MM.yyyy"),
+
+                        Status = status,
+                        StatusBrush = GetMaintenanceStatusBrush(status)
+                    });
 				}
 			}
 
@@ -396,6 +413,32 @@ namespace FleetManagement.Desktop.Pages
         private void AfterHoursRequestForm_Click(object sender, RoutedEventArgs e)
         {
             OpenAssetFile("MESAİ DIŞINDA ARAÇ TALEP FORMU.pdf");
+        }
+
+        private static Brush GetVehicleSituationBrush(string? text)
+        {
+            return (text ?? "Müsait") switch
+            {
+                "Müsait" => Brushes.ForestGreen,
+                "Görevde" => Brushes.OrangeRed,
+                "Kademe" => Brushes.DarkOrange,
+                "Servis" => Brushes.MediumPurple,
+                "Fabrika" => Brushes.SteelBlue,
+                _ => Brushes.Black
+            };
+        }
+
+        private static Brush GetMaintenanceStatusBrush(string? text)
+        {
+            return (text ?? "") switch
+            {
+                "Gecikti" => Brushes.Red,
+                "Yaklaşıyor" => Brushes.DarkOrange,
+                "Normal" => Brushes.ForestGreen,
+                "Tanımsız" => Brushes.DimGray,
+                "Bakım Gir" => Brushes.SaddleBrown,
+                _ => Brushes.Black
+            };
         }
 
 

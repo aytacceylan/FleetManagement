@@ -18,6 +18,8 @@ namespace FleetManagement.Desktop.Dtos
         public int? VehicleYear { get; set; }
 
         public string? VehicleSituation { get; set; }
+        public string? VehicleSituationText { get; set; }
+
         public Brush VehicleSituationBrush { get; set; } = Brushes.Black;
 
         public int? VehicleKm { get; set; }
