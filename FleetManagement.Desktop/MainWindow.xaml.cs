@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using FleetManagement.Desktop.Services;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace FleetManagement.Desktop
@@ -29,7 +30,7 @@ namespace FleetManagement.Desktop
                 // =======================
                 // Faaliyet / Raporlar
                 // =======================
-                "VehicleDispatchPreparePage" => new Pages.VehicleMovementsPage(), // şimdilik sevk hazırlaya bağlı
+                "VehicleDispatchPreparePage" => new Pages.VehicleMovementsPage(),
                 "QueriesPage" => new Pages.VehicleMovementReportsPage(),
 
                 // =======================
@@ -39,12 +40,10 @@ namespace FleetManagement.Desktop
                 "DriversPage" => new Pages.DriversPage(),
                 "UnitsPage" => new Pages.UnitsPage(),
                 "VehicleTypesPage" => new Pages.VehicleTypesPage(),
-
                 "VehicleBrandsPage" => new Pages.VehicleBrandsPage(),
-				"VehicleModelsPage" => new Pages.VehicleModelsPage(),
+                "VehicleModelsPage" => new Pages.VehicleModelsPage(),
                 "VehicleYearsPage" => new Pages.VehicleYearsPage(),
-
-				"RoutesPage" => new Pages.RoutesPage(),
+                "RoutesPage" => new Pages.RoutesPage(),
                 "VehicleCommandersPage" => new Pages.VehicleCommandersPage(),
                 "DeparturesPage" => new Pages.DeparturesPage(),
                 "DutyTypesPage" => new Pages.DutyTypesPage(),
@@ -55,10 +54,16 @@ namespace FleetManagement.Desktop
                 "HelpPage" => new Pages.HelpPage(),
 
                 // =======================
-                // Default
+                // DEFAULT (ÇOK ÖNEMLİ)
                 // =======================
-                // _ => new Pages.DashboardPage()
+                _ => HandleUnknownPage(tag)
             };
         }
+        private Page HandleUnknownPage(string tag)
+        {
+            AppLogger.Error("Navigation", $"Bilinmeyen sayfa çağrıldı: {tag}", null);
+            return new Pages.HomePage();
+        }
+
     }
 }

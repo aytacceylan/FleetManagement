@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Media;
 
-namespace FleetManagement.Desktop.Pages
+namespace FleetManagement.Desktop.Dtos
 {
     public sealed class VehicleMovementRow
     {
