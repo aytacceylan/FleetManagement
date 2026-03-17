@@ -13,6 +13,7 @@
 	  <None Remove="Assets\EL SENEDİ ÖRNEĞİ.xlsx" />
 	  <None Remove="Assets\FORM 110.pdf" />
 	  <None Remove="Assets\KATLI GARAJ DEVAMLI TALİMATI.pdf" />
+	  <None Remove="Assets\KullanıcıTeknikKılavuz.pdf" />
 	  <None Remove="Assets\MESAİ DIŞINDA ARAÇ TALEP FORMU.pdf" />
 	  <None Remove="Assets\SÜRÜCÜ TALİMATI.pdf" />
 	  <None Remove="Assets\UserGuide.pdf" />
@@ -40,15 +41,16 @@
 	  <Content Include="Assets\KATLI GARAJ DEVAMLI TALİMATI.pdf">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
+	  <Content Include="Assets\KullanıcıTeknikKılavuz.pdf">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
 	  <Content Include="Assets\MESAİ DIŞINDA ARAÇ TALEP FORMU.pdf">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	  <Content Include="Assets\SÜRÜCÜ TALİMATI.pdf">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Assets\UserGuide.pdf">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
+	  
 	</ItemGroup>
 
 	<ItemGroup>

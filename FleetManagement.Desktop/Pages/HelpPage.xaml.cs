@@ -22,7 +22,7 @@ namespace FleetManagement.Desktop.Pages
 
         // PDF yolu (Output’a kopyalanmış olacak)
         private static string GuidePath =>
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "UserGuide.pdf");
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "KullanıcıTeknikKılavuz.pdf");
 
         public HelpPage()
         {
@@ -218,20 +218,20 @@ namespace FleetManagement.Desktop.Pages
         private static string? TryFindGuidePath()
         {
             // 1) Önce output (bin) altını dene
-            var p1 = System.IO.Path.Combine(AppContext.BaseDirectory, "Assets", "UserGuide.pdf");
+            var p1 = System.IO.Path.Combine(AppContext.BaseDirectory, "Assets", "KullanıcıTeknikKılavuz.pdf");
             if (System.IO.File.Exists(p1)) return p1;
 
-            // 2) Sonra yukarı çıkarak proje klasörünü bulmaya çalış
-            // bin\Debug\netX -> ... -> FleetManagement.Desktop\Assets\UserGuide.pdf
-            var dir = new System.IO.DirectoryInfo(AppContext.BaseDirectory);
+			// 2) Sonra yukarı çıkarak proje klasörünü bulmaya çalış
+			// bin\Debug\netX -> ... -> FleetManagement.Desktop\Assets\KullanıcıTeknikKılavuz.pdf
+			var dir = new System.IO.DirectoryInfo(AppContext.BaseDirectory);
 
             for (int i = 0; i < 8 && dir != null; i++)
             {
-                var p2 = System.IO.Path.Combine(dir.FullName, "FleetManagement.Desktop", "Assets", "UserGuide.pdf");
+                var p2 = System.IO.Path.Combine(dir.FullName, "FleetManagement.Desktop", "Assets", "KullanıcıTeknikKılavuz.pdf");
                 if (System.IO.File.Exists(p2)) return p2;
 
                 // bazen direkt Desktop klasörü üstündeyken:
-                var p3 = System.IO.Path.Combine(dir.FullName, "Assets", "UserGuide.pdf");
+                var p3 = System.IO.Path.Combine(dir.FullName, "Assets", "KullanıcıTeknikKılavuz.pdf");
                 if (System.IO.File.Exists(p3)) return p3;
 
                 dir = dir.Parent;
@@ -247,7 +247,7 @@ namespace FleetManagement.Desktop.Pages
                 var path = TryFindGuidePath();
                 if (path is null)
                 {
-                    Notify("Kılavuz bulunamadı. Beklenen yerler:\n- bin\\...\\Assets\\UserGuide.pdf\n- FleetManagement.Desktop\\Assets\\UserGuide.pdf", "Uyarı");
+                    Notify("Kılavuz bulunamadı. Beklenen yerler:\n- bin\\...\\Assets\\KullanıcıTeknikKılavuz.pdf\n- FleetManagement.Desktop\\Assets\\KullanıcıTeknikKılavuz.pdf", "Uyarı");
                     return;
                 }
 
@@ -279,8 +279,8 @@ namespace FleetManagement.Desktop.Pages
                 {
                     Title = "Kılavuzu Dışa Aktar",
                     Filter = "PDF (*.pdf)|*.pdf",
-                    FileName = "OtoSevk_KullanimKilavuzu.pdf"
-                };
+                    FileName = "OtoSevk_KullanıcıTeknikKılavuz.pdf"
+				};
 
                 if (dlg.ShowDialog() != true) return;
 

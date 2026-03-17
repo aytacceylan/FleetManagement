@@ -35,7 +35,7 @@
                 <Button Grid.Column="1" MinWidth="140" Click="OpenGuide_Click">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock Text="📖" FontSize="16" Margin="0,0,6,0" Foreground="#FFFF00"/>
-                        <TextBlock Text="Kılavuzu Aç"/>
+                        <TextBlock Text="Kullanıcı ve Teknik Kılavuzu Aç"/>
                     </StackPanel>
                 </Button>
 
