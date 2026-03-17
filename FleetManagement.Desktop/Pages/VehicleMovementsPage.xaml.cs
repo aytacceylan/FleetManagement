@@ -528,25 +528,43 @@ namespace FleetManagement.Desktop.Pages
 					}
 				}
 
-				await _db.SaveChangesAsync();
-                AppLogger.Info("VehicleMovement.Save",
-				$"Sevk kaydı oluşturuldu. Id: {entity.Id}, Plaka: {entity.Vehicle?.Plate}");
+                var isNew = _selectedId is null;
 
-                Notify(_selectedId is null
-					? $"Kaydedildi: #{entity.Id}"
-					: $"Güncellendi: #{entity.Id}");
+                // ... entity oluşturma / güncelleme işlemleri ...
+                await _db.SaveChangesAsync();
 
-				await LoadAsync();
-				ClearForm();
-				PrepareNewFormState();
-			}
-			catch (Exception ex)
-			{
-                AppLogger.Error("VehicleMovement.Save", "Sevk kaydı oluşturma hatası.", ex);
+                if (isNew)
+                {
+                    AppLogger.Info("VehicleMovement.Save",
+                        $"Sevk kaydı oluşturuldu. Id: {entity.Id}, Plaka: {entity.Vehicle?.Plate ?? entity.VehiclePlateText}");
+                }
+                else
+                {
+                    AppLogger.Info("VehicleMovement.Update",
+                        $"Sevk kaydı güncellendi. Id: {entity.Id}, Plaka: {entity.Vehicle?.Plate ?? entity.VehiclePlateText}");
+                }
+
+                Notify(isNew
+                    ? $"Kaydedildi: #{entity.Id}"
+                    : $"Güncellendi: #{entity.Id}");
+
+                await LoadAsync();
+                ClearForm();
+                PrepareNewFormState();
+            }
+            catch (Exception ex)
+            {
+                var isNew = _selectedId is null;
+
+                AppLogger.Error(
+                    isNew ? "VehicleMovement.Save" : "VehicleMovement.Update",
+                    isNew ? "Sevk kaydı oluşturma hatası." : "Sevk kaydı güncelleme hatası.",
+                    ex);
+
                 Notify("Hata: kaydetme başarısız.", "Hata");
-				MessageBox.Show(ex.ToString(), "Hata (detay)");
-			}
-		}
+                MessageBox.Show(ex.ToString(), "Hata (detay)");
+            }
+        }
 
 		private async void Delete_Click(object sender, RoutedEventArgs e)
 		{
@@ -572,7 +590,7 @@ namespace FleetManagement.Desktop.Pages
 				entity.IsDeleted = true;
 				await _db.SaveChangesAsync();
                 // ✅ BAŞARILI LOG
-                AppLogger.Info("VehicleMovement.Delete", $"Sevk Kayıt silindi. Id: {_selectedId.Value}");
+                AppLogger.Info("VehicleMovement.Delete", $"Sevk kaydı silindi. Id: {_selectedId.Value}");
 
                 Notify($"Silindi: #{_selectedId.Value}");
 				await LoadAsync();
@@ -582,7 +600,7 @@ namespace FleetManagement.Desktop.Pages
 			catch (Exception ex)
 			{
                 // ❌ HATA LOG
-                AppLogger.Error("VehicleMovement.Delete", "Sevk kayıt silme hatası.", ex);
+                AppLogger.Error("VehicleMovement.Delete", "Sevk kaydı silme hatası.", ex);
                 Notify("Hata: silme başarısız.", "Hata");
 				MessageBox.Show(ex.Message, "Hata");
 			}

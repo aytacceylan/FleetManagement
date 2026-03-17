@@ -288,6 +288,8 @@ namespace FleetManagement.Desktop.Pages
 
                 var now = DateTime.Now;
                 var path = ExportRowsToExcel(rowsToExport, $"SevkSorgulama_{now:yyyy-MM-dd_HH-mm}.xlsx");
+                AppLogger.Info("VehicleMovementReports.Export",
+                                $"Excel export alındı. Kayıt sayısı: {rowsToExport.Count}");
 
                 var msg = selectedRows.Any()
                     ? $"Seçili kayıtlar Excel'e aktarıldı.\n{path}"

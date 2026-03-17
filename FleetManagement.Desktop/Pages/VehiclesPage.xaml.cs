@@ -314,6 +314,8 @@ namespace FleetManagement.Desktop.Pages
         {
             try
             {
+                var isNew = _selectedId is null;
+
                 var plate = (PlateBox.Text ?? "").Trim();
                 if (string.IsNullOrWhiteSpace(plate))
                 {
@@ -321,7 +323,7 @@ namespace FleetManagement.Desktop.Pages
                     return;
                 }
 
-                var entity = _selectedId is null
+                var entity = isNew
                     ? new Vehicle { CreatedAt = DateTime.UtcNow, IsDeleted = false }
                     : await _db.Vehicles.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
 
@@ -353,20 +355,32 @@ namespace FleetManagement.Desktop.Pages
 
                 var dt = LastMaintenanceDatePicker.SelectedDate?.Date;
                 entity.LastMaintenanceDate = dt is null ? null : DateTime.SpecifyKind(dt.Value, DateTimeKind.Utc);
+
                 entity.VehicleSituation = string.IsNullOrWhiteSpace(VehicleSituationCombo.Text)
                     ? "Müsait"
                     : VehicleSituationCombo.Text.Trim();
 
-
                 entity.MaintenanceIntervalKm = TryParseNullableInt(MaintenanceIntervalKmBox.Text);
                 entity.MaintenanceIntervalMonths = TryParseNullableInt(MaintenanceIntervalMonthsBox.Text);
 
-                if (_selectedId is null)
+                if (isNew)
                     _db.Vehicles.Add(entity);
 
                 await _db.SaveChangesAsync();
 
-                Notify(_selectedId is null
+                // ✅ LOG (NEW / UPDATE AYRIMLI)
+                if (isNew)
+                {
+                    AppLogger.Info("Vehicles.Save",
+                        $"Araç kaydedildi. Id: {entity.Id}, Plaka: {entity.Plate}");
+                }
+                else
+                {
+                    AppLogger.Info("Vehicles.Update",
+                        $"Araç güncellendi. Id: {entity.Id}, Plaka: {entity.Plate}");
+                }
+
+                Notify(isNew
                     ? $"Kaydedildi: #{entity.Id}"
                     : $"Güncellendi: #{entity.Id}");
 
@@ -375,12 +389,15 @@ namespace FleetManagement.Desktop.Pages
             }
             catch (DbUpdateException ex)
             {
+                AppLogger.Error("Vehicles.Save", "DB hata (duplicate vb).", ex);
+
                 Notify("Hata: Plaka veya Sivil Plaka tekrar ediyor olabilir.", "DB Hatası");
                 MessageBox.Show(ex.InnerException?.Message ?? ex.Message, "DB Hatası");
             }
             catch (Exception ex)
             {
-                AppLogger.Error("VehiclesPage.Save_Click", "Araç kaydetme işlemi başarısız.", ex);
+                AppLogger.Error("Vehicles.Save", "Araç kaydetme işlemi başarısız.", ex);
+
                 Notify("Hata: kaydetme başarısız.", "Hata");
                 MessageBox.Show(ex.Message, "Hata");
             }
@@ -404,6 +421,7 @@ namespace FleetManagement.Desktop.Pages
 
                 entity.IsDeleted = true;
                 await _db.SaveChangesAsync();
+                AppLogger.Info("Vehicles.Delete", $"Araç silindi. Id: {_selectedId.Value}");
 
                 Notify($"Silindi: #{_selectedId.Value}");
 
@@ -412,6 +430,8 @@ namespace FleetManagement.Desktop.Pages
             }
             catch (Exception ex)
             {
+
+                AppLogger.Error("Vehicles.Delete","Araç silme hatası.",ex);
                 Notify("Hata: silme başarısız.", "Hata");
                 MessageBox.Show(ex.Message, "Hata");
             }
