@@ -1,4 +1,6 @@
-﻿using FleetManagement.Domain.Entities;
+﻿using ClosedXML.Excel;
+using FleetManagement.Desktop.Services;
+using FleetManagement.Domain.Entities;
 using FleetManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,7 +13,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using ClosedXML.Excel;
 
 namespace FleetManagement.Desktop.Pages
 {
@@ -528,8 +529,10 @@ namespace FleetManagement.Desktop.Pages
 				}
 
 				await _db.SaveChangesAsync();
+                AppLogger.Info("VehicleMovement.Save",
+				$"Sevk kaydı oluşturuldu. Id: {entity.Id}, Plaka: {entity.Vehicle?.Plate}");
 
-				Notify(_selectedId is null
+                Notify(_selectedId is null
 					? $"Kaydedildi: #{entity.Id}"
 					: $"Güncellendi: #{entity.Id}");
 
@@ -539,7 +542,8 @@ namespace FleetManagement.Desktop.Pages
 			}
 			catch (Exception ex)
 			{
-				Notify("Hata: kaydetme başarısız.", "Hata");
+                AppLogger.Error("VehicleMovement.Save", "Sevk kaydı oluşturma hatası.", ex);
+                Notify("Hata: kaydetme başarısız.", "Hata");
 				MessageBox.Show(ex.ToString(), "Hata (detay)");
 			}
 		}
@@ -567,15 +571,19 @@ namespace FleetManagement.Desktop.Pages
 
 				entity.IsDeleted = true;
 				await _db.SaveChangesAsync();
+                // ✅ BAŞARILI LOG
+                AppLogger.Info("VehicleMovement.Delete", $"Sevk Kayıt silindi. Id: {_selectedId.Value}");
 
-				Notify($"Silindi: #{_selectedId.Value}");
+                Notify($"Silindi: #{_selectedId.Value}");
 				await LoadAsync();
 				ClearForm();
 				PrepareNewFormState();
 			}
 			catch (Exception ex)
 			{
-				Notify("Hata: silme başarısız.", "Hata");
+                // ❌ HATA LOG
+                AppLogger.Error("VehicleMovement.Delete", "Sevk kayıt silme hatası.", ex);
+                Notify("Hata: silme başarısız.", "Hata");
 				MessageBox.Show(ex.Message, "Hata");
 			}
 		}

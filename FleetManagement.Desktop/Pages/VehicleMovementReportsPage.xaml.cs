@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using FleetManagement.Desktop.Services;
 using FleetManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -296,6 +297,7 @@ namespace FleetManagement.Desktop.Pages
             }
             catch (Exception ex)
             {
+                AppLogger.Error("VehicleMovementReportsPage.ExportExcel_Click", "Excel export hatası.", ex);
                 MessageBox.Show(ex.Message, "Export Hatası", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }

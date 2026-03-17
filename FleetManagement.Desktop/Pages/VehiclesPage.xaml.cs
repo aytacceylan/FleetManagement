@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Office2013.Drawing.ChartStyle;
 using FleetManagement.Desktop.Dtos;
+using FleetManagement.Desktop.Services;
 using FleetManagement.Domain.Entities;
 using FleetManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -379,6 +380,7 @@ namespace FleetManagement.Desktop.Pages
             }
             catch (Exception ex)
             {
+                AppLogger.Error("VehiclesPage.Save_Click", "Araç kaydetme işlemi başarısız.", ex);
                 Notify("Hata: kaydetme başarısız.", "Hata");
                 MessageBox.Show(ex.Message, "Hata");
             }

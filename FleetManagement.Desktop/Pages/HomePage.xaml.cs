@@ -10,6 +10,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
+using FleetManagement.Desktop.Services;
+using System;
+
 
 
 namespace FleetManagement.Desktop.Pages
@@ -441,6 +444,38 @@ namespace FleetManagement.Desktop.Pages
             };
         }
 
+        //yedek al
+        private void BackupDatabase_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var pgDumpPath = @"C:\pgsql\bin\pg_dump.exe";
+                var cs = ConnectionStringParser.ParseFleetDb();
+
+                var path = DatabaseBackupService.CreateBackup(
+                    pgDumpPath,
+                    cs.Host,
+                    cs.Port,
+                    cs.Database,
+                    cs.Username,
+                    cs.Password);
+
+                MessageBox.Show(
+							"Yedek alma işlemi başarıyla tamamlandı. \nYedekler sistem tarafından saklanmaktadır.",
+							"Bilgi",
+							MessageBoxButton.OK,
+							MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                AppLogger.Error("HomePage.BackupDatabase_Click", "Veritabanı yedekleme hatası.", ex);
+                MessageBox.Show(
+                    ex.Message,
+                    "Yedek Hatası",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
 
     }
 }

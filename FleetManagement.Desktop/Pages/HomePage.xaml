@@ -153,6 +153,15 @@
                             <TextBlock Text="Yenile"/>
                         </StackPanel>
                     </Button>
+
+                    <Button Width="130" Margin="0,0,8,8" Padding="14,6" Click="BackupDatabase_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="💾" FontSize="16" Margin="0,0,6,0" Foreground="#32CD32"/>
+                            <TextBlock Text="Yedek Al"/>
+                        </StackPanel>
+                    </Button>
+
+
                 </WrapPanel>
             </Grid>
         </Border>
