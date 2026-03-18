@@ -543,7 +543,7 @@
                         <!-- 1. kolon -->
                         <DataGridTextColumn Header="PLAKA" Binding="{Binding Plate}" Width="80"/>
                         <DataGridTextColumn Header="SİVİL PLAKA" Binding="{Binding InventoryNumber}" Width="100"/>
-                        <DataGridTextColumn Header="SÜRÜCÜ ADI" Binding="{Binding DriverFullName}" Width="140"/>
+                        <DataGridTextColumn Header="SÜRÜCÜ ADI" Binding="{Binding DriverFullName}" Width="210"/>
                         <DataGridTextColumn Header="AİT OLDUĞU TAKIM" Binding="{Binding VehicleUnit}" Width="130"/>
 
                         <!-- 2. kolon -->
