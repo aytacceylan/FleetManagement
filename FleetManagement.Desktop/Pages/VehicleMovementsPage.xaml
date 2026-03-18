@@ -161,12 +161,15 @@
 
                             <TextBlock Text="PLAKA" Foreground="{StaticResource BrushMuted}"/>
                             <ComboBox x:Name="VehicleCombo"
-                                      Margin="0,6,0,0"
-                                      IsEditable="True"
-                                      IsReadOnly="True"
-                                      Foreground="Black"
-                                      Background="#3D5869"
-                                      BorderBrush="Black">
+          Margin="0,6,0,0"
+          IsEditable="True"
+          IsReadOnly="True"
+          Foreground="Black"
+          Background="#3D5869"
+          BorderBrush="Black"
+          DisplayMemberPath="Plate"
+          SelectedValuePath="Id"
+          SelectionChanged="VehicleCombo_SelectionChanged">
                                 <ComboBox.ItemContainerStyle>
                                     <Style TargetType="ComboBoxItem">
                                         <Setter Property="Foreground" Value="Black"/>

@@ -1075,5 +1075,29 @@ namespace FleetManagement.Desktop.Pages
 			ExitDatePicker.SelectedDate = now.Date;
 			ExitTimeBox.Text = now.ToString("HH:mm");
 		}
-	}
+
+        private async void VehicleCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (VehicleCombo.SelectedValue is not int vehicleId)
+                    return;
+
+                var vehicle = await _db.Vehicles
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.Id == vehicleId);
+
+                if (vehicle is null)
+                    return;
+
+                // ARAÇ TİPİ ALANININ ADINA GÖRE BUNU KULLAN
+                VehicleTypeCombo.Text = vehicle.VehicleType ?? "";
+            }
+            catch (Exception ex)
+            {
+                AppLogger.Error("VehicleMovements.VehicleCombo_SelectionChanged",
+                    "Plaka seçilince araç tipi doldurma hatası.", ex);
+            }
+        }
+    }
 }
