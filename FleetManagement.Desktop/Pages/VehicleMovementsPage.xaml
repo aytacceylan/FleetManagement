@@ -481,7 +481,7 @@
                     </StackPanel>
                 </Grid>
 
-                
+
 
                 <DataGrid x:Name="MovementsGrid"
           Grid.Row="2"
@@ -490,6 +490,7 @@
           CanUserAddRows="False"
           SelectionMode="Single"
           MinRowHeight="35"
+          HorizontalAlignment="Stretch"
           SelectionChanged="MovementsGrid_SelectionChanged">
 
                     <DataGrid.ColumnHeaderStyle>
@@ -524,7 +525,7 @@
                         <DataGridTextColumn Header="SEVK NO" Binding="{Binding MovementNo}" Width="80"/>
                         <DataGridTextColumn Header="PLAKA" Binding="{Binding Plate}" Width="65"/>
 
-                        <DataGridTemplateColumn Header="SÜRÜCÜ RÜTBESİ ADI SOYADI" Width="120">
+                        <DataGridTemplateColumn Header="SÜRÜCÜ RÜTBESİ ADI SOYADI" Width="2*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Driver}"
@@ -535,7 +536,7 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTemplateColumn Header="2. SÜRÜCÜ RÜTBESİ ADI SOYADI" Width="120">
+                        <DataGridTemplateColumn Header="2. SÜRÜCÜ RÜTBESİ ADI SOYADI" Width="2*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding SecondDriver}"
@@ -546,9 +547,9 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTextColumn Header="ARAÇ CİNSİ" Binding="{Binding VehicleType}" Width="75"/>
+                        <DataGridTextColumn Header="ARAÇ CİNSİ" Binding="{Binding VehicleType}" Width="85"/>
 
-                        <DataGridTemplateColumn Header="ARAÇ KOMUTANI" Width="120">
+                        <DataGridTemplateColumn Header="ARAÇ KOMUTANI" Width="1.5*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Commander}"
@@ -559,7 +560,7 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTemplateColumn Header="EMRİNE GİRDİĞİ BRL./KS." Width="100">
+                        <DataGridTemplateColumn Header="EMRİNE GİRDİĞİ BRL./KS." Width="1.5*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Departure}"
@@ -573,7 +574,7 @@
                         <DataGridTextColumn Header="YOLCU SAYISI" Binding="{Binding PassengerCount}" Width="70"/>
                         <DataGridTextColumn Header="YÜK MİKTARI" Binding="{Binding LoadAmount}" Width="70"/>
 
-                        <DataGridTemplateColumn Header="GİDİLECEK YER" Width="80">
+                        <DataGridTemplateColumn Header="GİDİLECEK YER" Width="1.5*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Route}"
@@ -584,10 +585,10 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTextColumn Header="ÇIKIŞ SAATİ" Binding="{Binding ExitTimeText}" Width="50"/>
-                        <DataGridTextColumn Header="DÖNÜŞ SAATİ" Binding="{Binding ReturnTimeText}" Width="50"/>
+                        <DataGridTextColumn Header="ÇIKIŞ SAATİ" Binding="{Binding ExitTimeText}" Width="60"/>
+                        <DataGridTextColumn Header="DÖNÜŞ SAATİ" Binding="{Binding ReturnTimeText}" Width="60"/>
 
-                        <DataGridTemplateColumn Header="DURUM" Width="80">
+                        <DataGridTemplateColumn Header="DURUM" Width="90">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Status}"
@@ -599,9 +600,9 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTextColumn Header="YAPILAN KM" Binding="{Binding KmText}" Width="60"/>
+                        <DataGridTextColumn Header="YAPILAN KM" Binding="{Binding KmText}" Width="70"/>
 
-                        <DataGridTemplateColumn Header="ÇIKIŞ TÜRÜ" Width="80">
+                        <DataGridTemplateColumn Header="ÇIKIŞ TÜRÜ" Width="1.2*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding DutyType}"
