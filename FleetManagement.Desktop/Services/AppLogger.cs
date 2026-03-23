@@ -1,53 +1,63 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 
 namespace FleetManagement.Desktop.Services
 {
-    public static class AppLogger
-    {
-        // log kayıt yeri / path
-        private static readonly string LogFolder =
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "OtoSevk", "Logs");
+	public static class AppLogger
+	{
+		private static string LogFolder => AppPaths.LogsFolder;
 
-        private static readonly string LogFile =
-            Path.Combine(LogFolder, $"system_{DateTime.Now:yyyy-MM-dd}.log");
+		private static string LogFile =>
+			Path.Combine(LogFolder, $"log_{DateTime.Now:yyyy-MM-dd}.txt");
 
-        public static void Info(string source, string message)
-        {
-            Write("INFO", source, message, null);
-        }
+		public static void Info(string source, string message)
+		{
+			Write("INFO", source, message, null);
+		}
 
-        public static void Error(string source, string message, Exception? ex = null)
-        {
-            Write("ERROR", source, message, ex);
-        }
+		public static void Error(string source, string message, Exception? ex = null)
+		{
+			Write("ERROR", source, message, ex);
+		}
 
-        private static void Write(string level, string source, string message, Exception? ex)
-        {
-            try
-            {
-                Directory.CreateDirectory(LogFolder);
+		public static void CleanOldLogs(int days = 30)
+		{
+			try
+			{
+				if (!Directory.Exists(LogFolder))
+					return;
 
-                var sb = new StringBuilder();
-                sb.AppendLine("--------------------------------------------------");
-                sb.AppendLine($"Tarih   : {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-                sb.AppendLine($"Seviye  : {level}");
-                sb.AppendLine($"Kaynak  : {source}");
-                sb.AppendLine($"Mesaj   : {message}");
+				var files = Directory.GetFiles(LogFolder, "*.txt");
 
-                if (ex != null)
-                {
-                    sb.AppendLine("Hata    : " + ex.Message);
-                    sb.AppendLine("Detay   : " + ex);
-                }
+				foreach (var file in files)
+				{
+					var info = new FileInfo(file);
 
-                File.AppendAllText(LogFile, sb.ToString(), Encoding.UTF8);
-            }
-            catch
-            {
-                // Log yazımı hata verirse uygulamayı durdurmasın
-            }
-        }
-    }
+					if (info.CreationTime < DateTime.Now.AddDays(-days))
+						info.Delete();
+				}
+			}
+			catch
+			{
+			}
+		}
+
+		private static void Write(string level, string source, string message, Exception? ex)
+		{
+			try
+			{
+				AppPaths.EnsureFolders();
+
+				var log = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{level}] [{source}] {message}";
+
+				if (ex != null)
+					log += $"\nEXCEPTION: {ex}";
+
+				File.AppendAllText(LogFile, log + "\n\n");
+			}
+			catch
+			{
+			}
+		}
+	}
 }

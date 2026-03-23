@@ -21,6 +21,7 @@ namespace FleetManagement.Desktop
             this.DispatcherUnhandledException += App_DispatcherUnhandledException;
 
             base.OnStartup(e);
+            AppLogger.CleanOldLogs(); // ✅ BURAYA
 
             var config = new ConfigurationBuilder()
                 .SetBasePath(AppContext.BaseDirectory)
@@ -55,5 +56,7 @@ namespace FleetManagement.Desktop
 
             e.Handled = true;
         }
+
+
     }
 }
