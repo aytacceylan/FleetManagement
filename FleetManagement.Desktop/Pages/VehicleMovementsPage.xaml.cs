@@ -50,6 +50,7 @@ namespace FleetManagement.Desktop.Pages
 				.Where(x => !x.IsDeleted)
 				.OrderBy(x => x.Plate)
 				.Select(x => new { x.Id, Display = x.Plate })
+				.Take(1000)
 				.ToListAsync();
 
 			VehicleCombo.ItemsSource = vehicles;
