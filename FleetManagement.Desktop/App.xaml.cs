@@ -14,14 +14,19 @@ namespace FleetManagement.Desktop
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            // 🔹 Log başlangıç
+            // Klasörleri hazırla
+            AppPaths.EnsureFolders();
+
+            // Log başlangıç
             AppLogger.Info("App.OnStartup", "Uygulama başlatıldı.");
 
-            // 🔹 GLOBAL HATA YAKALAMA (DOĞRU YER)
+            // Global hata yakalama
             this.DispatcherUnhandledException += App_DispatcherUnhandledException;
 
+            // Eski logları temizle
+            AppLogger.CleanOldLogs();
+
             base.OnStartup(e);
-            AppLogger.CleanOldLogs(); // ✅ BURAYA
 
             var config = new ConfigurationBuilder()
                 .SetBasePath(AppContext.BaseDirectory)
@@ -30,6 +35,7 @@ namespace FleetManagement.Desktop
 
             var cs = config.GetConnectionString("FleetDb")
                      ?? throw new InvalidOperationException("ConnectionStrings:FleetDb bulunamadı.");
+
             AppLogger.Info("App.OnStartup", "Connection string başarıyla alındı.");
 
             DbOptions = new DbContextOptionsBuilder<AppDbContext>()
@@ -43,7 +49,6 @@ namespace FleetManagement.Desktop
             base.OnExit(e);
         }
 
-        // 🔹 BURASI YENİ EKLENEN METHOD
         private void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             AppLogger.Error("App.DispatcherUnhandledException", "Yakalanmamış hata.", e.Exception);
@@ -56,7 +61,5 @@ namespace FleetManagement.Desktop
 
             e.Handled = true;
         }
-
-
     }
 }
