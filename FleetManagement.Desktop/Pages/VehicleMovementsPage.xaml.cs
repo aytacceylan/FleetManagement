@@ -46,14 +46,13 @@ namespace FleetManagement.Desktop.Pages
 		// =========================
 		private async Task LoadLookupsAsync()
 		{
-			var vehicles = await _db.Vehicles.AsNoTracking()
-				.Where(x => !x.IsDeleted)
-				.OrderBy(x => x.Plate)
-				.Select(x => new { x.Id, Display = x.Plate })
-				.Take(1000)
-				.ToListAsync();
+            var vehicles = await _db.Vehicles.AsNoTracking()
+                .Where(x => !x.IsDeleted)
+                .OrderBy(x => x.Plate)
+                .Select(x => new { x.Id, Display = x.Plate })
+                .ToListAsync();
 
-			VehicleCombo.ItemsSource = vehicles;
+            VehicleCombo.ItemsSource = vehicles;
 			VehicleCombo.DisplayMemberPath = "Display";
 			VehicleCombo.SelectedValuePath = "Id";
 
@@ -133,7 +132,8 @@ namespace FleetManagement.Desktop.Pages
 				.Include(x => x.SecondDriver)
 				.Include(x => x.VehicleCommander)
 				.OrderByDescending(x => x.Id)
-				.ToListAsync();
+                .Take(3000)
+                .ToListAsync();
 
 			var rows = raw.Select(m =>
 			{
