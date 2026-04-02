@@ -6,7 +6,7 @@
 		<UseWPF>true</UseWPF>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<ApplicationIcon>Assets\favicon.ico</ApplicationIcon>
+		<ApplicationIcon>Assets\favicon_new.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -51,7 +51,7 @@
 	  <Content Include="Assets\SÜRÜCÜ TALİMATI.pdf">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Assets\favicon.ico" />
+	  <Content Include="Assets\favicon_new.ico" />
 	  
 	</ItemGroup>
 
