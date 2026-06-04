@@ -300,9 +300,10 @@
                             </ComboBox.ItemContainerStyle>
                         </ComboBox>
 
-                        <TextBlock Text="ARAÇ TİPİ"
-                                   Foreground="{StaticResource BrushMuted}"/>
-                        <ComboBox x:Name="VehicleTypeCombo"
+                        <TextBlock Text="ARAÇ MARKA"
+           Foreground="{StaticResource BrushMuted}"/>
+
+                        <ComboBox x:Name="VehicleBrandCombo"
                                   Margin="0,6,0,10"
                                   IsEditable="True"
                                   IsReadOnly="True"

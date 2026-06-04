@@ -74,13 +74,15 @@ namespace FleetManagement.Desktop.Pages
 
             RouteCombo.ItemsSource = routes;
 
-            var types = await _db.VehicleTypes.AsNoTracking()
+            var brands = await _db.Vehicles.AsNoTracking()
                 .Where(x => !x.IsDeleted)
-                .OrderBy(x => x.Name)
-                .Select(x => x.Name)
+                .Select(x => x.VehicleBrand)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Distinct()
+                .OrderBy(x => x)
                 .ToListAsync();
 
-            VehicleTypeCombo.ItemsSource = types;
+            VehicleBrandCombo.ItemsSource = brands;
         }
 
         private async System.Threading.Tasks.Task LoadAllAsync()
@@ -119,6 +121,8 @@ namespace FleetManagement.Desktop.Pages
                     ReturnTimeText = returnLocal is null ? "—" : returnLocal.Value.ToString("HH:mm"),
 
                     VehicleType = GetVehicleTypeSafe(m.Vehicle),
+
+                    VehicleBrand = m.Vehicle?.VehicleBrand,
 
                     Status = status,
                     DateText = exitLocal.ToString("dd.MM.yyyy"),
@@ -160,7 +164,7 @@ namespace FleetManagement.Desktop.Pages
             DutyTypeCombo.Text = "";
             UnitCombo.Text = "";
             RouteCombo.Text = "";
-            VehicleTypeCombo.Text = "";
+            VehicleBrandCombo.Text = "";
 
             ApplyFilters();
         }
@@ -175,7 +179,9 @@ namespace FleetManagement.Desktop.Pages
             var dutyType = (DutyTypeCombo.Text ?? "").Trim().ToLowerInvariant();
             var unit = (UnitCombo.Text ?? "").Trim().ToLowerInvariant();
             var route = (RouteCombo.Text ?? "").Trim().ToLowerInvariant();
-            var type = (VehicleTypeCombo.Text ?? "").Trim().ToLowerInvariant();
+            var brand = (VehicleBrandCombo.Text ?? "")
+              .Trim()
+              .ToLowerInvariant();
 
             var query = _all.AsEnumerable();
 
@@ -197,8 +203,13 @@ namespace FleetManagement.Desktop.Pages
             if (!string.IsNullOrWhiteSpace(route))
                 query = query.Where(x => (x.Route ?? "").ToLowerInvariant().Contains(route));
 
-            if (!string.IsNullOrWhiteSpace(type))
-                query = query.Where(x => (x.VehicleType ?? "").ToLowerInvariant().Contains(type));
+            if (!string.IsNullOrWhiteSpace(brand))
+            {
+                query = query.Where(x =>
+                    (x.VehicleBrand ?? "")
+                    .ToLowerInvariant()
+                    .Contains(brand));
+            }
 
             if (!string.IsNullOrWhiteSpace(unit))
             {

@@ -21,6 +21,7 @@ namespace FleetManagement.Desktop.Dtos
         public string ReturnTimeText { get; set; } = "";
 
         public string? VehicleType { get; set; }
+        public string? VehicleBrand { get; set; }
 
         public string Status { get; set; } = "";
 
