@@ -926,7 +926,7 @@ namespace FleetManagement.Desktop.Pages
 					.OrderBy(x => x.DailyNo)
 					.ToList();
 
-				var path = ExportRowsToExcel(rows, $"VehicleMovements_{DateTime.Now:yyyy-MM-dd_HH-mm}.xlsx");
+				var path = ExportRowsToExcel(rows, $"Görev Kayıt Defteri_{DateTime.Now:yyyy-MM-dd_HH-mm}.xlsx");
 				Notify($"Günlük Excel export tamamlandı.\n{path}");
 			}
 			catch (Exception ex)
@@ -949,7 +949,7 @@ namespace FleetManagement.Desktop.Pages
 					.ThenBy(x => x.DailyNo)
 					.ToList();
 
-				var path = ExportRowsToExcel(rows, $"VehicleMovements_{DateTime.Now:yyyy-MM_HH-mm}.xlsx");
+				var path = ExportRowsToExcel(rows, $"Görev Kayıt Defteri_{DateTime.Now:yyyy-MM_HH-mm}.xlsx");
 				Notify($"Aylık Excel export tamamlandı.\n{path}");
 			}
 			catch (Exception ex)
@@ -961,7 +961,7 @@ namespace FleetManagement.Desktop.Pages
 
 		private static string ExportRowsToCsv(List<VehicleMovementRow> rows, string fileName)
 		{
-			var folder = @"C:\Araç Görev Kayıt Defteri";
+			var folder = @"D:\Araç Görev Kayıt Defteri";
 			Directory.CreateDirectory(folder);
 
 			var path = Path.Combine(folder, fileName);
