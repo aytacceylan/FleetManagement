@@ -4,13 +4,14 @@
              StartupUri="MainWindow.xaml">
 
     <Application.Resources>
+
         <ResourceDictionary>
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Themes/AppTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- Lacivert palet -->
+            <!-- Lacivert Palette -->
             <Color x:Key="Navy900">#0B1F3B</Color>
             <Color x:Key="Navy800">#102A52</Color>
             <Color x:Key="Navy700">#163764</Color>
@@ -29,248 +30,16 @@
             <SolidColorBrush x:Key="BrushDanger" Color="{StaticResource DangerRed}" />
             <SolidColorBrush x:Key="BrushSuccess" Color="{StaticResource SuccessGreen}" />
 
-            <!-- Genel arkaplan / kart -->
             <SolidColorBrush x:Key="AppBackgroundBrush" Color="{StaticResource Navy900}" />
             <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource Navy800}" />
             <SolidColorBrush x:Key="SurfaceAltBrush" Color="{StaticResource Navy700}" />
 
-            <!-- Yazı -->
-            <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FFFFFF" />
-            <SolidColorBrush x:Key="TextSecondaryBrush" Color="#C7D2FE" />
-            <SolidColorBrush x:Key="BorderBrush" Color="#223A66" />
-
-            <!-- Basit card stili -->
-            <Style TargetType="Border" x:Key="CardBorder">
-                <Setter Property="CornerRadius" Value="14"/>
-                <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Padding" Value="16"/>
-                <Setter Property="SnapsToDevicePixels" Value="True"/>
-            </Style>
-
-            <!-- TextBox / ComboBox ufak modernleşme -->
-            <Style TargetType="TextBox">
-                <Setter Property="Background" Value="{StaticResource SurfaceAltBrush}"/>
-                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Padding" Value="10,6"/>
-            </Style>
-
-            <Style TargetType="ComboBox">
-                <Setter Property="Background" Value="{StaticResource SurfaceAltBrush}"/>
-                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Padding" Value="10,6"/>
-            </Style>
-
-            <Style TargetType="TextBlock">
-                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
-            </Style>
-
-            <Style TargetType="Window">
-                <Setter Property="Background" Value="{StaticResource AppBackgroundBrush}"/>
-            </Style>
-
-            <!-- Sidebar: normal -->
-            <Style x:Key="SidebarButtonStyle" TargetType="Button">
-                <Setter Property="Margin" Value="0,6"/>
-                <Setter Property="Padding" Value="12,10"/>
-                <Setter Property="HorizontalContentAlignment" Value="Left"/>
-                <Setter Property="Background" Value="{StaticResource BrushNavy800}"/>
-                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Grid>
-                                <!-- Sol accent çizgi (normalde görünmez) -->
-                                <Border x:Name="Accent"
-                            Width="4"
-                            HorizontalAlignment="Left"
-                            CornerRadius="2"
-                            Background="{StaticResource BrushAccent}"
-                            Opacity="0"/>
-
-                                <Border x:Name="Root"
-                            Margin="0"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="10">
-                                    <ContentPresenter Margin="{TemplateBinding Padding}"/>
-                                </Border>
-                            </Grid>
-
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Root" Property="Background" Value="{StaticResource BrushNavy700}"/>
-                                </Trigger>
-                                <Trigger Property="IsPressed" Value="True">
-                                    <Setter TargetName="Root" Property="Background" Value="{StaticResource BrushNavy600}"/>
-                                </Trigger>
-                                <Trigger Property="IsEnabled" Value="False">
-                                    <Setter Property="Opacity" Value="0.55"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <!-- Sidebar: aktif -->
-            <Style x:Key="SidebarButtonActiveStyle" TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
-                <Setter Property="Background" Value="{StaticResource BrushNavy700}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource BrushAccent}"/>
-                <Setter Property="BorderThickness" Value="1"/>
-            </Style>
-
-            <!-- Ana Sayfa / Kart Başlığı -->
-            <Style x:Key="PageTitleStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="20"/>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="Foreground" Value="White"/>
-            </Style>
-
-            <!-- Alt Açıklama -->
-            <Style x:Key="PageSubtitleStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="13"/>
-                <Setter Property="Foreground" Value="#9FB3D9"/>
-                <!-- soft açık mavi -->
-            </Style>
-
-            <!-- Section Başlığı (Liste Başlığı gibi) -->
-            <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="16"/>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="Foreground" Value="{StaticResource BrushAccent}"/>
-            </Style>
-
-            <!-- DataGrid genel görünüm -->
-            <Style TargetType="DataGrid">
-                <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
-                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
-                <Setter Property="RowBackground" Value="{StaticResource SurfaceBrush}"/>
-                <Setter Property="AlternatingRowBackground" Value="{StaticResource SurfaceAltBrush}"/>
-                <Setter Property="GridLinesVisibility" Value="None"/>
-                <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="RowHeaderWidth" Value="0"/>
-            </Style>
-
-            <!-- DataGrid kolon başlıkları (Id, Sürücü No, ...) -->
-            <Style TargetType="DataGridColumnHeader">
-                <Setter Property="Background" Value="{StaticResource BrushNavy700}"/>
-                <Setter Property="Foreground" Value="White"/>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="Padding" Value="10,8"/>
-                <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-                <Setter Property="BorderThickness" Value="0,0,0,1"/>
-                <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            </Style>
-
-            <!-- Seçili satır görünümü -->
-            <Style TargetType="DataGridRow">
-                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
-                <Style.Triggers>
-                    <Trigger Property="IsSelected" Value="True">
-                        <Setter Property="Background" Value="{StaticResource BrushNavy600}"/>
-                        <Setter Property="Foreground" Value="White"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <!-- Dropdown içindeki satırlar (Item) -->
-            <Style TargetType="ComboBoxItem">
-                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="Padding" Value="10,8"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ComboBoxItem">
-                            <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8">
-                                <ContentPresenter />
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsHighlighted" Value="True">
-                                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource BrushNavy700}"/>
-                                </Trigger>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource BrushNavy600}"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <!-- Sadece istediğimiz yerde kullanacağımız koyu dropdown combo -->
-            <Style x:Key="DarkComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ComboBox">
-                            <Grid>
-                                <Border x:Name="Bd"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="10">
-                                    <DockPanel LastChildFill="True">
-                                        <ToggleButton DockPanel.Dock="Right"
-                                          Focusable="False"
-                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                          Background="Transparent"
-                                          BorderThickness="0"
-                                          Width="34"
-                                          Content="▾"
-                                          Foreground="{StaticResource TextSecondaryBrush}"/>
-                                        <ContentPresenter Margin="{TemplateBinding Padding}"
-                                              Content="{TemplateBinding SelectionBoxItem}"
-                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                              VerticalAlignment="Center"
-                                              HorizontalAlignment="Left"/>
-                                    </DockPanel>
-                                </Border>
-
-                                <Popup IsOpen="{TemplateBinding IsDropDownOpen}"
-                           Placement="Bottom"
-                           AllowsTransparency="True"
-                           Focusable="False"
-                           PopupAnimation="Fade">
-                                    <Border Background="{StaticResource BrushNavy800}"
-                                BorderBrush="{StaticResource BorderBrush}"
-                                BorderThickness="1"
-                                CornerRadius="10"
-                                Padding="6"
-                                MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}">
-                                        <ScrollViewer>
-                                            <ItemsPresenter />
-                                        </ScrollViewer>
-                                    </Border>
-                                </Popup>
-                            </Grid>
-
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Bd" Property="Background" Value="{StaticResource BrushNavy700}"/>
-                                </Trigger>
-                                <Trigger Property="IsEnabled" Value="False">
-                                    <Setter Property="Opacity" Value="0.55"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-          
-           
+            <SolidColorBrush x:Key="TextPrimaryBrush" Color="White"/>
+            <SolidColorBrush x:Key="TextSecondaryBrush" Color="#C7D2FE"/>
+            <SolidColorBrush x:Key="BorderBrush" Color="#223A66"/>
 
         </ResourceDictionary>
-    </Application.Resources>
-</Application>
 
+    </Application.Resources>
+
+</Application>

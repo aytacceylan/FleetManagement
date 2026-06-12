@@ -3,6 +3,7 @@ using FleetManagement.Desktop.Dtos;
 using FleetManagement.Desktop.Services;
 using FleetManagement.Domain.Entities;
 using FleetManagement.Infrastructure.Data;
+using FleetManagement.Desktop.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+
 
 namespace FleetManagement.Desktop.Pages
 {
@@ -41,84 +43,115 @@ namespace FleetManagement.Desktop.Pages
 			};
 		}
 
+
 		// =========================
 		// LOOKUPS
 		// =========================
 		private async Task LoadLookupsAsync()
 		{
-            var vehicles = await _db.Vehicles.AsNoTracking()
+            var vehicles = await _db.Vehicles
+                .AsNoTracking()
                 .Where(x => !x.IsDeleted)
                 .OrderBy(x => x.Plate)
-                .Select(x => new { x.Id, Display = x.Plate })
                 .ToListAsync();
 
-            VehicleCombo.ItemsSource = vehicles;
-			VehicleCombo.DisplayMemberPath = "Display";
-			VehicleCombo.SelectedValuePath = "Id";
+            ComboBoxSearchHelper.BindContains(
+                VehicleCombo,
+                vehicles,
+                nameof(Vehicle.Plate),
+                nameof(Vehicle.Id),
+                x => x.Plate ?? "");
 
-			var drivers = await _db.Drivers.AsNoTracking()
+            var drivers = await _db.Drivers
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted)
+                .OrderBy(x => x.FullName)
+                .ToListAsync();
+
+            ComboBoxSearchHelper.BindContains(
+                DriverCombo,
+                drivers,
+                nameof(Driver.FullName),
+                nameof(Driver.Id),
+                x => x.FullName ?? "");
+
+            var seconddrivers = await _db.Drivers
+				.AsNoTracking()
 				.Where(x => !x.IsDeleted)
 				.OrderBy(x => x.FullName)
-				.Select(x => new { x.Id, Display = x.FullName })
 				.ToListAsync();
 
-			DriverCombo.ItemsSource = drivers;
-			DriverCombo.DisplayMemberPath = "Display";
-			DriverCombo.SelectedValuePath = "Id";
+            ComboBoxSearchHelper.BindContains(
+                SecondDriverCombo,
+                drivers,
+                nameof(Driver.FullName),
+                nameof(Driver.Id),
+                x => x.FullName ?? "");
 
-			SecondDriverCombo.ItemsSource = drivers;
-			SecondDriverCombo.DisplayMemberPath = "Display";
-			SecondDriverCombo.SelectedValuePath = "Id";
+            var commanders = await _db.VehicleCommanders
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted)
+                .OrderBy(x => x.FullName)
+                .ToListAsync();
 
-			var commanders = await _db.VehicleCommanders.AsNoTracking()
-				.Where(x => !x.IsDeleted)
-				.OrderBy(x => x.FullName)
-				.Select(x => new { x.Id, Display = x.FullName })
-				.ToListAsync();
+            ComboBoxSearchHelper.BindContains(
+                CommanderCombo,
+                commanders,
+                nameof(VehicleCommander.FullName),
+                nameof(VehicleCommander.Id),
+                x => x.FullName ?? "");
 
-			CommanderCombo.ItemsSource = commanders;
-			CommanderCombo.DisplayMemberPath = "Display";
-			CommanderCombo.SelectedValuePath = "Id";
+            var routes = await _db.Routes
+                .AsNoTracking()
+                .OrderBy(x => x.Name)
+                .ToListAsync();
 
-			var routes = await _db.Routes.AsNoTracking()
-				.OrderBy(x => x.Name)
-				.Select(x => new { Display = x.Name })
-				.ToListAsync();
+            ComboBoxSearchHelper.BindContains(
+                RouteCombo,
+                routes,
+                nameof(Route.Name),
+                nameof(Route.Name),
+                x => x.Name ?? "");
 
-			RouteCombo.ItemsSource = routes;
-			RouteCombo.DisplayMemberPath = "Display";
-			RouteCombo.SelectedValuePath = "Display";
+            var departures = await _db.Departures
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted)
+                .OrderBy(x => x.Name)
+                .ToListAsync();
 
-			var departures = await _db.Departures.AsNoTracking()
-				.Where(x => !x.IsDeleted)
-				.OrderBy(x => x.Name)
-				.Select(x => new { Display = x.Name })
-				.ToListAsync();
+            ComboBoxSearchHelper.BindContains(
+                DepartureCombo,
+                departures,
+                nameof(Departure.Name),
+                nameof(Departure.Name),
+                x => x.Name ?? "");
 
-			DepartureCombo.ItemsSource = departures;
-			DepartureCombo.DisplayMemberPath = "Display";
-			DepartureCombo.SelectedValuePath = "Display";
+            var dutyTypes = await _db.DutyTypes
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted)
+                .OrderBy(x => x.Name)
+                .ToListAsync();
 
-			var dutyTypes = await _db.DutyTypes.AsNoTracking()
-				.Where(x => !x.IsDeleted)
-				.OrderBy(x => x.Name)
-				.Select(x => new { Display = x.Name })
-				.ToListAsync();
+            ComboBoxSearchHelper.BindContains(
+                DutyTypeCombo,
+                dutyTypes,
+                nameof(DutyType.Name),
+                nameof(DutyType.Name),
+                x => x.Name ?? "");
 
-			DutyTypeCombo.ItemsSource = dutyTypes;
-			DutyTypeCombo.DisplayMemberPath = "Display";
-			DutyTypeCombo.SelectedValuePath = "Display";
+            var vehicleTypes = await _db.VehicleTypes
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted)
+                .OrderBy(x => x.Name)
+                .ToListAsync();
 
-			var types = await _db.VehicleTypes.AsNoTracking()
-				.Where(x => !x.IsDeleted)
-				.OrderBy(x => x.Name)
-				.Select(x => new { Display = x.Name })
-				.ToListAsync();
-
-			VehicleTypeCombo.ItemsSource = types;
-			VehicleTypeCombo.DisplayMemberPath = "Display";
-			VehicleTypeCombo.SelectedValuePath = "Display";
-		}
+            ComboBoxSearchHelper.BindContains(
+                VehicleTypeCombo,
+                vehicleTypes,
+                nameof(VehicleType.Name),
+                nameof(VehicleType.Name),
+                x => x.Name ?? "");
+        }
 
 		// =========================
 		// GRID LOAD
