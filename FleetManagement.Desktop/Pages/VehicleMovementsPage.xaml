@@ -13,16 +13,6 @@
             <Setter Property="FontSize" Value="13"/>
         </Style>
 
-        <Style x:Key="FixDatePickerText" TargetType="{x:Type DatePicker}">
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="Background" Value="White"/>
-        </Style>
-
-        <Style x:Key="FixCalendar" TargetType="{x:Type Calendar}">
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="Background" Value="Black"/>
-        </Style>
-
         <Style x:Key="ForceComboBoxItemStyle" TargetType="ComboBoxItem" BasedOn="{x:Null}">
             <Setter Property="Foreground" Value="#111827"/>
             <Setter Property="Background" Value="White"/>
@@ -188,68 +178,29 @@
                         <!-- 2. KOLON -->
 
                         <StackPanel Grid.Column="2">
-                            
-                            <TextBlock Text="ARAÇ CİNSİ" Foreground="{StaticResource BrushMuted}"/>
+
+                            <TextBlock Text="ARAÇ CİNSİ" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
                             <ComboBox x:Name="VehicleTypeCombo"
-                                      Margin="0,6,0,0"
-                                      IsEditable="True"
-                                      IsReadOnly="True"
-                                      Foreground="Black"
-                                      Background="#3D5869"
-                                      BorderBrush="Black">
-                                <ComboBox.ItemContainerStyle>
-                                    <Style TargetType="ComboBoxItem">
-                                        <Setter Property="Foreground" Value="Black"/>
-                                        <Setter Property="Background" Value="Black"/>
-                                        <Style.Triggers>
-                                            <Trigger Property="IsHighlighted" Value="True">
-                                                <Setter Property="Background" Value="Black"/>
-                                                <Setter Property="Foreground" Value="Black"/>
-                                            </Trigger>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter Property="Background" Value="Black"/>
-                                                <Setter Property="Foreground" Value="Black"/>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ComboBox.ItemContainerStyle>
+                                     Margin="0,6,0,0"
+                                     DisplayMemberPath="Display"
+                                     SelectedValuePath="Id">
                             </ComboBox>
 
                                 <TextBlock Text="ARAÇ KOMUTANI" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
-                                <ComboBox x:Name="CommanderCombo"
-Margin="0,6,0,0"
-  DisplayMemberPath="Plate"
-  SelectedValuePath="Id"
-  SelectionChanged="VehicleCombo_SelectionChanged">
-
+                            <ComboBox x:Name="CommanderCombo"
+                                        Margin="0,6,0,0"
+                                          DisplayMemberPath="Plate"
+                                          SelectedValuePath="Id"
+                                          SelectionChanged="VehicleCombo_SelectionChanged">
 
                             </ComboBox>
 
-                                <TextBlock Text="EMRİNE GİRDİĞİ BRL./KS." Foreground="{StaticResource BrushMuted}"/>
-                                <ComboBox x:Name="DepartureCombo"
-                                          Margin="0,6,0,0"
-                                          IsEditable="True"
-                                          IsReadOnly="True"
-                                          Foreground="Black"
-                                          Background="#3D5869"
-                                          BorderBrush="Black">
-                                    <ComboBox.ItemContainerStyle>
-                                        <Style TargetType="ComboBoxItem">
-                                            <Setter Property="Foreground" Value="Black"/>
-                                            <Setter Property="Background" Value="Black"/>
-                                            <Style.Triggers>
-                                                <Trigger Property="IsHighlighted" Value="True">
-                                                    <Setter Property="Background" Value="Black"/>
-                                                    <Setter Property="Foreground" Value="Black"/>
-                                                </Trigger>
-                                                <Trigger Property="IsSelected" Value="True">
-                                                    <Setter Property="Background" Value="Black"/>
-                                                    <Setter Property="Foreground" Value="Black"/>
-                                                </Trigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </ComboBox.ItemContainerStyle>
-                                </ComboBox>
+                            <TextBlock Text="EMRİNE GİRDİĞİ BRL./KS." Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0" />
+                            <ComboBox x:Name="DepartureCombo"
+                                     Margin="0,6,0,0"
+                                     DisplayMemberPath="Display"
+                                     SelectedValuePath="Id">
+                            </ComboBox>
 
                             </StackPanel>
 
@@ -262,31 +213,12 @@ Margin="0,6,0,0"
 
                             <TextBlock Text="YÜK MİKTARI" Foreground="{StaticResource BrushMuted}"/>
                             <TextBox x:Name="LoadAmountBox" Margin="0,5,0,0"/>
-                            
-                            <TextBlock Text="GİDİLECEK YER" Foreground="{StaticResource BrushMuted}"/>
+
+                            <TextBlock Text="GİDİLECEK YER" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
                             <ComboBox x:Name="RouteCombo"
-                                      Margin="0,6,0,0"
-                                      IsEditable="True"
-                                      IsReadOnly="True"
-                                      Foreground="Black"
-                                      Background="#3D5869"
-                                      BorderBrush="Black">
-                                <ComboBox.ItemContainerStyle>
-                                    <Style TargetType="ComboBoxItem">
-                                        <Setter Property="Foreground" Value="Black"/>
-                                        <Setter Property="Background" Value="Black"/>
-                                        <Style.Triggers>
-                                            <Trigger Property="IsHighlighted" Value="True">
-                                                <Setter Property="Background" Value="Black"/>
-                                                <Setter Property="Foreground" Value="Black"/>
-                                            </Trigger>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter Property="Background" Value="Black"/>
-                                                <Setter Property="Foreground" Value="Black"/>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ComboBox.ItemContainerStyle>
+                                     Margin="0,6,0,0"
+                                     DisplayMemberPath="Display"
+                                     SelectedValuePath="Id">
                             </ComboBox>
                           
                         </StackPanel>
@@ -296,19 +228,19 @@ Margin="0,6,0,0"
 
                             <TextBlock Text="ÇIKIŞ TARİHİ" Foreground="{StaticResource BrushMuted}"/>
                             <DatePicker x:Name="ExitDatePicker"
-                                                Margin="0,5,0,0"
-                                                Style="{StaticResource FixDatePickerText}"
-                                                CalendarStyle="{StaticResource FixCalendar}"/>
+                                                />
 
                             <TextBlock Text="ÇIKIŞ SAATİ" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
                             <TextBox x:Name="ExitTimeBox" Margin="0,6,0,10" Text="08:00"/>
                             
                             <TextBlock Text="DÖNÜŞ TARİHİ" Foreground="{StaticResource BrushMuted}"/>
-                            <DatePicker x:Name="ReturnDatePicker"
-            Margin="0,6,0,0"
-            Style="{StaticResource FixDatePickerText}"
-            CalendarStyle="{StaticResource FixCalendar}"
-            SelectedDateChanged="ReturnDatePicker_SelectedDateChanged"/>
+                            <DatePicker x:Name="ReturnDatePicker"/>
+
+                            <TextBlock Text="DÖNÜŞ SAATİ" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBox x:Name="ReturnTimeBox"
+                                     Foreground="Brown"
+                                     Margin="0,6,0,0"
+                                     TextChanged="ReturnTimeBox_TextChanged"/>
 
                         </StackPanel>
 
@@ -316,40 +248,16 @@ Margin="0,6,0,0"
                         <StackPanel Grid.Column="8">
 
 
-                            <TextBlock Text="DÖNÜŞ SAATİ" Foreground="{StaticResource BrushMuted}"/>
-                            <TextBox x:Name="ReturnTimeBox"
-                                     Foreground="Brown"
-                                     Margin="0,6,0,0"
-                                     TextChanged="ReturnTimeBox_TextChanged"/>
 
                             <TextBlock Text="YAPILAN KM." Foreground="{StaticResource BrushMuted}"/>
                             <TextBox x:Name="DoneKmBox" Margin="0,5,0,0"/>
-                           
 
-                            <TextBlock Text="ÇIKIŞ TÜRÜ" Foreground="{StaticResource BrushMuted}"/>
+
+                            <TextBlock Text="ÇIKIŞ TÜRÜ" Foreground="{StaticResource BrushMuted}" Margin="0,6,0,0"/>
                             <ComboBox x:Name="DutyTypeCombo"
-                                      Margin="0,5,0,0"
-                                      IsEditable="True"
-                                      IsReadOnly="True"
-                                      Foreground="Black"
-                                      Background="#3D5869"
-                                      BorderBrush="Black">
-                                <ComboBox.ItemContainerStyle>
-                                    <Style TargetType="ComboBoxItem">
-                                        <Setter Property="Foreground" Value="Black"/>
-                                        <Setter Property="Background" Value="Black"/>
-                                        <Style.Triggers>
-                                            <Trigger Property="IsHighlighted" Value="True">
-                                                <Setter Property="Background" Value="Black"/>
-                                                <Setter Property="Foreground" Value="Black"/>
-                                            </Trigger>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter Property="Background" Value="Black"/>
-                                                <Setter Property="Foreground" Value="Black"/>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ComboBox.ItemContainerStyle>
+                                     Margin="0,6,0,0"
+                                     DisplayMemberPath="Display"
+                                     SelectedValuePath="Id">
                             </ComboBox>
                             <TextBlock Text="GÖREV DURUMU" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
                             <TextBox x:Name="StatusBox" Margin="0,6,0,10" IsReadOnly="True"/>

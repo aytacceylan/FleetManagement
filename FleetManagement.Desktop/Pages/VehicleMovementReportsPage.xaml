@@ -14,13 +14,13 @@
         </Style>
 
         <Style x:Key="FixDatePickerText" TargetType="{x:Type DatePicker}">
-            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Foreground" Value="#0066FF"/>
             <Setter Property="Background" Value="White"/>
         </Style>
 
         <Style x:Key="FixCalendar" TargetType="{x:Type Calendar}">
             <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="Background" Value="Black"/>
+            <Setter Property="Background" Value="#a8ccff"/>
         </Style>
 
         <Style x:Key="ForceComboBoxItemStyle" TargetType="ComboBoxItem" BasedOn="{x:Null}">
