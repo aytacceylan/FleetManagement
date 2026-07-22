@@ -160,55 +160,15 @@
                                    Foreground="{StaticResource BrushMuted}"
                                    Margin="0,8,0,0"/>
                         <ComboBox x:Name="PlateCombo"
-                                  Margin="0,6,0,10"
-                                  IsEditable="True"
-                                  IsReadOnly="True"
-                                  Foreground="Black"
-                                  Background="#3D5869"
-                                  BorderBrush="Black">
-                            <ComboBox.ItemContainerStyle>
-                                <Style TargetType="ComboBoxItem">
-                                    <Setter Property="Foreground" Value="Black"/>
-                                    <Setter Property="Background" Value="Black"/>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsHighlighted" Value="True">
-                                            <Setter Property="Background" Value="Black"/>
-                                            <Setter Property="Foreground" Value="Black"/>
-                                        </Trigger>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Background" Value="Black"/>
-                                            <Setter Property="Foreground" Value="Black"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ComboBox.ItemContainerStyle>
+                                  Margin="0,6,0,0"
+                                  >
                         </ComboBox>
 
                         <TextBlock Text="SÜRÜCÜ"
                                    Foreground="{StaticResource BrushMuted}"/>
                         <ComboBox x:Name="DriverCombo"
-                                  Margin="0,6,0,10"
-                                  IsEditable="True"
-                                  IsReadOnly="True"
-                                  Foreground="Black"
-                                  Background="#3D5869"
-                                  BorderBrush="Black">
-                            <ComboBox.ItemContainerStyle>
-                                <Style TargetType="ComboBoxItem">
-                                    <Setter Property="Foreground" Value="Black"/>
-                                    <Setter Property="Background" Value="Black"/>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsHighlighted" Value="True">
-                                            <Setter Property="Background" Value="Black"/>
-                                            <Setter Property="Foreground" Value="Black"/>
-                                        </Trigger>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Background" Value="Black"/>
-                                            <Setter Property="Foreground" Value="Black"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ComboBox.ItemContainerStyle>
+                                    Margin="0,6,0,0"
+                                    >
                         </ComboBox>
                     </StackPanel>
 
@@ -218,55 +178,14 @@
                                    Foreground="{StaticResource BrushMuted}"
                                    Margin="0,8,0,0"/>
                         <ComboBox x:Name="DutyTypeCombo"
-                                  Margin="0,6,0,10"
-                                  IsEditable="True"
-                                  IsReadOnly="True"
-                                  Foreground="Black"
-                                  Background="#3D5869"
-                                  BorderBrush="Black">
-                            <ComboBox.ItemContainerStyle>
-                                <Style TargetType="ComboBoxItem">
-                                    <Setter Property="Foreground" Value="Black"/>
-                                    <Setter Property="Background" Value="Black"/>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsHighlighted" Value="True">
-                                            <Setter Property="Background" Value="Black"/>
-                                            <Setter Property="Foreground" Value="Black"/>
-                                        </Trigger>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Background" Value="Black"/>
-                                            <Setter Property="Foreground" Value="Black"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ComboBox.ItemContainerStyle>
+                                  Margin="0,6,0,10">
+
                         </ComboBox>
 
                         <TextBlock Text="AİT OLDUĞU TAKIM"
                                    Foreground="{StaticResource BrushMuted}"/>
                         <ComboBox x:Name="UnitCombo"
-                                  Margin="0,6,0,10"
-                                  IsEditable="True"
-                                  IsReadOnly="True"
-                                  Foreground="Black"
-                                  Background="#3D5869"
-                                  BorderBrush="Black">
-                            <ComboBox.ItemContainerStyle>
-                                <Style TargetType="ComboBoxItem">
-                                    <Setter Property="Foreground" Value="Black"/>
-                                    <Setter Property="Background" Value="Black"/>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsHighlighted" Value="True">
-                                            <Setter Property="Background" Value="Black"/>
-                                            <Setter Property="Foreground" Value="Black"/>
-                                        </Trigger>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Background" Value="Black"/>
-                                            <Setter Property="Foreground" Value="Black"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ComboBox.ItemContainerStyle>
+                                  Margin="0,6,0,10">
                         </ComboBox>
                     </StackPanel>
 
@@ -276,56 +195,15 @@
                                    Foreground="{StaticResource BrushMuted}"
                                    Margin="0,8,0,0"/>
                         <ComboBox x:Name="RouteCombo"
-                                  Margin="0,6,0,10"
-                                  IsEditable="True"
-                                  IsReadOnly="True"
-                                  Foreground="Black"
-                                  Background="#3D5869"
-                                  BorderBrush="Black">
-                            <ComboBox.ItemContainerStyle>
-                                <Style TargetType="ComboBoxItem">
-                                    <Setter Property="Foreground" Value="Black"/>
-                                    <Setter Property="Background" Value="Black"/>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsHighlighted" Value="True">
-                                            <Setter Property="Background" Value="Black"/>
-                                            <Setter Property="Foreground" Value="Black"/>
-                                        </Trigger>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Background" Value="Black"/>
-                                            <Setter Property="Foreground" Value="Black"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ComboBox.ItemContainerStyle>
+                                  Margin="0,6,0,10">
                         </ComboBox>
 
                         <TextBlock Text="ARAÇ MARKA"
            Foreground="{StaticResource BrushMuted}"/>
 
                         <ComboBox x:Name="VehicleBrandCombo"
-                                  Margin="0,6,0,10"
-                                  IsEditable="True"
-                                  IsReadOnly="True"
-                                  Foreground="Black"
-                                  Background="#3D5869"
-                                  BorderBrush="Black">
-                            <ComboBox.ItemContainerStyle>
-                                <Style TargetType="ComboBoxItem">
-                                    <Setter Property="Foreground" Value="Black"/>
-                                    <Setter Property="Background" Value="Black"/>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsHighlighted" Value="True">
-                                            <Setter Property="Background" Value="Black"/>
-                                            <Setter Property="Foreground" Value="Black"/>
-                                        </Trigger>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Background" Value="Black"/>
-                                            <Setter Property="Foreground" Value="Black"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ComboBox.ItemContainerStyle>
+                                  Margin="0,6,0,10" >
+                            
                         </ComboBox>
                     </StackPanel>
                 </Grid>

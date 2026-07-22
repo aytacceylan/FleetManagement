@@ -158,7 +158,7 @@
                         <TextBlock Text="SÜRÜCÜ NO"
                                    Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="DriverNumberBox"
-                                 Margin="0,6,0,0"/>
+                                 Margin="0,4,0,0"/>
                     </StackPanel>
 
                     <!-- Ad Soyad -->
@@ -166,7 +166,7 @@
                         <TextBlock Text="RÜTBE AD SOYAD"
                                    Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="FullNameBox"
-                                 Margin="0,6,0,0"/>
+                                 Margin="0,4,0,0"/>
                     </StackPanel>
 
                     <!-- Sürücü DURUMU -->
@@ -174,35 +174,9 @@
                     <TextBlock Text="SÜRÜCÜ DURUMU"
                                 Foreground="Black"/>
                     <ComboBox x:Name="DriverSituationCombo"
-                                          Margin="0,6,0,0"
-                                         IsEditable="True"
-                                         IsReadOnly="True"
-                                         Foreground="Black"
-                                         Background="#3D5869"
-                                         BorderBrush="Black">
+                                          Margin="0,4,0,0">
 
-                            <ComboBox.ItemContainerStyle>
-                                <Style TargetType="ComboBoxItem">
-                                    <!-- Normal liste -->
-                                    <Setter Property="Foreground" Value="Black"/>
-                                    <Setter Property="Background" Value="black"/>
-
-                                    <Style.Triggers>
-                                        <!-- Hover -->
-                                        <Trigger Property="IsHighlighted" Value="True">
-                                            <Setter Property="Background" Value="Black"/>
-                                            <Setter Property="Foreground" Value="Black"/>
-                                        </Trigger>
-
-                                        <!-- Seçili -->
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Background" Value="Black"/>
-                                            <Setter Property="Foreground" Value="Black"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                            </Style>
-                        </ComboBox.ItemContainerStyle>
-                    </ComboBox>
+                        </ComboBox>
                     </StackPanel>
 
                     <!-- Telefon -->
@@ -210,7 +184,7 @@
                         <TextBlock Text="TELEFON"
                                    Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="PhoneBox"
-                                 Margin="0,6,0,0"/>
+                                 Margin="0,4,0,0"/>
                     </StackPanel>
 
                 </Grid>
