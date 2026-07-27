@@ -293,6 +293,7 @@
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
 
+                    
                     <Button Grid.Column="1" Width="120" Click="ExportDaily_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock Text="📊" FontSize="16" Margin="0,0,6,0" Foreground="#FFFF00"/>
@@ -314,6 +315,12 @@
                    Foreground="{StaticResource BrushMuted}"
                    FontSize="12"
                    Text="Toplam kayıt: 0"/>
+
+                        <CheckBox x:Name="ShowAllCheckBox"
+                              Content="Tüm kayıtları göster"
+                              Margin="10,5"
+                              Checked="ShowAllCheckBox_Changed"
+                              Unchecked="ShowAllCheckBox_Changed"/>
                     </StackPanel>
                 </Grid>
 
@@ -328,6 +335,26 @@
           MinRowHeight="35"
           HorizontalAlignment="Stretch"
           SelectionChanged="MovementsGrid_SelectionChanged">
+
+                    <DataGrid.RowStyle>
+
+                        <Style TargetType="DataGridRow">
+
+                            <Style.Triggers>
+
+                                <DataTrigger Binding="{Binding IsPreviousDayOpen}"
+                         Value="True">
+
+                                    <Setter Property="Background"
+                        Value="#FFF8C5"/>
+
+                                </DataTrigger>
+
+                            </Style.Triggers>
+
+                        </Style>
+
+                    </DataGrid.RowStyle>
 
                     <DataGrid.ColumnHeaderStyle>
                         <Style TargetType="DataGridColumnHeader">

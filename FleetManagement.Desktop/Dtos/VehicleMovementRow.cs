@@ -48,5 +48,7 @@ namespace FleetManagement.Desktop.Dtos
         public DateTime ExitDateTimeUtc { get; set; }
 
         public DateTime? ReturnDateTimeUtc { get; set; }
+
+        public bool IsPreviousDayOpen { get; set; }
     }
 }

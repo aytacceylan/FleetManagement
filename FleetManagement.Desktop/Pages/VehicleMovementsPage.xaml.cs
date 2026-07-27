@@ -158,17 +158,45 @@ namespace FleetManagement.Desktop.Pages
 		// =========================
 		private async Task LoadAsync()
 		{
-			var raw = await _db.VehicleMovements.AsNoTracking()
-				.Where(x => !x.IsDeleted)
-				.Include(x => x.Vehicle)
-				.Include(x => x.Driver)
-				.Include(x => x.SecondDriver)
-				.Include(x => x.VehicleCommander)
-				.OrderByDescending(x => x.Id)
+            // Bugünün başlangıcı (00:00)
+            var todayStart = DateTime.Today;
+
+            // Yarının başlangıcı (00:00)
+            var tomorrowStart = todayStart.AddDays(1);
+
+            // UTC'ye çevir
+            var todayStartUtc = DateTime.SpecifyKind(todayStart, DateTimeKind.Local).ToUniversalTime();
+            var tomorrowStartUtc = DateTime.SpecifyKind(tomorrowStart, DateTimeKind.Local).ToUniversalTime();
+
+            var query = _db.VehicleMovements
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted);
+
+            if (!ShowAllCheckBox.IsChecked.GetValueOrDefault())
+            {
+                query = query.Where(x =>
+
+                    // bugün başlayanlar
+                    (x.ExitDateTime >= todayStartUtc &&
+                     x.ExitDateTime < tomorrowStartUtc)
+
+                    ||
+
+                    // önceki günden kalan açık görevler
+                    (x.ExitDateTime < todayStartUtc &&
+                     x.ReturnDateTime == null));
+            }
+
+            var raw = await query
+                .Include(x => x.Vehicle)
+                .Include(x => x.Driver)
+                .Include(x => x.SecondDriver)
+                .Include(x => x.VehicleCommander)
+                .OrderByDescending(x => x.Id)
                 .Take(3000)
                 .ToListAsync();
 
-			var rows = raw.Select(m =>
+            var rows = raw.Select(m =>
 			{
 				var exitLocal = m.ExitDateTime.ToLocalTime();
 				var returnLocal = m.ReturnDateTime?.ToLocalTime();
@@ -183,6 +211,8 @@ namespace FleetManagement.Desktop.Pages
 				var dateForNo = m.MovementDate == default
 					? m.ExitDateTime.ToLocalTime().Date
 					: m.MovementDate.ToLocalTime().Date;
+
+
 
 				return new VehicleMovementRow
 				{
@@ -207,7 +237,10 @@ namespace FleetManagement.Desktop.Pages
 					DutyType = m.Description,
 					ExitDateTimeUtc = m.ExitDateTime,
 					ReturnDateTimeUtc = m.ReturnDateTime,
-				};
+                    IsPreviousDayOpen =
+					m.ReturnDateTime == null &&
+					m.ExitDateTime < todayStartUtc,
+                };
 			}).ToList();
 
 			_all = rows;
@@ -1132,6 +1165,12 @@ namespace FleetManagement.Desktop.Pages
                 AppLogger.Error("VehicleMovements.VehicleCombo_SelectionChanged",
                     "Plaka seçilince araç tipi doldurma hatası.", ex);
             }
+        }
+
+		//Tüm kayıtları göster
+        private async void ShowAllCheckBox_Changed(object sender, RoutedEventArgs e)
+        {
+            await LoadAsync();
         }
     }
 }
