@@ -49,11 +49,17 @@ namespace FleetManagement.Desktop.Pages
 
 		private sealed class AvailableVehicleRow
 		{
-			public string Plate { get; set; } = "";
-			public string? VehicleBrand { get; set; }
-			public string? VehicleUnit { get; set; }
-			public int? VehicleKm { get; set; }
-		}
+            public string Plate { get; set; } = "";
+            public string? VehicleBrand { get; set; }
+            public string? VehicleUnit { get; set; }
+            public int? VehicleKm { get; set; }
+
+            public string? PlannedTime { get; set; }
+
+            public string? PlannedStatus { get; set; }
+
+            public Brush? PlannedStatusBrush { get; set; }
+        }
 
 		private sealed class AvailableDriverRow
 		{

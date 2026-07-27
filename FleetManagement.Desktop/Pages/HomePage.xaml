@@ -275,7 +275,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="MÜSAİT ARAÇLAR"
+                    <TextBlock Text="MÜSAİT / PLANLI ARAÇLAR"
                        Foreground="Black"
                        FontSize="16"
                        FontWeight="SemiBold"/>
@@ -290,6 +290,27 @@
                             <DataGridTextColumn Header="ARAÇ MARKA" Binding="{Binding VehicleBrand}" Width="120"/>
                             <DataGridTextColumn Header="AİT OLDUĞU TAKIM" Binding="{Binding VehicleUnit}" Width="130"/>
                             <DataGridTextColumn Header="KM" Binding="{Binding VehicleKm}" Width="80"/>
+                            <DataGridTextColumn
+    Header="PLANLI SAAT"
+    Binding="{Binding PlannedTime}"
+    Width="90"/>
+                            <DataGridTemplateColumn Header="PLAN DURUMU" Width="120">
+
+                                <DataGridTemplateColumn.CellTemplate>
+
+                                    <DataTemplate>
+
+                                        <TextBlock
+                Text="{Binding PlannedStatus}"
+                Foreground="{Binding PlannedStatusBrush}"
+                FontWeight="Bold"/>
+
+                                    </DataTemplate>
+
+                                </DataGridTemplateColumn.CellTemplate>
+
+                            </DataGridTemplateColumn>
+
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
