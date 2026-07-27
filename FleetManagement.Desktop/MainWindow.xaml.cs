@@ -1,6 +1,8 @@
 ﻿using FleetManagement.Desktop.Services;
+using FleetManagement.Infrastructure.Data;
 using System.Windows;
 using System.Windows.Controls;
+using System;
 
 namespace FleetManagement.Desktop
 {
@@ -9,7 +11,8 @@ namespace FleetManagement.Desktop
         public MainWindow()
         {
             InitializeComponent();
-            NavigateTo("HomePage");
+
+            Loaded += MainWindow_Loaded;
         }
 
         private void Menu_Click(object sender, RoutedEventArgs e)
@@ -65,5 +68,23 @@ namespace FleetManagement.Desktop
             return new Pages.HomePage();
         }
 
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                using var db = new AppDbContext(App.DbOptions);
+
+                await DriverAutoDeleteService.RunAsync(db);
+            }
+            catch (Exception ex)
+            {
+                AppLogger.Error(
+                    "DriverAutoDelete",
+                    "Otomatik sürücü temizleme hatası.",
+                    ex);
+            }
+
+            NavigateTo("HomePage");
+        }
     }
 }
