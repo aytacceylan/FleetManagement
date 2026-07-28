@@ -674,7 +674,24 @@ namespace FleetManagement.Desktop.Pages
 			}
 		}
 
-		private async void MovementsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+
+        private async void StartMission_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private async void FinishMission_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private async void CancelMission_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+
+        private async void MovementsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (MovementsGrid.SelectedItem is not VehicleMovementRow row)
 				return;
@@ -915,21 +932,27 @@ namespace FleetManagement.Desktop.Pages
 			return true;
 		}
 
-		private static string CalcStatus(DateTime exitUtc, DateTime? returnUtc)
-		{
-			if (returnUtc is not null)
-				return "Tamamlandı";
+        private static string CalcStatus(DateTime exitUtc, DateTime? returnUtc)
+        {
+            if (returnUtc != null)
+                return "Tamamlandı";
 
-			var exitLocal = exitUtc.ToLocalTime();
-			var now = DateTime.Now;
+            var exit = exitUtc.ToLocalTime();
+            var now = DateTime.Now;
 
-			if (exitLocal > now)
-				return "Planlandı";
+            // Göreve başlamasına 15 dk'dan fazla varsa
+            if (exit > now.AddMinutes(15))
+                return "Planlandı";
 
-			return "Devam Ediyor";
-		}
+            // Son 15 dk içerisindeyse
+            if (exit > now)
+                return "Görev Yaklaşıyor";
 
-		private static string? BuildLoadOrPassengerInfo(int? passenger, int? load)
+            // Saati geçti ama henüz çıkış yapılmadı
+            return "Görev Gecikti";
+        }
+
+        private static string? BuildLoadOrPassengerInfo(int? passenger, int? load)
 		{
 			if (passenger is null && load is null) return null;
 			return $"Yolcu:{passenger?.ToString() ?? ""};Yük:{load?.ToString() ?? ""}";
@@ -970,19 +993,21 @@ namespace FleetManagement.Desktop.Pages
 			MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
 		}
 
-		private static Brush GetStatusBrush(string status)
-		{
-			return status switch
-			{
-				"Devam Ediyor" => Brushes.Red,
-				"Planlandı" => Brushes.DarkOrange,
-				"Tamamlandı" => Brushes.Green,
-				_ => Brushes.Black
-			};
-		}
+        private static Brush GetStatusBrush(string status)
+        {
+            return status switch
+            {
+                "Planlandı" => Brushes.DodgerBlue,
+                "Görev Yaklaşıyor" => Brushes.DarkOrange,
+                "Görev Gecikti" => Brushes.Red,
+                "Devam Ediyor" => Brushes.Red,
+                "Tamamlandı" => Brushes.Green,
+                _ => Brushes.Black
+            };
+        }
 
-		// I/O
-		private void ExportDaily_Click(object sender, RoutedEventArgs e)
+        // I/O
+        private void ExportDaily_Click(object sender, RoutedEventArgs e)
 		{
 			try
 			{
@@ -1172,5 +1197,8 @@ namespace FleetManagement.Desktop.Pages
         {
             await LoadAsync();
         }
+
+
+
     }
 }

@@ -284,26 +284,20 @@
                       x:Name="AvailableVehiclesGrid"
                       AutoGenerateColumns="False"
                       IsReadOnly="True"
-                      CanUserAddRows="False">
+                      CanUserAddRows="False" SelectionChanged="AvailableVehiclesGrid_SelectionChanged">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="PLAKA" Binding="{Binding Plate}" Width="100"/>
                             <DataGridTextColumn Header="ARAÇ MARKA" Binding="{Binding VehicleBrand}" Width="120"/>
                             <DataGridTextColumn Header="AİT OLDUĞU TAKIM" Binding="{Binding VehicleUnit}" Width="130"/>
                             <DataGridTextColumn Header="KM" Binding="{Binding VehicleKm}" Width="80"/>
-                            <DataGridTextColumn
-    Header="PLANLI SAAT"
-    Binding="{Binding PlannedTime}"
-    Width="90"/>
+                            <DataGridTextColumn Header="PLANLI SAAT" Binding="{Binding PlannedTime}" Width="90"/>
                             <DataGridTemplateColumn Header="PLAN DURUMU" Width="120">
 
                                 <DataGridTemplateColumn.CellTemplate>
 
                                     <DataTemplate>
 
-                                        <TextBlock
-                Text="{Binding PlannedStatus}"
-                Foreground="{Binding PlannedStatusBrush}"
-                FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding PlannedStatus}" Foreground="{Binding PlannedStatusBrush}" FontWeight="Bold"/>
 
                                     </DataTemplate>
 

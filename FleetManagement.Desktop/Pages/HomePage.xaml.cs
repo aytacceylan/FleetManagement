@@ -278,17 +278,54 @@ namespace FleetManagement.Desktop.Pages
 
         private async Task LoadAvailableVehiclesAsync()
         {
-            var rows = await _db.Vehicles.AsNoTracking()
-                .Where(x => !x.IsDeleted && (x.VehicleSituation ?? "Müsait") == "Müsait")
-                .OrderBy(x => x.Plate)
-                .Select(x => new AvailableVehicleRow
-                {
-                    Plate = x.Plate,
-                    VehicleBrand = x.VehicleBrand,
-                    VehicleUnit = x.VehicleUnit,
-                    VehicleKm = x.VehicleKm
-                })
+            // Açık görevler
+            var openMovements = await _db.VehicleMovements
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted)
+                .Where(x => x.ReturnDateTime == null)
                 .ToListAsync();
+
+            // Müsait araçlar
+            var vehicles = await _db.Vehicles
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted)
+                .Where(x => (x.VehicleSituation ?? "Müsait") == "Müsait")
+                .OrderBy(x => x.Plate)
+                .ToListAsync();
+
+            var rows = vehicles.Select(vehicle =>
+            {
+                var movement = openMovements
+                    .FirstOrDefault(x => x.VehicleId == vehicle.Id);
+
+                string? plannedTime = "";
+                string? plannedStatus = "";
+                Brush? plannedBrush = Brushes.Black;
+
+                if (movement != null)
+                {
+                    var exit = movement.ExitDateTime.ToLocalTime();
+
+                    plannedTime = exit.ToString("HH:mm");
+
+                    var status = VehicleService.GetPlanningStatus(vehicle, movement);
+
+                    plannedStatus = status;
+                    plannedBrush = VehicleService.GetPlanningBrush(status);
+                }
+
+                return new AvailableVehicleRow
+                {
+                    Plate = vehicle.Plate,
+                    VehicleBrand = vehicle.VehicleBrand,
+                    VehicleUnit = vehicle.VehicleUnit,
+                    VehicleKm = vehicle.VehicleKm,
+
+                    PlannedTime = plannedTime,
+                    PlannedStatus = plannedStatus,
+                    PlannedStatusBrush = plannedBrush
+                };
+            }).ToList();
 
             AvailableVehiclesGrid.ItemsSource = rows;
         }
@@ -483,5 +520,9 @@ namespace FleetManagement.Desktop.Pages
             }
         }
 
+        private void AvailableVehiclesGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }
