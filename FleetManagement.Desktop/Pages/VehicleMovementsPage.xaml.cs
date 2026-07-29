@@ -711,18 +711,20 @@ namespace FleetManagement.Desktop.Pages
 
             var now = DateTime.UtcNow;
 
+            // Görev bilgisi
+            movement.Status = "Görevde";
             movement.ActualExitDateTime = now;
             movement.ExitDateTime = now;
 
-            movement.Status = "Görevde";
-            movement.ActualExitDateTime = DateTime.UtcNow;
-
+            // Araç
             if (movement.Vehicle != null)
                 movement.Vehicle.VehicleSituation = "Görevde";
 
+            // 1. Sürücü
             if (movement.Driver != null)
                 movement.Driver.DriverSituation = "Sürüş Görevi";
 
+            // 2. Sürücü
             if (movement.SecondDriver != null)
                 movement.SecondDriver.DriverSituation = "Sürüş Görevi";
 
@@ -732,23 +734,10 @@ namespace FleetManagement.Desktop.Pages
                 $"Görev başlatıldı. Hareket No:{movement.Id}");
 
             Notify("Görev başlatıldı.");
-            Notify($"DB Status = {movement.Status}");
 
             await LoadAsync();
 
-            _currentMovement = movement;
-
-            StatusBox.Text = movement.Status;
-
-            ExitDatePicker.SelectedDate =
-                movement.ExitDateTime.ToLocalTime().Date;
-
-            ExitTimeBox.Text =
-                movement.ExitDateTime.ToLocalTime().ToString("HH:mm");
-
-            ClearForm();
-
-            PrepareNewFormState();
+            await ReloadMovement(movement.Id);
         }
 
         private async void FinishMission_Click(object sender, RoutedEventArgs e)
@@ -1422,6 +1411,11 @@ namespace FleetManagement.Desktop.Pages
         private async void ShowAllCheckBox_Changed(object sender, RoutedEventArgs e)
         {
             await LoadAsync();
+        }
+
+        private async Task ReloadMovement(int movementId)
+        {
+            // Şimdilik boş bırak.
         }
 
 
