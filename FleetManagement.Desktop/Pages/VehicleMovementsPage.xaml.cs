@@ -764,6 +764,31 @@ namespace FleetManagement.Desktop.Pages
                 return;
             }
 
+            if (ReturnDatePicker.SelectedDate == null ||
+    string.IsNullOrWhiteSpace(ReturnTimeBox.Text))
+            {
+                Notify("Lütfen dönüş tarihi ve saatini giriniz.", "Uyarı");
+                return;
+            }
+
+            if (!TimeSpan.TryParse(ReturnTimeBox.Text, out var returnTime))
+            {
+                Notify("Dönüş saati hatalı.", "Uyarı");
+                return;
+            }
+
+            var returnLocal =
+                ReturnDatePicker.SelectedDate.Value.Date +
+                returnTime;
+
+            movement.ReturnDateTime =
+    returnLocal.ToUniversalTime();
+
+            movement.ActualReturnDateTime =
+    DateTime.UtcNow;
+
+
+
             movement.Status = "Tamamlandı";
             movement.ActualReturnDateTime = DateTime.UtcNow;
 
