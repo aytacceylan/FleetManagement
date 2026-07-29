@@ -24,7 +24,11 @@ namespace FleetManagement.Desktop.Pages
 		private readonly AppDbContext _db = new(App.DbOptions);
 
 		private int? _selectedId;
-		private List<VehicleMovementRow> _all = new();
+
+        // Yeni ekle
+        private VehicleMovement? _currentMovement;
+
+        private List<VehicleMovementRow> _all = new();
 
 		public VehicleMovementsPage()
 		{
@@ -202,9 +206,9 @@ namespace FleetManagement.Desktop.Pages
 				var returnLocal = m.ReturnDateTime?.ToLocalTime();
 				var parsed = ParseLoadOrPassengerInfo(m.LoadOrPassengerInfo);
 
-				var status = CalcStatus(m.ExitDateTime, m.ReturnDateTime);
+                var status = CalcStatus(m);
 
-				int? doneKm = null;
+                int? doneKm = null;
 				if (m.StartKm.HasValue && m.EndKm.HasValue && m.EndKm.Value >= m.StartKm.Value)
 					doneKm = m.EndKm.Value - m.StartKm.Value;
 
@@ -423,7 +427,10 @@ namespace FleetManagement.Desktop.Pages
 
 					entity.MovementDate = startUtc;
 					entity.DailyNo = nextDailyNo;
-				}
+
+                    // EKLE
+                    entity.Status = "Planlandı";
+                }
 
 				entity.VehicleId = vehicleId;
 				entity.DriverId = didValue;
@@ -493,108 +500,112 @@ namespace FleetManagement.Desktop.Pages
 
 				var isNowOpen = entity.ReturnDateTime is null;
 
-				// 1) Yeni kayıt açıldıysa
-				if (_selectedId is null && isNowOpen)
-				{
-					if (selectedVehicle is not null)
-						selectedVehicle.VehicleSituation = "Görevde";
+                // 1) Yeni kayıt açıldıysa
+                if (_selectedId is null && isNowOpen)
+                {
+                    // Workflow v2
+                    // Araç ve sürücü durumları artık Save sırasında değil,
+                    // StartMission_Click içinde yönetilecek.
 
-					if (selectedDriver is not null)
-						selectedDriver.DriverSituation = "Sürüş Görevi";
+                    // if (selectedVehicle is not null)
+                    //     selectedVehicle.VehicleSituation = "Görevde";
 
-					if (selectedSecondDriver is not null)
-						selectedSecondDriver.DriverSituation = "Sürüş Görevi";
-				}
+                    // if (selectedDriver is not null)
+                    //     selectedDriver.DriverSituation = "Sürüş Görevi";
 
-				// 2) Mevcut açık kayıt düzenleniyorsa ve sürücü/araç değiştiyse
-				if (_selectedId is not null && wasOpen && isNowOpen)
-				{
-					// Eski araç değiştiyse eskiyi müsait yap
-					if (oldVehicleId != entity.VehicleId && oldVehicleId is not null)
-					{
-						var oldVehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == oldVehicleId.Value && !v.IsDeleted);
-						if (oldVehicle is not null && NormalizeVehicleSituation(oldVehicle.VehicleSituation) == "Görevde")
-							oldVehicle.VehicleSituation = "Müsait";
-					}
+                    // if (selectedSecondDriver is not null)
+                    //     selectedSecondDriver.DriverSituation = "Sürüş Görevi";
+                }
 
-					// Yeni araç varsa görevde yap
-					if (entity.VehicleId is not null)
-					{
-						var newVehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == entity.VehicleId.Value && !v.IsDeleted);
-						if (newVehicle is not null)
-							newVehicle.VehicleSituation = "Görevde";
-					}
+    //            // 2) Mevcut açık kayıt düzenleniyorsa ve sürücü/araç değiştiyse
+    //            if (_selectedId is not null && wasOpen && isNowOpen)
+				//{
+				//	// Eski araç değiştiyse eskiyi müsait yap
+				//	if (oldVehicleId != entity.VehicleId && oldVehicleId is not null)
+				//	{
+				//		var oldVehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == oldVehicleId.Value && !v.IsDeleted);
+				//		if (oldVehicle is not null && NormalizeVehicleSituation(oldVehicle.VehicleSituation) == "Görevde")
+				//			oldVehicle.VehicleSituation = "Müsait";
+				//	}
 
-					// Eski 1. sürücü değiştiyse eskiyi müsait yap
-					if (oldDriverId != entity.DriverId && oldDriverId is not null)
-					{
-						var oldDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == oldDriverId.Value && !d.IsDeleted);
-						if (oldDriver is not null && NormalizeDriverSituation(oldDriver.DriverSituation) == "Sürüş Görevi")
-							oldDriver.DriverSituation = "Müsait";
-					}
+				//	// Yeni araç varsa görevde yap
+				//	if (entity.VehicleId is not null)
+				//	{
+				//		var newVehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == entity.VehicleId.Value && !v.IsDeleted);
+				//		if (newVehicle is not null)
+				//			newVehicle.VehicleSituation = "Görevde";
+				//	}
 
-					// Yeni 1. sürücüyü görevde yap
-					if (entity.DriverId is not null)
-					{
-						var newDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == entity.DriverId.Value && !d.IsDeleted);
-						if (newDriver is not null)
-							newDriver.DriverSituation = "Sürüş Görevi";
-					}
+				//	// Eski 1. sürücü değiştiyse eskiyi müsait yap
+				//	if (oldDriverId != entity.DriverId && oldDriverId is not null)
+				//	{
+				//		var oldDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == oldDriverId.Value && !d.IsDeleted);
+				//		if (oldDriver is not null && NormalizeDriverSituation(oldDriver.DriverSituation) == "Sürüş Görevi")
+				//			oldDriver.DriverSituation = "Müsait";
+				//	}
 
-					// Eski 2. sürücü değiştiyse eskiyi müsait yap
-					if (oldSecondDriverId != entity.SecondDriverId && oldSecondDriverId is not null)
-					{
-						var oldSecondDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == oldSecondDriverId.Value && !d.IsDeleted);
-						if (oldSecondDriver is not null && NormalizeDriverSituation(oldSecondDriver.DriverSituation) == "Sürüş Görevi")
-							oldSecondDriver.DriverSituation = "Müsait";
-					}
+				//	// Yeni 1. sürücüyü görevde yap
+				//	if (entity.DriverId is not null)
+				//	{
+				//		var newDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == entity.DriverId.Value && !d.IsDeleted);
+				//		if (newDriver is not null)
+				//			newDriver.DriverSituation = "Sürüş Görevi";
+				//	}
 
-					// Yeni 2. sürücüyü görevde yap
-					if (entity.SecondDriverId is not null)
-					{
-						var newSecondDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == entity.SecondDriverId.Value && !d.IsDeleted);
-						if (newSecondDriver is not null)
-							newSecondDriver.DriverSituation = "Sürüş Görevi";
-					}
-				}
+				//	// Eski 2. sürücü değiştiyse eskiyi müsait yap
+				//	if (oldSecondDriverId != entity.SecondDriverId && oldSecondDriverId is not null)
+				//	{
+				//		var oldSecondDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == oldSecondDriverId.Value && !d.IsDeleted);
+				//		if (oldSecondDriver is not null && NormalizeDriverSituation(oldSecondDriver.DriverSituation) == "Sürüş Görevi")
+				//			oldSecondDriver.DriverSituation = "Müsait";
+				//	}
+
+				//	// Yeni 2. sürücüyü görevde yap
+				//	if (entity.SecondDriverId is not null)
+				//	{
+				//		var newSecondDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == entity.SecondDriverId.Value && !d.IsDeleted);
+				//		if (newSecondDriver is not null)
+				//			newSecondDriver.DriverSituation = "Sürüş Görevi";
+				//	}
+				//}
 
 				// 3) Açık kayıt kapatılıyorsa
-				if (wasOpen && !isNowOpen)
-				{
-					if (entity.VehicleId is not null)
-					{
-						var vehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == entity.VehicleId.Value && !v.IsDeleted);
-						if (vehicle is not null)
-						{
-							if (NormalizeVehicleSituation(vehicle.VehicleSituation) == "Görevde")
-								vehicle.VehicleSituation = "Müsait";
-						}
-					}
+				//if (wasOpen && !isNowOpen)
+				//{
+				//	if (entity.VehicleId is not null)
+				//	{
+				//		var vehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == entity.VehicleId.Value && !v.IsDeleted);
+				//		if (vehicle is not null)
+				//		{
+				//			if (NormalizeVehicleSituation(vehicle.VehicleSituation) == "Görevde")
+				//				vehicle.VehicleSituation = "Müsait";
+				//		}
+				//	}
 
-					if (entity.DriverId is not null)
-					{
-						var driver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == entity.DriverId.Value && !d.IsDeleted);
-						if (driver is not null && NormalizeDriverSituation(driver.DriverSituation) == "Sürüş Görevi")
-							driver.DriverSituation = "Müsait";
-					}
+				//	if (entity.DriverId is not null)
+				//	{
+				//		var driver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == entity.DriverId.Value && !d.IsDeleted);
+				//		if (driver is not null && NormalizeDriverSituation(driver.DriverSituation) == "Sürüş Görevi")
+				//			driver.DriverSituation = "Müsait";
+				//	}
 
-					if (entity.SecondDriverId is not null)
-					{
-						var secondDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == entity.SecondDriverId.Value && !d.IsDeleted);
-						if (secondDriver is not null && NormalizeDriverSituation(secondDriver.DriverSituation) == "Sürüş Görevi")
-							secondDriver.DriverSituation = "Müsait";
-					}
-				}
+				//	if (entity.SecondDriverId is not null)
+				//	{
+				//		var secondDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == entity.SecondDriverId.Value && !d.IsDeleted);
+				//		if (secondDriver is not null && NormalizeDriverSituation(secondDriver.DriverSituation) == "Sürüş Görevi")
+				//			secondDriver.DriverSituation = "Müsait";
+				//	}
+				//}
 
 				// 4) Kayıt kapalıysa araç km her zaman son EndKm'ye eşitlensin
-				if (entity.VehicleId is not null && entity.ReturnDateTime is not null)
-				{
-					var vehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == entity.VehicleId.Value && !v.IsDeleted);
-					if (vehicle is not null && entity.EndKm.HasValue)
-					{
-						vehicle.VehicleKm = entity.EndKm.Value;
-					}
-				}
+				//if (entity.VehicleId is not null && entity.ReturnDateTime is not null)
+				//{
+				//	var vehicle = await _db.Vehicles.FirstOrDefaultAsync(v => v.Id == entity.VehicleId.Value && !v.IsDeleted);
+				//	if (vehicle is not null && entity.EndKm.HasValue)
+				//	{
+				//		vehicle.VehicleKm = entity.EndKm.Value;
+				//	}
+				//}
 
                 var isNew = _selectedId is null;
 
@@ -677,64 +688,258 @@ namespace FleetManagement.Desktop.Pages
 
         private async void StartMission_Click(object sender, RoutedEventArgs e)
         {
+            if (_selectedId == null)
+            {
+                Notify("Lütfen bir görev seçiniz.", "Uyarı");
+                return;
+            }
 
+            var movement = await _db.VehicleMovements
+                .Include(x => x.Vehicle)
+                .Include(x => x.Driver)
+                .Include(x => x.SecondDriver)
+                .FirstOrDefaultAsync(x => x.Id == _selectedId);
+
+            if (movement == null)
+                return;
+
+            if (movement.Status != "Planlandı")
+            {
+                Notify("Sadece planlanan görev başlatılabilir.", "Uyarı");
+                return;
+            }
+
+            var now = DateTime.UtcNow;
+
+            movement.ActualExitDateTime = now;
+            movement.ExitDateTime = now;
+
+            movement.Status = "Görevde";
+            movement.ActualExitDateTime = DateTime.UtcNow;
+
+            if (movement.Vehicle != null)
+                movement.Vehicle.VehicleSituation = "Görevde";
+
+            if (movement.Driver != null)
+                movement.Driver.DriverSituation = "Sürüş Görevi";
+
+            if (movement.SecondDriver != null)
+                movement.SecondDriver.DriverSituation = "Sürüş Görevi";
+
+            await _db.SaveChangesAsync();
+
+            AppLogger.Info("Mission.Start",
+                $"Görev başlatıldı. Hareket No:{movement.Id}");
+
+            Notify("Görev başlatıldı.");
+            Notify($"DB Status = {movement.Status}");
+
+            await LoadAsync();
+
+            _currentMovement = movement;
+
+            StatusBox.Text = movement.Status;
+
+            ExitDatePicker.SelectedDate =
+                movement.ExitDateTime.ToLocalTime().Date;
+
+            ExitTimeBox.Text =
+                movement.ExitDateTime.ToLocalTime().ToString("HH:mm");
+
+            ClearForm();
+
+            PrepareNewFormState();
         }
 
         private async void FinishMission_Click(object sender, RoutedEventArgs e)
         {
+            if (_selectedId == null)
+            {
+                Notify("Lütfen bir görev seçiniz.", "Uyarı");
+                return;
+            }
 
+            var movement = await _db.VehicleMovements
+                .Include(x => x.Vehicle)
+                .Include(x => x.Driver)
+                .Include(x => x.SecondDriver)
+                .FirstOrDefaultAsync(x => x.Id == _selectedId);
+
+            if (movement == null)
+                return;
+
+            if (movement.Status != "Görevde")
+            {
+                Notify("Sadece görevde olan kayıtlar bitirilebilir.", "Uyarı");
+                return;
+            }
+
+            movement.Status = "Tamamlandı";
+            movement.ActualReturnDateTime = DateTime.UtcNow;
+
+            // Eski uyumluluk için
+            movement.ReturnDateTime = DateTime.UtcNow;
+
+            if (movement.Vehicle != null)
+            {
+                movement.Vehicle.VehicleSituation = "Müsait";
+
+                if (movement.EndKm.HasValue)
+                    movement.Vehicle.VehicleKm = movement.EndKm.Value;
+            }
+
+            if (movement.Driver != null)
+                movement.Driver.DriverSituation = "Müsait";
+
+            if (movement.SecondDriver != null)
+                movement.SecondDriver.DriverSituation = "Müsait";
+
+            await _db.SaveChangesAsync();
+
+            AppLogger.Info("Mission.Finish",
+                $"Görev tamamlandı. Hareket No:{movement.Id}");
+
+            Notify("Görev tamamlandı.");
+
+            await LoadAsync();
+
+            ClearForm();
+
+            PrepareNewFormState();
         }
 
         private async void CancelMission_Click(object sender, RoutedEventArgs e)
         {
+            if (_selectedId == null)
+            {
+                Notify("Lütfen bir görev seçiniz.", "Uyarı");
+                return;
+            }
 
+            var movement = await _db.VehicleMovements
+                .Include(x => x.Vehicle)
+                .Include(x => x.Driver)
+                .Include(x => x.SecondDriver)
+                .FirstOrDefaultAsync(x => x.Id == _selectedId);
+
+            if (movement == null)
+                return;
+
+            if (movement.Status == "Tamamlandı")
+            {
+                Notify("Tamamlanan görev iptal edilemez.", "Uyarı");
+                return;
+            }
+
+            movement.Status = "İptal";
+            movement.CancelDateTime = DateTime.UtcNow;
+
+            if (movement.Vehicle != null)
+                movement.Vehicle.VehicleSituation = "Müsait";
+
+            if (movement.Driver != null)
+                movement.Driver.DriverSituation = "Müsait";
+
+            if (movement.SecondDriver != null)
+                movement.SecondDriver.DriverSituation = "Müsait";
+
+            await _db.SaveChangesAsync();
+
+            AppLogger.Info("Mission.Cancel",
+                $"Görev iptal edildi. Hareket No:{movement.Id}");
+
+            Notify("Görev iptal edildi.");
+
+            await LoadAsync();
+
+            ClearForm();
+
+            PrepareNewFormState();
         }
 
 
         private async void MovementsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (MovementsGrid.SelectedItem is not VehicleMovementRow row)
-				return;
+        {
+            if (MovementsGrid.SelectedItem is not VehicleMovementRow row)
+                return;
 
-			var m = await _db.VehicleMovements.AsNoTracking()
-				.Include(x => x.Vehicle)
-				.FirstOrDefaultAsync(x => x.Id == row.Id && !x.IsDeleted);
+            _currentMovement = await _db.VehicleMovements
+                .Include(x => x.Vehicle)
+                .Include(x => x.Driver)
+                .Include(x => x.SecondDriver)
+                .Include(x => x.VehicleCommander)
+                .FirstOrDefaultAsync(x => x.Id == row.Id && !x.IsDeleted);
 
-			if (m is null) return;
+            if (_currentMovement == null)
+                return;
 
-			_selectedId = m.Id;
+            _selectedId = _currentMovement.Id;
 
-			VehicleCombo.SelectedValue = m.VehicleId;
-			DriverCombo.SelectedValue = m.DriverId;
-			SecondDriverCombo.SelectedValue = m.SecondDriverId;
-			CommanderCombo.SelectedValue = m.VehicleCommanderId;
+            FillForm(_currentMovement);
+        }
 
-			ExitDatePicker.SelectedDate = m.ExitDateTime.ToLocalTime().Date;
-			ExitTimeBox.Text = m.ExitDateTime.ToLocalTime().ToString("HH:mm");
+        private void FillForm(VehicleMovement m)
+        {
+            VehicleCombo.SelectedValue = m.VehicleId;
+            DriverCombo.SelectedValue = m.DriverId;
+            SecondDriverCombo.SelectedValue = m.SecondDriverId;
+            CommanderCombo.SelectedValue = m.VehicleCommanderId;
 
-			ReturnDatePicker.SelectedDate = m.ReturnDateTime?.ToLocalTime().Date;
-			ReturnTimeBox.Text = m.ReturnDateTime is null ? "" : m.ReturnDateTime.Value.ToLocalTime().ToString("HH:mm");
-			UpdateReturnHighlight();
+            ExitDatePicker.SelectedDate = m.ExitDateTime.ToLocalTime().Date;
+            ExitTimeBox.Text = m.ExitDateTime.ToLocalTime().ToString("HH:mm");
 
-			RouteCombo.Text = m.Route ?? "";
-			DepartureCombo.Text = m.Purpose ?? "";
-			DutyTypeCombo.Text = m.Description ?? "";
+            ReturnDatePicker.SelectedDate = m.ReturnDateTime?.ToLocalTime().Date;
+            ReturnTimeBox.Text = m.ReturnDateTime is null
+                ? ""
+                : m.ReturnDateTime.Value.ToLocalTime().ToString("HH:mm");
 
-			var parsed = ParseLoadOrPassengerInfo(m.LoadOrPassengerInfo);
-			PassengerCountBox.Text = parsed.passenger?.ToString() ?? "";
-			LoadAmountBox.Text = parsed.load?.ToString() ?? "";
+            UpdateReturnHighlight();
 
-			if (m.StartKm.HasValue && m.EndKm.HasValue && m.EndKm.Value >= m.StartKm.Value)
-				DoneKmBox.Text = (m.EndKm.Value - m.StartKm.Value).ToString();
-			else
-				DoneKmBox.Text = "";
+            RouteCombo.Text = m.Route ?? "";
+            DepartureCombo.Text = m.Purpose ?? "";
+            DutyTypeCombo.Text = m.Description ?? "";
 
-			VehicleTypeCombo.Text = m.Vehicle?.VehicleType ?? "";
-			StatusBox.Text = CalcStatus(m.ExitDateTime, m.ReturnDateTime);
-			DailyNoBox.Text = row.DailyNo.ToString("000");
-		}
+            var parsed = ParseLoadOrPassengerInfo(m.LoadOrPassengerInfo);
 
-		private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+            PassengerCountBox.Text = parsed.passenger?.ToString() ?? "";
+            LoadAmountBox.Text = parsed.load?.ToString() ?? "";
+
+            if (m.StartKm.HasValue &&
+                m.EndKm.HasValue &&
+                m.EndKm >= m.StartKm)
+            {
+                DoneKmBox.Text = (m.EndKm.Value - m.StartKm.Value).ToString();
+            }
+            else
+            {
+                DoneKmBox.Text = "";
+            }
+
+            VehicleTypeCombo.Text = m.Vehicle?.VehicleType ?? "";
+            StatusBox.Text = CalcStatus(m);
+
+            DailyNoBox.Text = m.DailyNo.ToString("000");
+        }
+        private async Task RefreshCurrentAsync()
+        {
+            if (_selectedId == null)
+                return;
+
+            _currentMovement = await _db.VehicleMovements
+                .Include(x => x.Vehicle)
+                .Include(x => x.Driver)
+                .Include(x => x.SecondDriver)
+                .Include(x => x.VehicleCommander)
+                .FirstOrDefaultAsync(x => x.Id == _selectedId && !x.IsDeleted);
+
+            if (_currentMovement == null)
+                return;
+
+            FillForm(_currentMovement);
+
+            await LoadAsync();
+        }
+        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			var q = (SearchBox.Text ?? "").Trim().ToLowerInvariant();
 
@@ -932,23 +1137,35 @@ namespace FleetManagement.Desktop.Pages
 			return true;
 		}
 
-        private static string CalcStatus(DateTime exitUtc, DateTime? returnUtc)
+        private static string CalcStatus(VehicleMovement movement)
         {
-            if (returnUtc != null)
-                return "Tamamlandı";
+            // Artık görev bitmiş veya iptal edilmişse
+            // zamanı hesaplamaya gerek yok.
+            switch (movement.Status)
+            {
+                case "Tamamlandı":
+                    return "Tamamlandı";
 
-            var exit = exitUtc.ToLocalTime();
+                case "İptal":
+                    return "İptal";
+
+                case "Görevde":
+                    return "Görevde";
+            }
+
+            // Buraya geldiysek Status = Planlandı
+            var exit = movement.ExitDateTime.ToLocalTime();
             var now = DateTime.Now;
 
-            // Göreve başlamasına 15 dk'dan fazla varsa
+            // 15 dakikadan fazla varsa
             if (exit > now.AddMinutes(15))
                 return "Planlandı";
 
-            // Son 15 dk içerisindeyse
+            // Son 15 dakika
             if (exit > now)
                 return "Görev Yaklaşıyor";
 
-            // Saati geçti ama henüz çıkış yapılmadı
+            // Saati geçti
             return "Görev Gecikti";
         }
 
@@ -998,10 +1215,17 @@ namespace FleetManagement.Desktop.Pages
             return status switch
             {
                 "Planlandı" => Brushes.DodgerBlue,
+
                 "Görev Yaklaşıyor" => Brushes.DarkOrange,
+
                 "Görev Gecikti" => Brushes.Red,
-                "Devam Ediyor" => Brushes.Red,
+
+                "Görevde" => Brushes.MediumVioletRed,
+
                 "Tamamlandı" => Brushes.Green,
+
+                "İptal" => Brushes.Gray,
+
                 _ => Brushes.Black
             };
         }
@@ -1168,6 +1392,8 @@ namespace FleetManagement.Desktop.Pages
 			ExitTimeBox.Text = now.ToString("HH:mm");
 		}
 
+
+
         private async void VehicleCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
@@ -1201,4 +1427,8 @@ namespace FleetManagement.Desktop.Pages
 
 
     }
+
+
+
+
 }

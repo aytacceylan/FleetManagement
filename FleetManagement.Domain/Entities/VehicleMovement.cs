@@ -26,11 +26,29 @@ namespace FleetManagement.Domain.Entities
         //public string? VehicleType { get; set; }
 
         // 🕒 TARİH / SAAT
-        public DateTime ExitDateTime { get; set; }          // Kaydederken = DateTime.Now
-		public DateTime? ReturnDateTime { get; set; }       // Elle girilecek (opsiyonel)
 
-		// 📍 GÖREV BİLGİLERİ (opsiyonel yapmak için ?)
-		public string? Route { get; set; }
+        // Planlanan
+        public DateTime PlannedExitDateTime { get; set; }
+
+        // Eski alanlar (korunacak)
+        public DateTime ExitDateTime { get; set; }
+
+        public DateTime? ReturnDateTime { get; set; }
+
+        // Yeni alanlar
+        public DateTime? ActualExitDateTime { get; set; }
+
+        public DateTime? ActualReturnDateTime { get; set; }
+
+        public string Status { get; set; } = "Planlandı";
+
+        public DateTime? CancelDateTime { get; set; }
+
+        public string? CancelReason { get; set; }
+
+
+        // 📍 GÖREV BİLGİLERİ (opsiyonel yapmak için ?)
+        public string? Route { get; set; }
 		public string? Purpose { get; set; }
 		public string? Description { get; set; }
 
