@@ -263,7 +263,8 @@ namespace FleetManagement.Desktop.Pages
 		private async void Refresh_Click(object sender, RoutedEventArgs e)
 		{
 			await LoadLookupsAsync();
-			await LoadAsync();
+            await RepairMissionStatesAsync();
+            await LoadAsync();
 			PrepareNewFormState();
 			Notify("Yenilendi");
 		}
@@ -1419,10 +1420,60 @@ namespace FleetManagement.Desktop.Pages
         }
 
 
+        /// <summary>
+        /// Geliştirici aracı.
+        /// Araç ve sürücü durumlarını mevcut görev kayıtlarından yeniden oluşturur.
+        /// Normal çalışma sırasında çağrılmaz.
+        /// </summary>
+        private async Task RepairMissionStatesAsync()
+        {
+
+            var vehicles = await _db.Vehicles
+						.Where(x => !x.IsDeleted)
+						.ToListAsync();
+
+            foreach (var vehicle in vehicles)
+            {
+                vehicle.VehicleSituation = "Müsait";
+            }
+
+            var drivers = await _db.Drivers
+						.Where(x => !x.IsDeleted)
+						.ToListAsync();
+
+            foreach (var driver in drivers)
+            {
+                driver.DriverSituation = "Müsait";
+            }
+
+            var activeMovements = await _db.VehicleMovements
+						.Include(x => x.Vehicle)
+						.Include(x => x.Driver)
+						.Include(x => x.SecondDriver)
+						.Where(x => !x.IsDeleted)
+						.Where(x => x.Status == "Görevde")
+						.ToListAsync();
+            foreach (var movement in activeMovements)
+            {
+                if (movement.Vehicle != null)
+                    movement.Vehicle.VehicleSituation = "Görevde";
+
+                if (movement.Driver != null)
+                    movement.Driver.DriverSituation = "Sürüş Görevi";
+
+                if (movement.SecondDriver != null)
+                    movement.SecondDriver.DriverSituation = "Sürüş Görevi";
+            }
+
+            await _db.SaveChangesAsync();
+
+            Notify("Araç ve sürücü durumları yeniden oluşturuldu.");
+
+            Notify("Repair tamamlandı.");
+        }
+
 
     }
-
-
 
 
 }
