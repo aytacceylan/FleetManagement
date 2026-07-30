@@ -846,6 +846,12 @@ namespace FleetManagement.Desktop.Pages
                 return;
             }
 
+            if (movement.Status == "İptal")
+            {
+                Notify("Görev zaten iptal edilmiş.", "Uyarı");
+                return;
+            }
+
             movement.Status = "İptal";
             movement.CancelDateTime = DateTime.UtcNow;
 
@@ -858,6 +864,16 @@ namespace FleetManagement.Desktop.Pages
             if (movement.SecondDriver != null)
                 movement.SecondDriver.DriverSituation = "Müsait";
 
+
+
+            if (movement.ActualExitDateTime != null)
+            {
+                movement.ActualReturnDateTime = DateTime.UtcNow;
+            }
+
+            System.Diagnostics.Debug.WriteLine(
+    $"Araç durumu: {movement.Vehicle?.VehicleSituation}");
+
             await _db.SaveChangesAsync();
 
             AppLogger.Info("Mission.Cancel",
@@ -866,9 +882,12 @@ namespace FleetManagement.Desktop.Pages
             Notify("Görev iptal edildi.");
 
             await LoadAsync();
+            MovementsGrid.SelectedItem = null;
+
+            _selectedId = null;
+            _currentMovement = null;
 
             ClearForm();
-
             PrepareNewFormState();
         }
 
