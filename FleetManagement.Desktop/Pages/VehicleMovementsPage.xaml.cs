@@ -1,9 +1,10 @@
 ﻿using ClosedXML.Excel;
+using FleetManagement.Application.Helpers;
 using FleetManagement.Desktop.Dtos;
+using FleetManagement.Desktop.Helpers;
 using FleetManagement.Desktop.Services;
 using FleetManagement.Domain.Entities;
 using FleetManagement.Infrastructure.Data;
-using FleetManagement.Desktop.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -378,25 +379,27 @@ namespace FleetManagement.Desktop.Pages
 					}
 				}
 
-				if (_selectedId is null && vehicleId is not null)
-				{
-					var hasOpenMovement = await _db.VehicleMovements.AnyAsync(m =>
-						!m.IsDeleted &&
-						m.VehicleId == vehicleId &&
-						m.ReturnDateTime == null);
+                if (_selectedId is null && vehicleId is not null)
+                {
+                    var hasOpenMovement = await _db.VehicleMovements
+                        .AsNoTracking()
+                        .Where(m => !m.IsDeleted &&
+                                    m.VehicleId == vehicleId)
+                        .ToListAsync();
 
-					if (hasOpenMovement)
-					{
-						MessageBox.Show(
-							"Bu araç halen görevde. Yeni görev tanımlanamaz. Önce dönüş saatini girin.",
-							"Uyarı",
-							MessageBoxButton.OK,
-							MessageBoxImage.Warning);
-						return;
-					}
-				}
+                    if (hasOpenMovement.Any(MissionHelper.IsActiveMission))
+                    {
+                        MessageBox.Show(
+                            "Bu araç halen aktif bir görevde. Yeni görev tanımlanamaz.",
+                            "Uyarı",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
 
-				var entity = _selectedId is null
+                        return;
+                    }
+                }
+
+                var entity = _selectedId is null
 					? new VehicleMovement { CreatedAt = DateTime.UtcNow, IsDeleted = false }
 					: await _db.VehicleMovements.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
 
@@ -758,43 +761,61 @@ namespace FleetManagement.Desktop.Pages
             if (movement == null)
                 return;
 
+            // Sadece görevde olan kayıt bitirilebilir
             if (movement.Status != "Görevde")
             {
                 Notify("Sadece görevde olan kayıtlar bitirilebilir.", "Uyarı");
                 return;
             }
 
+            // Dönüş tarihi ve saati zorunlu
             if (ReturnDatePicker.SelectedDate == null ||
-    string.IsNullOrWhiteSpace(ReturnTimeBox.Text))
+                string.IsNullOrWhiteSpace(ReturnTimeBox.Text))
             {
                 Notify("Lütfen dönüş tarihi ve saatini giriniz.", "Uyarı");
                 return;
             }
 
+            // Saat formatı kontrolü
             if (!TimeSpan.TryParse(ReturnTimeBox.Text, out var returnTime))
             {
                 Notify("Dönüş saati hatalı.", "Uyarı");
                 return;
             }
 
+            // Dönüş tarihi
             var returnLocal =
-                ReturnDatePicker.SelectedDate.Value.Date +
-                returnTime;
+                ReturnDatePicker.SelectedDate.Value.Date + returnTime;
 
-            movement.ReturnDateTime =
-    returnLocal.ToUniversalTime();
+            // Çıkış zamanı
+            var exitLocal = movement.ExitDateTime.ToLocalTime();
 
-            movement.ActualReturnDateTime =
-    DateTime.UtcNow;
+            // Dönüş zamanı çıkıştan önce olamaz
+            if (returnLocal < exitLocal)
+            {
+                Notify("Dönüş tarihi/saati çıkış tarihinden önce olamaz.", "Uyarı");
+                return;
+            }
 
+            // Km kontrolü
+            if (movement.StartKm.HasValue &&
+                movement.EndKm.HasValue &&
+                movement.EndKm.Value < movement.StartKm.Value)
+            {
+                Notify("Son kilometre ilk kilometreden küçük olamaz.", "Uyarı");
+                return;
+            }
 
+            // Planlanan dönüş
+            movement.ReturnDateTime = returnLocal.ToUniversalTime();
 
-            movement.Status = "Tamamlandı";
+            // Gerçek dönüş
             movement.ActualReturnDateTime = DateTime.UtcNow;
 
-            // Eski uyumluluk için
-            movement.ReturnDateTime = DateTime.UtcNow;
+            // Durum
+            movement.Status = "Tamamlandı";
 
+            // Araç durumu
             if (movement.Vehicle != null)
             {
                 movement.Vehicle.VehicleSituation = "Müsait";
@@ -803,6 +824,7 @@ namespace FleetManagement.Desktop.Pages
                     movement.Vehicle.VehicleKm = movement.EndKm.Value;
             }
 
+            // Sürücü durumu
             if (movement.Driver != null)
                 movement.Driver.DriverSituation = "Müsait";
 
@@ -811,10 +833,11 @@ namespace FleetManagement.Desktop.Pages
 
             await _db.SaveChangesAsync();
 
-            AppLogger.Info("Mission.Finish",
-                $"Görev tamamlandı. Hareket No:{movement.Id}");
+            AppLogger.Info(
+                "Mission.Finish",
+                $"Görev tamamlandı. Hareket No:{movement.Id}, Araç:{movement.Vehicle?.Plate}, Yapılan Km:{movement.EndKm - movement.StartKm}");
 
-            Notify("Görev tamamlandı.");
+            Notify("Görev başarıyla tamamlandı.");
 
             await LoadAsync();
 
