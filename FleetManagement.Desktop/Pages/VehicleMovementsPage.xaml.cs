@@ -166,31 +166,17 @@ namespace FleetManagement.Desktop.Pages
             // Bugünün başlangıcı (00:00)
             var todayStart = DateTime.Today;
 
-            // Yarının başlangıcı (00:00)
-            var tomorrowStart = todayStart.AddDays(1);
+
 
             // UTC'ye çevir
             var todayStartUtc = DateTime.SpecifyKind(todayStart, DateTimeKind.Local).ToUniversalTime();
-            var tomorrowStartUtc = DateTime.SpecifyKind(tomorrowStart, DateTimeKind.Local).ToUniversalTime();
+
 
             var query = _db.VehicleMovements
                 .AsNoTracking()
                 .Where(x => !x.IsDeleted);
 
-            if (!ShowAllCheckBox.IsChecked.GetValueOrDefault())
-            {
-                query = query.Where(x =>
 
-                    // bugün başlayanlar
-                    (x.ExitDateTime >= todayStartUtc &&
-                     x.ExitDateTime < tomorrowStartUtc)
-
-                    ||
-
-                    // önceki günden kalan açık görevler
-                    (x.ExitDateTime < todayStartUtc &&
-                     x.ReturnDateTime == null));
-            }
 
             var raw = await query
                 .Include(x => x.Vehicle)
@@ -201,23 +187,21 @@ namespace FleetManagement.Desktop.Pages
                 .Take(3000)
                 .ToListAsync();
 
-            var rows = raw.Select(m =>
+			var rows = raw.Select(m =>
 			{
 				var exitLocal = m.ExitDateTime.ToLocalTime();
 				var returnLocal = m.ReturnDateTime?.ToLocalTime();
 				var parsed = ParseLoadOrPassengerInfo(m.LoadOrPassengerInfo);
 
-                var status = CalcStatus(m);
+				var status = CalcStatus(m);
 
-                int? doneKm = null;
+				int? doneKm = null;
 				if (m.StartKm.HasValue && m.EndKm.HasValue && m.EndKm.Value >= m.StartKm.Value)
 					doneKm = m.EndKm.Value - m.StartKm.Value;
 
 				var dateForNo = m.MovementDate == default
 					? m.ExitDateTime.ToLocalTime().Date
 					: m.MovementDate.ToLocalTime().Date;
-
-
 
 				return new VehicleMovementRow
 				{
@@ -242,13 +226,46 @@ namespace FleetManagement.Desktop.Pages
 					DutyType = m.Description,
 					ExitDateTimeUtc = m.ExitDateTime,
 					ReturnDateTimeUtc = m.ReturnDateTime,
-                    IsPreviousDayOpen =
+					IsPreviousDayOpen =
 					m.ReturnDateTime == null &&
 					m.ExitDateTime < todayStartUtc,
-                };
+				};
 			}).ToList();
 
-			_all = rows;
+            // Varsayılan görünüm: Güncel görevler
+            if (!ShowAllCheckBox.IsChecked.GetValueOrDefault())
+            {
+                rows = rows.Where(x =>
+                    // Planlandı
+                    x.Status == "Planlandı"
+
+                    ||
+
+                    // Görev yaklaşıyor
+                    x.Status == "Görev Yaklaşıyor"
+
+                    ||
+
+                    // Görev gecikti
+                    x.Status == "Görev Gecikti"
+
+                    ||
+
+                    // Devam eden görev
+                    x.Status == "Görevde"
+
+                    ||
+
+                    // Bugün tamamlanan görevler
+                    (
+                        x.Status == "Tamamlandı" &&
+                        x.ReturnDateTimeUtc.HasValue &&
+                        x.ReturnDateTimeUtc.Value.ToLocalTime().Date == DateTime.Today
+                    )
+                ).ToList();
+            }
+
+            _all = rows;
 			MovementsGrid.ItemsSource = _all;
 			UpdateCount(_all.Count);
 		}
@@ -258,33 +275,47 @@ namespace FleetManagement.Desktop.Pages
 			FilterInfo.Text = $"Toplam kayıt: {count}";
 		}
 
-		// =========================
-		// UI EVENTS
-		// =========================
-		private async void Refresh_Click(object sender, RoutedEventArgs e)
-		{
-			await LoadLookupsAsync();
+        // =========================
+        // UI EVENTS
+        // =========================
+        private async void Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            await LoadLookupsAsync();
             await RepairMissionStatesAsync();
             await LoadAsync();
-			PrepareNewFormState();
-			Notify("Yenilendi");
-		}
 
-		private void New_Click(object sender, RoutedEventArgs e)
-		{
-			ClearForm();
-			PrepareNewFormState();
-			Notify("Yeni kayıt için form hazır");
-		}
+            _selectedId = null;
 
-		private void Clear_Click(object sender, RoutedEventArgs e)
-		{
-			ClearForm();
-			PrepareNewFormState();
-			Notify("Temizlendi");
-		}
+            ClearForm();
 
-		private async void Save_Click(object sender, RoutedEventArgs e)
+            PrepareNewFormState();
+
+            Notify("Veriler güncellendi.");
+        }
+
+        private void New_Click(object sender, RoutedEventArgs e)
+        {
+            _selectedId = null;
+
+            ClearForm();
+
+            PrepareNewFormState();
+
+            Notify("Yeni kayıt için form hazır.");
+        }
+
+        private void Clear_Click(object sender, RoutedEventArgs e)
+        {
+            _selectedId = null;
+
+            ClearForm();
+
+            PrepareNewFormState();
+
+            Notify("Form temizlendi.");
+        }
+
+        private async void Save_Click(object sender, RoutedEventArgs e)
 		{
 			try
 			{
@@ -715,12 +746,45 @@ namespace FleetManagement.Desktop.Pages
 
             var now = DateTime.UtcNow;
 
+            // Planlanan çıkış günü
+            var plannedDate = movement.MovementDate == default
+                ? movement.ExitDateTime.ToLocalTime().Date
+                : movement.MovementDate.ToLocalTime().Date;
+
+            // Gerçek çıkış günü
+            var actualDate = now.ToLocalTime().Date;
+
+            // Eğer farklı bir günde göreve başlanıyorsa
+            if (plannedDate != actualDate)
+            {
+                var startUtc = DateTime.SpecifyKind(actualDate, DateTimeKind.Local)
+                    .ToUniversalTime();
+
+                var endUtc = DateTime.SpecifyKind(actualDate.AddDays(1), DateTimeKind.Local)
+                    .ToUniversalTime();
+
+                var nextDailyNo =
+                    (await _db.VehicleMovements
+                        .Where(x =>
+                            !x.IsDeleted &&
+                            x.Id != movement.Id &&
+                            x.MovementDate >= startUtc &&
+                            x.MovementDate < endUtc)
+                        .MaxAsync(x => (int?)x.DailyNo) ?? 0) + 1;
+
+                movement.MovementDate = now;
+                movement.DailyNo = nextDailyNo;
+            }
+
             // Görev bilgisi
             movement.Status = "Görevde";
             movement.ActualExitDateTime = now;
-            movement.ExitDateTime = now;
 
-            // Araç
+            // DİKKAT:
+            // ExitDateTime planlanan çıkış zamanıdır.
+            // Artık üzerine yazmıyoruz.
+
+            // Araç durumu
             if (movement.Vehicle != null)
                 movement.Vehicle.VehicleSituation = "Görevde";
 
@@ -734,8 +798,9 @@ namespace FleetManagement.Desktop.Pages
 
             await _db.SaveChangesAsync();
 
-            AppLogger.Info("Mission.Start",
-                $"Görev başlatıldı. Hareket No:{movement.Id}");
+            AppLogger.Info(
+                "Mission.Start",
+                $"Görev başlatıldı. Hareket No:{movement.Id}, Sevk No:{movement.MovementDate.ToLocalTime():yyyyMMdd}-{movement.DailyNo:000}");
 
             Notify("Görev başlatıldı.");
 
@@ -768,49 +833,52 @@ namespace FleetManagement.Desktop.Pages
                 return;
             }
 
-            // Dönüş tarihi ve saati zorunlu
-            if (ReturnDatePicker.SelectedDate == null ||
-                string.IsNullOrWhiteSpace(ReturnTimeBox.Text))
+            // Yapılan KM kontrolü
+            if (string.IsNullOrWhiteSpace(DoneKmBox.Text))
             {
-                Notify("Lütfen dönüş tarihi ve saatini giriniz.", "Uyarı");
+                Notify("Lütfen yapılan kilometreyi giriniz.", "Uyarı");
+                DoneKmBox.Focus();
                 return;
             }
 
-            // Saat formatı kontrolü
-            if (!TimeSpan.TryParse(ReturnTimeBox.Text, out var returnTime))
+            if (!int.TryParse(DoneKmBox.Text.Trim(), out var doneKm) || doneKm < 0)
             {
-                Notify("Dönüş saati hatalı.", "Uyarı");
+                Notify("Yapılan kilometre değeri hatalı.", "Uyarı");
+                DoneKmBox.Focus();
                 return;
             }
 
-            // Dönüş tarihi
-            var returnLocal =
-                ReturnDatePicker.SelectedDate.Value.Date + returnTime;
+            // Gerçek dönüş zamanı = Görev Bitir butonuna basıldığı an
+            var nowUtc = DateTime.UtcNow;
+            var nowLocal = nowUtc.ToLocalTime();
 
-            // Çıkış zamanı
+            // Çıkış zamanı kontrolü
             var exitLocal = movement.ExitDateTime.ToLocalTime();
 
-            // Dönüş zamanı çıkıştan önce olamaz
-            if (returnLocal < exitLocal)
+            if (nowLocal < exitLocal)
             {
-                Notify("Dönüş tarihi/saati çıkış tarihinden önce olamaz.", "Uyarı");
+                Notify("Dönüş zamanı çıkış zamanından önce olamaz.", "Uyarı");
                 return;
             }
 
-            // Km kontrolü
-            if (movement.StartKm.HasValue &&
-                movement.EndKm.HasValue &&
-                movement.EndKm.Value < movement.StartKm.Value)
+            // Yapılan KM -> Son KM hesaplama
+            if (movement.StartKm.HasValue)
             {
-                Notify("Son kilometre ilk kilometreden küçük olamaz.", "Uyarı");
-                return;
+                movement.EndKm = movement.StartKm.Value + doneKm;
+            }
+            else
+            {
+                // Başlangıç KM yoksa yapılan KM'yi doğrudan son KM olarak kullanıyoruz.
+                movement.EndKm = doneKm;
             }
 
-            // Planlanan dönüş
-            movement.ReturnDateTime = returnLocal.ToUniversalTime();
+            // Gerçek dönüş zamanı
+            movement.ReturnDateTime = nowUtc;
+            movement.ActualReturnDateTime = nowUtc;
 
-            // Gerçek dönüş
-            movement.ActualReturnDateTime = DateTime.UtcNow;
+            // Formdaki dönüş bilgilerini de güncelle
+            ReturnDatePicker.SelectedDate = nowLocal.Date;
+            ReturnTimeBox.Text = nowLocal.ToString("HH:mm");
 
             // Durum
             movement.Status = "Tamamlandı";
@@ -819,15 +887,14 @@ namespace FleetManagement.Desktop.Pages
             if (movement.Vehicle != null)
             {
                 movement.Vehicle.VehicleSituation = "Müsait";
-
-                if (movement.EndKm.HasValue)
-                    movement.Vehicle.VehicleKm = movement.EndKm.Value;
+                movement.Vehicle.VehicleKm = movement.EndKm.Value;
             }
 
-            // Sürücü durumu
+            // 1. Sürücü durumu
             if (movement.Driver != null)
                 movement.Driver.DriverSituation = "Müsait";
 
+            // 2. Sürücü durumu
             if (movement.SecondDriver != null)
                 movement.SecondDriver.DriverSituation = "Müsait";
 
@@ -835,7 +902,11 @@ namespace FleetManagement.Desktop.Pages
 
             AppLogger.Info(
                 "Mission.Finish",
-                $"Görev tamamlandı. Hareket No:{movement.Id}, Araç:{movement.Vehicle?.Plate}, Yapılan Km:{movement.EndKm - movement.StartKm}");
+                $"Görev tamamlandı. " +
+                $"Hareket No:{movement.Id}, " +
+                $"Araç:{movement.Vehicle?.Plate}, " +
+                $"Yapılan Km:{doneKm}, " +
+                $"Son Km:{movement.EndKm}");
 
             Notify("Görev başarıyla tamamlandı.");
 
@@ -1038,7 +1109,6 @@ namespace FleetManagement.Desktop.Pages
 		// =========================
 		private void ClearForm()
 		{
-			_selectedId = null;
 			MovementsGrid.SelectedItem = null;
 
 			VehicleCombo.SelectedIndex = -1;
@@ -1196,8 +1266,6 @@ namespace FleetManagement.Desktop.Pages
 
         private static string CalcStatus(VehicleMovement movement)
         {
-            // Artık görev bitmiş veya iptal edilmişse
-            // zamanı hesaplamaya gerek yok.
             switch (movement.Status)
             {
                 case "Tamamlandı":
@@ -1210,19 +1278,15 @@ namespace FleetManagement.Desktop.Pages
                     return "Görevde";
             }
 
-            // Buraya geldiysek Status = Planlandı
             var exit = movement.ExitDateTime.ToLocalTime();
-            var now = DateTime.Now;
+            var diff = exit - DateTime.Now;
 
-            // 15 dakikadan fazla varsa
-            if (exit > now.AddMinutes(15))
+            if (diff.TotalMinutes > 15)
                 return "Planlandı";
 
-            // Son 15 dakika
-            if (exit > now)
+            if (diff.TotalMinutes >= 0)
                 return "Görev Yaklaşıyor";
 
-            // Saati geçti
             return "Görev Gecikti";
         }
 
@@ -1534,9 +1598,9 @@ namespace FleetManagement.Desktop.Pages
 
             await _db.SaveChangesAsync();
 
-            Notify("Araç ve sürücü durumları yeniden oluşturuldu.");
+            //Notify("Araç ve sürücü durumları yeniden oluşturuldu.");
 
-            Notify("Repair tamamlandı.");
+            //Notify("Repair tamamlandı.");
         }
 
 
