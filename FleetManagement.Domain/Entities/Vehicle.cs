@@ -41,7 +41,10 @@ namespace FleetManagement.Domain.Entities
 		public int? LastMaintenanceKm { get; set; }
 		public DateTime? LastMaintenanceDate { get; set; }
 
+        public bool IsActive { get; set; }
 
-	}
+        public bool IsExternal { get; set; }
+
+    }
 }
 
