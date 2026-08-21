@@ -166,6 +166,12 @@ namespace FleetManagement.Desktop.Pages
             RouteCombo.Text = "";
             VehicleBrandCombo.Text = "";
 
+            MinKmTextBox.Text = "";
+            MaxKmTextBox.Text = "";
+
+            MinDurationTextBox.Text = "";
+            MaxDurationTextBox.Text = "";
+
             ApplyFilters();
         }
 
@@ -182,6 +188,14 @@ namespace FleetManagement.Desktop.Pages
             var brand = (VehicleBrandCombo.Text ?? "")
               .Trim()
               .ToLowerInvariant();
+
+            var minKm = ParseNullableInt(MinKmTextBox.Text);
+            var maxKm = ParseNullableInt(MaxKmTextBox.Text);
+
+            var minDurationHours = ParseNullableDecimal(MinDurationTextBox.Text);
+            var maxDurationHours = ParseNullableDecimal(MaxDurationTextBox.Text);
+
+
 
             var query = _all.AsEnumerable();
 
@@ -211,6 +225,34 @@ namespace FleetManagement.Desktop.Pages
                     .Contains(brand));
             }
 
+            // Yapılan KM filtresi
+            if (minKm.HasValue)
+            {
+                query = query.Where(x =>
+                    x.DoneKm.HasValue &&
+                    x.DoneKm.Value >= minKm.Value);
+            }
+
+            if (maxKm.HasValue)
+            {
+                query = query.Where(x =>
+                    x.DoneKm.HasValue &&
+                    x.DoneKm.Value <= maxKm.Value);
+            }
+
+            // Görev süresi filtresi
+            if (minDurationHours.HasValue)
+            {
+                query = query.Where(x =>
+                    GetDurationHours(x) >= minDurationHours.Value);
+            }
+
+            if (maxDurationHours.HasValue)
+            {
+                query = query.Where(x =>
+                    GetDurationHours(x) <= maxDurationHours.Value);
+            }
+
             if (!string.IsNullOrWhiteSpace(unit))
             {
                 var vehicleMap = _db.Vehicles.AsNoTracking()
@@ -228,8 +270,41 @@ namespace FleetManagement.Desktop.Pages
                 .OrderByDescending(x => x.ExitDateTimeUtc)
                 .ToList();
 
+            // Filtrelenmiş sonuçlara yeniden sıra numarası ver
+            for (int i = 0; i < _filtered.Count; i++)
+            {
+                _filtered[i].ReportNo = i + 1;
+            }
+
             ResultsGrid.ItemsSource = _filtered;
-            ResultInfoText.Text = $"Toplam kayıt: {_filtered.Count}";
+
+            UpdateResultSummary();
+        }
+
+        private void UpdateResultSummary()
+        {
+            var totalKm = _filtered
+                .Where(x => x.DoneKm.HasValue)
+                .Sum(x => x.DoneKm!.Value);
+
+            var totalDuration = TimeSpan.Zero;
+
+            foreach (var row in _filtered)
+            {
+                var end = row.ReturnDateTimeUtc ?? DateTime.UtcNow;
+
+                if (end >= row.ExitDateTimeUtc)
+                {
+                    totalDuration += end - row.ExitDateTimeUtc;
+                }
+            }
+
+            var totalHours = (int)totalDuration.TotalHours;
+
+            ResultInfoText.Text =
+                $"Toplam kayıt: {_filtered.Count}   |   " +
+                $"Toplam KM: {totalKm:N0} km   |   " +
+                $"Toplam görev süresi: {totalHours} sa {totalDuration.Minutes} dk";
         }
 
         private static string CalcStatus(DateTime exitUtc, DateTime? returnUtc)
@@ -244,6 +319,22 @@ namespace FleetManagement.Desktop.Pages
                 return "Planlandı";
 
             return "Devam Ediyor";
+        }
+
+        private static decimal GetDurationHours(VehicleMovementRow row)
+        {
+            var exit = row.ExitDateTimeUtc.ToLocalTime();
+
+            var returnTime = row.ReturnDateTimeUtc?.ToLocalTime();
+
+            var end = returnTime ?? DateTime.Now;
+
+            if (end < exit)
+                return 0;
+
+            var duration = end - exit;
+
+            return (decimal)duration.TotalHours;
         }
 
         private static string? GetVehicleTypeSafe(Domain.Entities.Vehicle? v)
@@ -299,7 +390,11 @@ namespace FleetManagement.Desktop.Pages
                 }
 
                 var now = DateTime.Now;
-                var path = ExportRowsToExcel(rowsToExport, $"SevkSorgulama_{now:yyyy-MM-dd_HH-mm}.xlsx");
+                var path = ExportRowsToExcel(
+    rowsToExport,
+    $"SevkSorgulama_{now:yyyy-MM-dd_HH-mm}.xlsx",
+    StartDatePicker.SelectedDate,
+    EndDatePicker.SelectedDate);
                 AppLogger.Info("VehicleMovementReports.Export",
                                 $"Excel export alındı. Kayıt sayısı: {rowsToExport.Count}");
 
@@ -316,9 +411,46 @@ namespace FleetManagement.Desktop.Pages
             }
         }
 
+        private static int? ParseNullableInt(string? text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return null;
 
+            if (int.TryParse(text.Trim(), out var value))
+                return value;
 
-        private static string ExportRowsToExcel(List<VehicleMovementRow> rows, string fileName)
+            return null;
+        }
+
+        private static decimal? ParseNullableDecimal(string? text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return null;
+
+            text = text.Trim();
+
+            if (decimal.TryParse(
+                text,
+                System.Globalization.NumberStyles.Number,
+                System.Globalization.CultureInfo.CurrentCulture,
+                out var value))
+            {
+                return value;
+            }
+
+            if (decimal.TryParse(
+                text,
+                System.Globalization.NumberStyles.Number,
+                System.Globalization.CultureInfo.InvariantCulture,
+                out value))
+            {
+                return value;
+            }
+
+            return null;
+        }
+
+        private static string ExportRowsToExcel(List<VehicleMovementRow> rows,string fileName,DateTime? startDate, DateTime? endDate)
         {
             var folder = @"D:\Raporlar Sorgulamalar";
             Directory.CreateDirectory(folder);
@@ -328,60 +460,193 @@ namespace FleetManagement.Desktop.Pages
             using var wb = new XLWorkbook();
             var ws = wb.Worksheets.Add("Sevk Sorgulama");
 
-            ws.Cell(1, 1).Value = "Sıra No";
-            ws.Cell(1, 2).Value = "Sürücü";
-            ws.Cell(1, 3).Value = "2. Sürücü";
-            ws.Cell(1, 4).Value = "Plaka";
-            ws.Cell(1, 5).Value = "Çıkış Saati";
-            ws.Cell(1, 6).Value = "Dönüş Saati";
-            ws.Cell(1, 7).Value = "Araç Cinsi";
-            ws.Cell(1, 8).Value = "Durum";
-            ws.Cell(1, 9).Value = "Tarih";
-            ws.Cell(1, 10).Value = "Güzergah";
-            ws.Cell(1, 11).Value = "Araç Komutanı";
-            ws.Cell(1, 12).Value = "Başkanlık";
-            ws.Cell(1, 13).Value = "Yapılan Km";
-            ws.Cell(1, 14).Value = "Taşınan Yolcu";
-            ws.Cell(1, 15).Value = "Taşınan Yük";
-            ws.Cell(1, 16).Value = "Görev Türü";
+            // =========================================================
+            // RAPOR ÖZETİ
+            // =========================================================
 
-            int row = 2;
-            foreach (var x in rows)
+            var totalKm = rows
+                .Where(x => x.DoneKm.HasValue)
+                .Sum(x => x.DoneKm!.Value);
+
+            var totalDuration = TimeSpan.Zero;
+
+            foreach (var row in rows)
             {
-                ws.Cell(row, 1).Value = x.DailyNo;
-                ws.Cell(row, 2).Value = x.Driver ?? "";
-                ws.Cell(row, 3).Value = x.SecondDriver ?? "";
-                ws.Cell(row, 4).Value = x.Plate ?? "";
-                ws.Cell(row, 5).Value = x.ExitTimeText ?? "";
-                ws.Cell(row, 6).Value = x.ReturnTimeText ?? "";
-                ws.Cell(row, 7).Value = x.VehicleType ?? "";
-                ws.Cell(row, 8).Value = x.Status ?? "";
-                ws.Cell(row, 9).Value = x.DateText ?? "";
-                ws.Cell(row, 10).Value = x.Route ?? "";
-                ws.Cell(row, 11).Value = x.Commander ?? "";
-                ws.Cell(row, 12).Value = x.Departure ?? "";
-                ws.Cell(row, 13).Value = x.KmText ?? "";
-                ws.Cell(row, 14).Value = x.PassengerCount?.ToString() ?? "";
-                ws.Cell(row, 15).Value = x.LoadAmount?.ToString() ?? "";
-                ws.Cell(row, 16).Value = x.DutyType ?? "";
-                row++;
+                var end = row.ReturnDateTimeUtc ?? DateTime.UtcNow;
+
+                if (end >= row.ExitDateTimeUtc)
+                {
+                    totalDuration += end - row.ExitDateTimeUtc;
+                }
             }
 
-            var headerRange = ws.Range(1, 1, 1, 16);
+            var totalHours = (int)totalDuration.TotalHours;
+
+            var startText = startDate?.ToString("dd.MM.yyyy") ?? "—";
+            var endText = endDate?.ToString("dd.MM.yyyy") ?? "—";
+
+            var reportTitle =
+                $"{startText} - {endText} TARİHLERİ ARASI ARAÇ SEVK SORGULAMA RAPORU";
+
+            var summaryText =
+                $"Toplam Kayıt: {rows.Count}   |   " +
+                $"Toplam KM: {totalKm:N0} km   |   " +
+                $"Toplam Görev Süresi: {totalHours} sa {totalDuration.Minutes} dk";
+
+            // Başlık
+            ws.Range(1, 1, 1, 16).Merge();
+            ws.Cell(1, 1).Value = reportTitle;
+
+            ws.Range(1, 1, 1, 16).Style.Font.Bold = true;
+            ws.Range(1, 1, 1, 16).Style.Font.FontSize = 16;
+            ws.Range(1, 1, 1, 16).Style.Alignment.Horizontal =
+                XLAlignmentHorizontalValues.Center;
+            ws.Range(1, 1, 1, 16).Style.Alignment.Vertical =
+                XLAlignmentVerticalValues.Center;
+
+            ws.Row(1).Height = 30;
+
+            ws.Range(1, 1, 1, 16).Style.Font.Bold = true;
+            ws.Range(1, 1, 1, 16).Style.Font.FontSize = 16;
+            ws.Range(1, 1, 1, 16).Style.Alignment.Horizontal =
+                XLAlignmentHorizontalValues.Center;
+            ws.Range(1, 1, 1, 16).Style.Alignment.Vertical =
+                XLAlignmentVerticalValues.Center;
+
+            ws.Row(1).Height = 28;
+
+            // Özet
+            ws.Range(2, 1, 2, 16).Merge();
+            ws.Cell(2, 1).Value = summaryText;
+
+            ws.Range(2, 1, 2, 16).Style.Font.Bold = true;
+            ws.Range(2, 1, 2, 16).Style.Alignment.Horizontal =
+                XLAlignmentHorizontalValues.Center;
+            ws.Range(2, 1, 2, 16).Style.Alignment.Vertical =
+                XLAlignmentVerticalValues.Center;
+
+            ws.Row(2).Height = 22;
+
+            // =========================================================
+            // SÜTUN BAŞLIKLARI
+            // =========================================================
+
+            int headerRow = 4;
+
+            ws.Cell(headerRow, 1).Value = "Sıra No";
+            ws.Cell(headerRow, 2).Value = "Sürücü";
+            ws.Cell(headerRow, 3).Value = "2. Sürücü";
+            ws.Cell(headerRow, 4).Value = "Plaka";
+            ws.Cell(headerRow, 5).Value = "Çıkış Saati";
+            ws.Cell(headerRow, 6).Value = "Dönüş Saati";
+            ws.Cell(headerRow, 7).Value = "Araç Cinsi";
+            ws.Cell(headerRow, 8).Value = "Araç Marka";
+            ws.Cell(headerRow, 9).Value = "Durum";
+            ws.Cell(headerRow, 10).Value = "Tarih";
+            ws.Cell(headerRow, 11).Value = "Güzergah";
+            ws.Cell(headerRow, 12).Value = "Araç Komutanı";
+            ws.Cell(headerRow, 13).Value = "Başkanlık";
+            ws.Cell(headerRow, 14).Value = "Yapılan Km";
+            ws.Cell(headerRow, 15).Value = "Görev Süresi";
+            ws.Cell(headerRow, 16).Value = "Görev Türü";
+
+            var headerRange = ws.Range(headerRow, 1, headerRow, 16);
+
             headerRange.Style.Font.Bold = true;
-            headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-            headerRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            headerRange.Style.Alignment.Horizontal =
+                XLAlignmentHorizontalValues.Center;
+            headerRange.Style.Alignment.Vertical =
+                XLAlignmentVerticalValues.Center;
 
-            var tableRange = ws.Range(1, 1, Math.Max(row - 1, 1), 16);
-            tableRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-            tableRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
-            tableRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            // =========================================================
+            // VERİLER
+            // =========================================================
 
+            int excelRow = headerRow + 1;
+
+            foreach (var x in rows)
+            {
+                ws.Cell(excelRow, 1).Value = x.ReportNo;
+                ws.Cell(excelRow, 2).Value = x.Driver ?? "";
+                ws.Cell(excelRow, 3).Value = x.SecondDriver ?? "";
+                ws.Cell(excelRow, 4).Value = x.Plate ?? "";
+                ws.Cell(excelRow, 5).Value = x.ExitTimeText ?? "";
+                ws.Cell(excelRow, 6).Value = x.ReturnTimeText ?? "";
+                ws.Cell(excelRow, 7).Value = x.VehicleType ?? "";
+                ws.Cell(excelRow, 8).Value = x.VehicleBrand ?? "";
+                ws.Cell(excelRow, 9).Value = x.Status ?? "";
+                ws.Cell(excelRow, 10).Value = x.DateText ?? "";
+                ws.Cell(excelRow, 11).Value = x.Route ?? "";
+                ws.Cell(excelRow, 12).Value = x.Commander ?? "";
+                ws.Cell(excelRow, 13).Value = x.Departure ?? "";
+                ws.Cell(excelRow, 14).Value = x.DoneKm.HasValue
+    ? x.DoneKm.Value
+    : "";
+                ws.Cell(excelRow, 15).Value = x.DurationText;
+                ws.Cell(excelRow, 16).Value = x.DutyType ?? "";
+
+                excelRow++;
+            }
+
+            // =========================================================
+            // TABLO BİÇİMLENDİRME
+            // =========================================================
+
+            var lastRow = Math.Max(excelRow - 1, headerRow);
+
+            var tableRange = ws.Range(
+                headerRow,
+                1,
+                lastRow,
+                16);
+
+            tableRange.Style.Border.OutsideBorder =
+                XLBorderStyleValues.Thin;
+
+            tableRange.Style.Border.InsideBorder =
+                XLBorderStyleValues.Thin;
+
+            tableRange.Style.Alignment.Vertical =
+                XLAlignmentVerticalValues.Center;
+
+            headerRange.Style.Alignment.WrapText = true;
+
+            // Filtre
             tableRange.SetAutoFilter();
+
+            // Sütun genişlikleri
             ws.Columns().AdjustToContents();
-            ws.SheetView.FreezeRows(1);
+
+            // =========================================================
+            // SAYFA AYARLARI
+            // =========================================================
+
+            ws.PageSetup.PageOrientation =
+                XLPageOrientation.Landscape;
+
+            ws.PageSetup.PaperSize =
+                XLPaperSize.A4Paper;
+
+            // Tüm sütunları tek sayfa genişliğine sığdır
+            ws.PageSetup.PagesWide = 1;
+
+            // Dikeyde sayfa sınırı yok
+            ws.PageSetup.PagesTall = 0;
+
+            // Kenar boşlukları
+            ws.PageSetup.Margins.Left = 0.25;
+            ws.PageSetup.Margins.Right = 0.25;
+            ws.PageSetup.Margins.Top = 0.5;
+            ws.PageSetup.Margins.Bottom = 0.5;
+
+            // Her sayfada sütun başlıkları tekrar etsin
+            ws.PageSetup.SetRowsToRepeatAtTop(headerRow, headerRow);
+
+            // İlk satırı sabitle
+            ws.SheetView.FreezeRows(headerRow);
 
             wb.SaveAs(path);
+
             return path;
         }
 

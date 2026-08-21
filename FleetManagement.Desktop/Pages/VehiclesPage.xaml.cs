@@ -305,6 +305,8 @@ namespace FleetManagement.Desktop.Pages
             LastMaintenanceDatePicker.SelectedDate = v.LastMaintenanceDate?.Date;
             MaintenanceIntervalKmBox.Text = v.MaintenanceIntervalKm?.ToString() ?? "";
             MaintenanceIntervalMonthsBox.Text = v.MaintenanceIntervalMonths?.ToString() ?? "";
+
+            IsExternalCheckBox.IsChecked = v.IsExternal;
         }
 
         // ==============================
@@ -362,6 +364,8 @@ namespace FleetManagement.Desktop.Pages
 
                 entity.MaintenanceIntervalKm = TryParseNullableInt(MaintenanceIntervalKmBox.Text);
                 entity.MaintenanceIntervalMonths = TryParseNullableInt(MaintenanceIntervalMonthsBox.Text);
+
+                entity.IsExternal = IsExternalCheckBox.IsChecked == true;
 
                 if (isNew)
                     _db.Vehicles.Add(entity);
@@ -489,6 +493,8 @@ namespace FleetManagement.Desktop.Pages
             LastMaintenanceDatePicker.SelectedDate = null;
             MaintenanceIntervalKmBox.Text = "";
             MaintenanceIntervalMonthsBox.Text = "";
+
+            IsExternalCheckBox.IsChecked = false;
 
             MaintInfoBox.Text = "—";
             MaintInfoBox.Foreground = Brushes.Black;

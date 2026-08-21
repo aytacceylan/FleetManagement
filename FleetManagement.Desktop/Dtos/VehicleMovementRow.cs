@@ -10,6 +10,7 @@ namespace FleetManagement.Desktop.Dtos
         public string MovementNo { get; set; } = "";
 
         public int DailyNo { get; set; }
+        public int ReportNo { get; set; }
 
         public string? Driver { get; set; }
 
@@ -50,5 +51,14 @@ namespace FleetManagement.Desktop.Dtos
         public DateTime? ReturnDateTimeUtc { get; set; }
 
         public bool IsPreviousDayOpen { get; set; }
+
+        public TimeSpan? Duration { get; set; }
+
+        public string DurationText =>
+            Duration is null
+                ? "—"
+                : $"{(int)Duration.Value.TotalHours} sa {Duration.Value.Minutes} dk";
     }
+
+
 }

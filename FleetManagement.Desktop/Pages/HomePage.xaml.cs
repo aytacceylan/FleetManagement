@@ -108,7 +108,7 @@ namespace FleetManagement.Desktop.Pages
         private async Task LoadDriverSummaryAsync()
         {
             var drivers = await _db.Drivers.AsNoTracking()
-                .Where(x => !x.IsDeleted)
+                .Where(x => !x.IsDeleted && !x.IsExternal)
                 .ToListAsync();
 
             var total = drivers.Count;
@@ -128,7 +128,7 @@ namespace FleetManagement.Desktop.Pages
         private async Task LoadVehicleSummaryAsync()
         {
             var vehicles = await _db.Vehicles.AsNoTracking()
-                .Where(x => !x.IsDeleted)
+                .Where(x => !x.IsDeleted && !x.IsExternal)
                 .ToListAsync();
 
             var total = vehicles.Count;
@@ -145,8 +145,8 @@ namespace FleetManagement.Desktop.Pages
         private async Task LoadMaintenanceSummaryAsync()
 		{
 			var vehicles = await _db.Vehicles.AsNoTracking()
-				.Where(x => !x.IsDeleted)
-				.ToListAsync();
+                .Where(x => !x.IsDeleted && !x.IsExternal)
+                .ToListAsync();
 
 			var delayed = 0;
 			var soon = 0;
@@ -191,8 +191,8 @@ namespace FleetManagement.Desktop.Pages
 		private async Task LoadMaintenanceGridAsync()
 		{
 			var vehicles = await _db.Vehicles.AsNoTracking()
-				.Where(x => !x.IsDeleted)
-				.OrderBy(x => x.Plate)
+                .Where(x => !x.IsDeleted && !x.IsExternal)
+                .OrderBy(x => x.Plate)
 				.ToListAsync();
 
 			var rows = new List<MaintenanceRow>();
@@ -289,6 +289,7 @@ namespace FleetManagement.Desktop.Pages
             var vehicles = await _db.Vehicles
                 .AsNoTracking()
                 .Where(x => !x.IsDeleted)
+                .Where(x => !x.IsExternal)
                 .Where(x => (x.VehicleSituation ?? "Müsait") == "Müsait")
                 .OrderBy(x => x.Plate)
                 .ToListAsync();
@@ -333,8 +334,11 @@ namespace FleetManagement.Desktop.Pages
         private async Task LoadAvailableDriversAsync()
         {
             var rows = await _db.Drivers.AsNoTracking()
-                .Where(x => !x.IsDeleted && x.DriverSituation == "Müsait")
-                .OrderBy(x => x.FullName)
+                .Where(x =>
+                    !x.IsDeleted &&
+                    !x.IsExternal &&
+                    x.DriverSituation == "Müsait")
+                            .OrderBy(x => x.FullName)
                 .Select(x => new AvailableDriverRow
                 {
                     FullName = x.FullName,

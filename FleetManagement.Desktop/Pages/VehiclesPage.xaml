@@ -236,6 +236,12 @@
                                        Foreground="{StaticResource BrushMuted}"/>
                             <TextBox x:Name="LoadCapacityBox"
                                      Margin="0,6,0,0"/>
+                            <CheckBox
+                                    x:Name="IsExternalCheckBox"
+                                    Content="Dış Birlik / Misafir Aracı"
+                                    Margin="0,8,0,0"
+                                    VerticalAlignment="Center"/>
+                            
                         </StackPanel>
 
                         <!-- 4. Kolon -->

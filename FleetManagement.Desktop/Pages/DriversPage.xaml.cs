@@ -59,7 +59,9 @@ namespace FleetManagement.Desktop.Pages
 			DriverNumberBox.Text = d.DriverNumber ?? "";
 			FullNameBox.Text = d.FullName ?? "";
 			PhoneBox.Text = d.PhoneNumber ?? "";
+
             DriverSituationCombo.Text = d.DriverSituation ?? "";
+            IsExternalCheckBox.IsChecked = d.IsExternal;
 
             // İstersen bunu da sessiz yap:
             // Notify($"Seçildi: #{d.Id}");
@@ -114,10 +116,13 @@ namespace FleetManagement.Desktop.Pages
                     {
                         DriverNumber = driverNumber,
                         FullName = fullName,
-                        DriverSituation = string.IsNullOrWhiteSpace(situation) ? null : situation,
+                        DriverSituation = string.IsNullOrWhiteSpace(situation)
+                                ? "Müsait"
+                                : situation,
                         PhoneNumber = phone,
                         CreatedAt = DateTime.UtcNow,
-                        IsDeleted = false
+                        IsDeleted = false,
+                        IsExternal = IsExternalCheckBox.IsChecked == true
                     };
 
                     _db.Drivers.Add(entity);
@@ -137,6 +142,7 @@ namespace FleetManagement.Desktop.Pages
                         ? "Müsait"
                         : situation;
                     entity.PhoneNumber = phone;
+                    entity.IsExternal = IsExternalCheckBox.IsChecked == true;
                 }
 
                 await _db.SaveChangesAsync();
@@ -257,6 +263,8 @@ namespace FleetManagement.Desktop.Pages
 			SearchBox.Text = "";
             DriverSituationCombo.SelectedIndex = -1;
             DriverSituationCombo.Text = "";
+
+            IsExternalCheckBox.IsChecked = false;
         }
 
 		private static void Notify(string message, string title = "Bilgi")

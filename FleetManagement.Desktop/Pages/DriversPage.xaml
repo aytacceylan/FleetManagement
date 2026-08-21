@@ -151,6 +151,8 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="12"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- Sürücü No -->
@@ -178,13 +180,20 @@
 
                         </ComboBox>
                     </StackPanel>
-
+                    
                     <!-- Telefon -->
                     <StackPanel Grid.Column="6">
                         <TextBlock Text="TELEFON"
                                    Foreground="{StaticResource BrushMuted}"/>
                         <TextBox x:Name="PhoneBox"
                                  Margin="0,4,0,0"/>
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Column="8">
+                        <CheckBox x:Name="IsExternalCheckBox"
+                                  Content="Dış Birlik / Misafir"
+                                  Margin="0,20,0,0"
+                                  VerticalAlignment="Center"/>
                     </StackPanel>
 
                 </Grid>
@@ -231,6 +240,8 @@
                           CanUserAddRows="False"
                           SelectionMode="Single"
                           SelectionChanged="DriversGrid_SelectionChanged">
+
+                   
 
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="SÜRÜCÜ NO" Binding="{Binding DriverNumber}" Width="120"/>

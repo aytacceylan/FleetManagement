@@ -134,6 +134,8 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="12"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- 1. kolon -->
@@ -206,6 +208,59 @@
                             
                         </ComboBox>
                     </StackPanel>
+
+                    <!-- 5. kolon -->
+                    <StackPanel Grid.Column="8">
+
+                        <!-- YAPILAN KM -->
+                        <TextBlock Text="YAPILAN KM"
+               Foreground="{StaticResource BrushMuted}"
+               Margin="0,8,0,0"/>
+
+                        <Grid Margin="0,6,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox x:Name="MinKmTextBox"
+                 Grid.Column="0"
+                 Padding="8,6"
+                 ToolTip="Minimum KM"/>
+
+                            <TextBox x:Name="MaxKmTextBox"
+                 Grid.Column="2"
+                 Padding="8,6"
+                 ToolTip="Maksimum KM"/>
+                        </Grid>
+
+                        <!-- GÖREVDE KALINAN SÜRE -->
+                        <TextBlock Text="GÖREVDE KALINAN SÜRE (SAAT)"
+               Foreground="{StaticResource BrushMuted}"
+               Margin="0,2,0,0"/>
+
+                        <Grid Margin="0,6,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox x:Name="MinDurationTextBox"
+                 Grid.Column="0"
+                 Padding="8,6"
+                 ToolTip="Minimum görev süresi (saat)"/>
+
+                            <TextBox x:Name="MaxDurationTextBox"
+                 Grid.Column="2"
+                 Padding="8,6"
+                 ToolTip="Maksimum görev süresi (saat)"/>
+                        </Grid>
+
+                    </StackPanel>
+
+
                 </Grid>
             </Grid>
         </Border>
@@ -266,16 +321,44 @@
                           SelectionMode="Extended">
                     
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="S.NO" Binding="{Binding DailyNo}" Width="50"/>
+                        <DataGridTextColumn Header="S.NO"
+                    Binding="{Binding ReportNo}"
+                    Width="60">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="TextAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
                         <DataGridTextColumn Header="TARİH" Binding="{Binding DateText}" Width="95"/>
                         <DataGridTextColumn Header="PLAKA" Binding="{Binding Plate}" Width="100"/>
                         <DataGridTextColumn Header="SÜRÜCÜ" Binding="{Binding Driver}" Width="150"/>
                         <DataGridTextColumn Header="ARAÇ MARKA" Binding="{Binding VehicleBrand}" Width="100"/>
                         <DataGridTextColumn Header="GİDİLEN YER" Binding="{Binding Route}" Width="110"/>
-                        <DataGridTextColumn Header="GÖREV TÜTÜ" Binding="{Binding DutyType}" Width="80"/>
+                        <DataGridTextColumn Header="GÖREV TÜRÜ" Binding="{Binding DutyType}" Width="80"/>
                         <DataGridTextColumn Header="EMRİNE GİRİLEN BRL/KS" Binding="{Binding Departure}" Width="120"/>
                         <DataGridTextColumn Header="DURUM" Binding="{Binding Status}" Width="100"/>
-                        <DataGridTextColumn Header="YAPILAN KM" Binding="{Binding KmText}" Width="80"/>
+                        <DataGridTextColumn Header="YAPILAN KM"
+                    Binding="{Binding KmText}"
+                    Width="90">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="TextAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="GÖREV SÜRESİ"
+                    Binding="{Binding DurationText}"
+                    Width="110">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="TextAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
                         <DataGridTextColumn Header="TAŞINAN YOLCU" Binding="{Binding PassengerCount}" Width="100"/>
                         <DataGridTextColumn Header="TAŞINAN YÜK" Binding="{Binding LoadAmount}" Width="110"/>
                     </DataGrid.Columns>
