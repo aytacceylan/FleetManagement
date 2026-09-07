@@ -391,10 +391,11 @@ namespace FleetManagement.Desktop.Pages
 
                 var now = DateTime.Now;
                 var path = ExportRowsToExcel(
-    rowsToExport,
-    $"SevkSorgulama_{now:yyyy-MM-dd_HH-mm}.xlsx",
-    StartDatePicker.SelectedDate,
-    EndDatePicker.SelectedDate);
+                        rowsToExport,
+                        $"SevkSorgulama_{now:yyyy-MM-dd_HH-mm}.xlsx",
+                        StartDatePicker.SelectedDate,
+                        EndDatePicker.SelectedDate);
+
                 AppLogger.Info("VehicleMovementReports.Export",
                                 $"Excel export alındı. Kayıt sayısı: {rowsToExport.Count}");
 

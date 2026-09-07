@@ -68,10 +68,12 @@ namespace FleetManagement.Desktop.Pages
                 x => x.Plate ?? "");
 
             var drivers = await _db.Drivers
-                .AsNoTracking()
-                .Where(x => !x.IsDeleted)
-                .OrderBy(x => x.FullName)
-                .ToListAsync();
+				.AsNoTracking()				.Where(x =>
+					!x.IsDeleted &&
+					x.IsActive &&
+					x.DriverSituation == "Müsait")
+				.OrderBy(x => x.FullName)
+				.ToListAsync();
 
             ComboBoxSearchHelper.BindContains(
                 DriverCombo,
@@ -81,14 +83,17 @@ namespace FleetManagement.Desktop.Pages
                 x => x.FullName ?? "");
 
             var seconddrivers = await _db.Drivers
-				.AsNoTracking()
-				.Where(x => !x.IsDeleted)
-				.OrderBy(x => x.FullName)
-				.ToListAsync();
+                .AsNoTracking()
+                .Where(x =>
+                    !x.IsDeleted &&
+                    x.IsActive &&
+                    x.DriverSituation == "Müsait")
+                .OrderBy(x => x.FullName)
+                .ToListAsync();
 
             ComboBoxSearchHelper.BindContains(
                 SecondDriverCombo,
-                drivers,
+                seconddrivers,
                 nameof(Driver.FullName),
                 nameof(Driver.Id),
                 x => x.FullName ?? "");
