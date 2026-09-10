@@ -224,6 +224,7 @@
 
                             <TextBlock Text="SÜRÜCÜ RÜTBESİ ADI SOYADI" Foreground="{StaticResource BrushMuted}"/>
                             <ComboBox x:Name="DriverCombo"
+                                      SelectionChanged="DriverCombo_SelectionChanged"
                                      Margin="0,6,0,0"
                                      DisplayMemberPath="Display"
                                      SelectedValuePath="Id">

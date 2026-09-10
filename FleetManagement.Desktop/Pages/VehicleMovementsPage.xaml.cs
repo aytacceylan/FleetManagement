@@ -31,7 +31,9 @@ namespace FleetManagement.Desktop.Pages
 
         private List<VehicleMovementRow> _all = new();
 
-		public VehicleMovementsPage()
+        private List<Driver> _availableDrivers = new();
+
+        public VehicleMovementsPage()
 		{
 			InitializeComponent();
 
@@ -55,10 +57,10 @@ namespace FleetManagement.Desktop.Pages
 		private async Task LoadLookupsAsync()
 		{
             var vehicles = await _db.Vehicles
-                .AsNoTracking()
-                .Where(x => !x.IsDeleted)
-                .OrderBy(x => x.Plate)
-                .ToListAsync();
+        .AsNoTracking()
+        .Where(x => !x.IsDeleted)
+        .OrderBy(x => x.Plate)
+        .ToListAsync();
 
             ComboBoxSearchHelper.BindContains(
                 VehicleCombo,
@@ -67,22 +69,9 @@ namespace FleetManagement.Desktop.Pages
                 nameof(Vehicle.Id),
                 x => x.Plate ?? "");
 
+
+            // 1. sürücü
             var drivers = await _db.Drivers
-				.AsNoTracking()				.Where(x =>
-					!x.IsDeleted &&
-					x.IsActive &&
-					x.DriverSituation == "Müsait")
-				.OrderBy(x => x.FullName)
-				.ToListAsync();
-
-            ComboBoxSearchHelper.BindContains(
-                DriverCombo,
-                drivers,
-                nameof(Driver.FullName),
-                nameof(Driver.Id),
-                x => x.FullName ?? "");
-
-            var seconddrivers = await _db.Drivers
                 .AsNoTracking()
                 .Where(x =>
                     !x.IsDeleted &&
@@ -91,12 +80,18 @@ namespace FleetManagement.Desktop.Pages
                 .OrderBy(x => x.FullName)
                 .ToListAsync();
 
+            _availableDrivers = drivers;
+
             ComboBoxSearchHelper.BindContains(
-                SecondDriverCombo,
-                seconddrivers,
+                DriverCombo,
+                drivers,
                 nameof(Driver.FullName),
                 nameof(Driver.Id),
                 x => x.FullName ?? "");
+
+
+            // 2. sürücü
+            await RefreshSecondDriverListAsync();
 
             var commanders = await _db.VehicleCommanders
                 .AsNoTracking()
@@ -1008,7 +1003,54 @@ namespace FleetManagement.Desktop.Pages
 
             _selectedId = _currentMovement.Id;
 
+            // Güncel müsait sürücü listesini al
+            var currentDrivers = await _db.Drivers
+                .AsNoTracking()
+                .Where(x =>
+                    !x.IsDeleted &&
+                    x.IsActive &&
+                    x.DriverSituation == "Müsait")
+                .OrderBy(x => x.FullName)
+                .ToListAsync();
+
+            // Mevcut görevin sürücülerini de geçici olarak listeye dahil et
+            if (_currentMovement.Driver != null &&
+                !currentDrivers.Any(x => x.Id == _currentMovement.Driver.Id))
+            {
+                currentDrivers.Add(_currentMovement.Driver);
+            }
+
+            if (_currentMovement.SecondDriver != null &&
+                !currentDrivers.Any(x => x.Id == _currentMovement.SecondDriver.Id))
+            {
+                currentDrivers.Add(_currentMovement.SecondDriver);
+            }
+
+            _availableDrivers = currentDrivers
+                .OrderBy(x => x.FullName)
+                .ToList();
+
+            ComboBoxSearchHelper.BindContains(
+                DriverCombo,
+                _availableDrivers,
+                nameof(Driver.FullName),
+                nameof(Driver.Id),
+                x => x.FullName ?? "");
+
+            var secondDrivers = _availableDrivers
+                .Where(x => x.Id != _currentMovement.DriverId)
+                .OrderBy(x => x.FullName)
+                .ToList();
+
+            ComboBoxSearchHelper.BindContains(
+                SecondDriverCombo,
+                secondDrivers,
+                nameof(Driver.FullName),
+                nameof(Driver.Id),
+                x => x.FullName ?? "");
+
             FillForm(_currentMovement);
+
         }
 
         private void FillForm(VehicleMovement m)
@@ -1608,6 +1650,85 @@ namespace FleetManagement.Desktop.Pages
             //Notify("Repair tamamlandı.");
         }
 
+        private void DriverCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (_availableDrivers == null || _availableDrivers.Count == 0)
+                    return;
+
+                var selectedDriverId =
+                    DriverCombo.SelectedValue is int id
+                        ? id
+                        : (int?)null;
+
+                var secondDrivers = _availableDrivers
+                    .Where(x => selectedDriverId == null || x.Id != selectedDriverId.Value)
+                    .OrderBy(x => x.FullName)
+                    .ToList();
+
+                var previousSecondDriverId =
+                    SecondDriverCombo.SelectedValue is int secondId
+                        ? secondId
+                        : (int?)null;
+
+                ComboBoxSearchHelper.BindContains(
+                    SecondDriverCombo,
+                    secondDrivers,
+                    nameof(Driver.FullName),
+                    nameof(Driver.Id),
+                    x => x.FullName ?? "");
+
+                
+
+                // Önceden seçili 2. sürücü hâlâ uygunsa seçimini koru
+                if (previousSecondDriverId.HasValue &&
+                    secondDrivers.Any(x => x.Id == previousSecondDriverId.Value))
+                {
+                    SecondDriverCombo.SelectedValue = previousSecondDriverId.Value;
+                }
+                else
+                {
+                    SecondDriverCombo.SelectedIndex = -1;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                AppLogger.Error(
+                    "VehicleMovements.DriverCombo_SelectionChanged",
+                    "1. sürücü değişirken 2. sürücü listesi güncellenemedi.",
+                    ex);
+            }
+
+        }
+
+        private async Task RefreshSecondDriverListAsync()
+        {
+            int? firstDriverId = null;
+
+            if (DriverCombo.SelectedValue is int selectedId)
+            {
+                firstDriverId = selectedId;
+            }
+
+            var secondDrivers = await _db.Drivers
+                .AsNoTracking()
+                .Where(x =>
+                    !x.IsDeleted &&
+                    x.IsActive &&
+                    x.DriverSituation == "Müsait" &&
+                    (!firstDriverId.HasValue || x.Id != firstDriverId.Value))
+                .OrderBy(x => x.FullName)
+                .ToListAsync();
+
+            ComboBoxSearchHelper.BindContains(
+                SecondDriverCombo,
+                secondDrivers,
+                nameof(Driver.FullName),
+                nameof(Driver.Id),
+                x => x.FullName ?? "");
+        }
 
     }
 
