@@ -47,6 +47,9 @@ namespace FleetManagement.Desktop.Pages
 				await LoadLookupsAsync();
 				await LoadAsync();
 				PrepareNewFormState();
+
+				// Aylık rapor kontrolünü arka planda başlat
+				_ = CheckMonthlyReportAsync();
 			};
 		}
 
@@ -70,43 +73,52 @@ namespace FleetManagement.Desktop.Pages
                 x => x.Plate ?? "");
 
 
-            // 1. sürücü
-            var drivers = await _db.Drivers
-                .AsNoTracking()
-                .Where(x =>
-                    !x.IsDeleted &&
-                    x.IsActive &&
-                    x.DriverSituation == "Müsait")
-                .OrderBy(x => x.FullName)
-                .ToListAsync();
+			// 1. sürücü
+			var drivers = await _db.Drivers
+				.AsNoTracking()
+				.Where(x =>
+					!x.IsDeleted &&
+					x.DriverSituation == "Müsait")
+				.OrderBy(x => x.FullName)
+				.ToListAsync();
 
-            _availableDrivers = drivers;
-
-            ComboBoxSearchHelper.BindContains(
-                DriverCombo,
-                drivers,
-                nameof(Driver.FullName),
-                nameof(Driver.Id),
-                x => x.FullName ?? "");
+			_availableDrivers = drivers;
 
 
-            // 2. sürücü
-            await RefreshSecondDriverListAsync();
 
-            var commanders = await _db.VehicleCommanders
-                .AsNoTracking()
-                .Where(x => !x.IsDeleted)
-                .OrderBy(x => x.FullName)
-                .ToListAsync();
+			ComboBoxSearchHelper.BindContains(
+				DriverCombo,
+				drivers,
+				nameof(Driver.FullName),
+				nameof(Driver.Id),
+				x => x.FullName ?? "");
 
-            ComboBoxSearchHelper.BindContains(
-                CommanderCombo,
-                commanders,
-                nameof(VehicleCommander.FullName),
-                nameof(VehicleCommander.Id),
-                x => x.FullName ?? "");
 
-            var routes = await _db.Routes
+
+			var seconddrivers = await _db.Drivers
+				.AsNoTracking()
+				.Where(x => !x.IsDeleted)
+				.OrderBy(x => x.FullName)
+				.ToListAsync();
+
+			ComboBoxSearchHelper.BindContains(
+				SecondDriverCombo,
+				seconddrivers,
+				nameof(Driver.FullName),
+				nameof(Driver.Id),
+				x => x.FullName ?? "");
+
+			var commanders = await _db.VehicleCommanders.AsNoTracking()
+	.Where(x => !x.IsDeleted)
+	.OrderBy(x => x.FullName)
+	.Select(x => new { x.Id, Display = x.FullName })
+	.ToListAsync();
+
+			CommanderCombo.ItemsSource = commanders;
+			CommanderCombo.DisplayMemberPath = "Display";
+			CommanderCombo.SelectedValuePath = "Id";
+
+			var routes = await _db.Routes
                 .AsNoTracking()
                 .OrderBy(x => x.Name)
                 .ToListAsync();
@@ -213,6 +225,7 @@ namespace FleetManagement.Desktop.Pages
 					Plate = m.Vehicle?.Plate ?? m.VehiclePlateText ?? "",
 					ExitTimeText = exitLocal.ToString("HH:mm"),
 					ReturnTimeText = returnLocal is null ? "—" : returnLocal.Value.ToString("HH:mm"),
+					VehicleBrand = m.Vehicle?.VehicleBrand,
 					VehicleType = m.Vehicle?.VehicleType,
 					Status = status,
 					StatusBrush = GetStatusBrush(status),
@@ -265,8 +278,11 @@ namespace FleetManagement.Desktop.Pages
                 ).ToList();
             }
 
-            _all = rows;
+			_all = rows;
 			MovementsGrid.ItemsSource = _all;
+
+			MovementsGrid.SelectedItem = null;
+
 			UpdateCount(_all.Count);
 		}
 
@@ -348,9 +364,16 @@ namespace FleetManagement.Desktop.Pages
 
 				if (DriverCombo.SelectedValue is not int didValue)
 				{
-					Notify("Sürücü seçimi zorunlu.", "Uyarı");
+					Notify(
+						$"Sürücü seçimi okunamadı.\n" +
+						$"Text: {DriverCombo.Text}\n" +
+						$"SelectedValue: {DriverCombo.SelectedValue}",
+						"Uyarı");
+
 					return;
 				}
+
+
 
 				Driver? selectedDriver = null;
 				Driver? selectedSecondDriver = null;
@@ -380,7 +403,6 @@ namespace FleetManagement.Desktop.Pages
 					Notify("Sürücü bulunamadı.", "Uyarı");
 					return;
 				}
-
 				if (_selectedId is null && IsDriverBlockedForDispatch(selectedDriver.DriverSituation))
 				{
 					Notify($"Bu sürücü sevke uygun değil. Sürücü durumu: {NormalizeDriverSituation(selectedDriver.DriverSituation)}", "Uyarı");
@@ -986,76 +1008,59 @@ namespace FleetManagement.Desktop.Pages
         }
 
 
-        private async void MovementsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		private async void MovementsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (MovementsGrid.SelectedItem is not VehicleMovementRow row)
+				return;
+
+			_currentMovement = await _db.VehicleMovements
+				.Include(x => x.Vehicle)
+				.Include(x => x.Driver)
+				.Include(x => x.SecondDriver)
+				.Include(x => x.VehicleCommander)
+				.FirstOrDefaultAsync(x => x.Id == row.Id && !x.IsDeleted);
+
+			if (_currentMovement == null)
+				return;
+
+			_selectedId = _currentMovement.Id;
+
+			// Başka görevlerde halen "Görevde" olan sürücülerin ID'lerini al.
+			// Düzenlenen mevcut görev kontrol dışında bırakılıyor.
+	
+
+
+			// 1. sürücü listesi
+			ComboBoxSearchHelper.BindContains(
+				DriverCombo,
+				_availableDrivers,
+				nameof(Driver.FullName),
+				nameof(Driver.Id),
+				x => x.FullName ?? "");
+
+			// 2. sürücü olarak 1. sürücü seçilemesin.
+			var secondDrivers = _availableDrivers
+				.Where(x => x.Id != _currentMovement.DriverId)
+				.OrderBy(x => x.FullName)
+				.ToList();
+
+			ComboBoxSearchHelper.BindContains(
+				SecondDriverCombo,
+				secondDrivers,
+				nameof(Driver.FullName),
+				nameof(Driver.Id),
+				x => x.FullName ?? "");
+
+			// Formdaki mevcut değerleri seç.
+			FillForm(_currentMovement);
+		}
+
+		private void FillForm(VehicleMovement m)
         {
-            if (MovementsGrid.SelectedItem is not VehicleMovementRow row)
-                return;
 
-            _currentMovement = await _db.VehicleMovements
-                .Include(x => x.Vehicle)
-                .Include(x => x.Driver)
-                .Include(x => x.SecondDriver)
-                .Include(x => x.VehicleCommander)
-                .FirstOrDefaultAsync(x => x.Id == row.Id && !x.IsDeleted);
 
-            if (_currentMovement == null)
-                return;
 
-            _selectedId = _currentMovement.Id;
-
-            // Güncel müsait sürücü listesini al
-            var currentDrivers = await _db.Drivers
-                .AsNoTracking()
-                .Where(x =>
-                    !x.IsDeleted &&
-                    x.IsActive &&
-                    x.DriverSituation == "Müsait")
-                .OrderBy(x => x.FullName)
-                .ToListAsync();
-
-            // Mevcut görevin sürücülerini de geçici olarak listeye dahil et
-            if (_currentMovement.Driver != null &&
-                !currentDrivers.Any(x => x.Id == _currentMovement.Driver.Id))
-            {
-                currentDrivers.Add(_currentMovement.Driver);
-            }
-
-            if (_currentMovement.SecondDriver != null &&
-                !currentDrivers.Any(x => x.Id == _currentMovement.SecondDriver.Id))
-            {
-                currentDrivers.Add(_currentMovement.SecondDriver);
-            }
-
-            _availableDrivers = currentDrivers
-                .OrderBy(x => x.FullName)
-                .ToList();
-
-            ComboBoxSearchHelper.BindContains(
-                DriverCombo,
-                _availableDrivers,
-                nameof(Driver.FullName),
-                nameof(Driver.Id),
-                x => x.FullName ?? "");
-
-            var secondDrivers = _availableDrivers
-                .Where(x => x.Id != _currentMovement.DriverId)
-                .OrderBy(x => x.FullName)
-                .ToList();
-
-            ComboBoxSearchHelper.BindContains(
-                SecondDriverCombo,
-                secondDrivers,
-                nameof(Driver.FullName),
-                nameof(Driver.Id),
-                x => x.FullName ?? "");
-
-            FillForm(_currentMovement);
-
-        }
-
-        private void FillForm(VehicleMovement m)
-        {
-            VehicleCombo.SelectedValue = m.VehicleId;
+			VehicleCombo.SelectedValue = m.VehicleId;
             DriverCombo.SelectedValue = m.DriverId;
             SecondDriverCombo.SelectedValue = m.SecondDriverId;
             CommanderCombo.SelectedValue = m.VehicleCommanderId;
@@ -1398,18 +1403,31 @@ namespace FleetManagement.Desktop.Pages
             };
         }
 
-        // I/O
-        private void ExportDaily_Click(object sender, RoutedEventArgs e)
+		// I/O
+		private void ExportDaily_Click(object sender, RoutedEventArgs e)
 		{
 			try
 			{
 				var today = DateTime.Today;
+
 				var rows = _all
-					.Where(x => x.ExitDateTimeUtc.ToLocalTime().Date == today)
+					.Where(x =>
+						x.ExitDateTimeUtc.ToLocalTime().Date == today)
 					.OrderBy(x => x.DailyNo)
 					.ToList();
 
-				var path = ExportRowsToExcel(rows, $"Görev Kayıt Defteri_{DateTime.Now:yyyy-MM-dd_HH-mm}.xlsx");
+				if (!rows.Any())
+				{
+					Notify("Bugün için aktarılacak görev kaydı bulunamadı.", "Bilgi");
+					return;
+				}
+
+				var path = ExportRowsToExcel(
+					rows,
+					$"Görev Kayıt Defteri_{today:yyyy-MM-dd_HH-mm}.xlsx",
+					today,
+					today);
+
 				Notify($"Günlük Excel export tamamlandı.\n{path}");
 			}
 			catch (Exception ex)
@@ -1424,15 +1442,47 @@ namespace FleetManagement.Desktop.Pages
 			try
 			{
 				var today = DateTime.Today;
-				var rows = _all
-					.Where(x =>
-						x.ExitDateTimeUtc.ToLocalTime().Year == today.Year &&
-						x.ExitDateTimeUtc.ToLocalTime().Month == today.Month)
-					.OrderBy(x => x.ExitDateTimeUtc)
-					.ThenBy(x => x.DailyNo)
-					.ToList();
 
-				var path = ExportRowsToExcel(rows, $"Görev Kayıt Defteri_{DateTime.Now:yyyy-MM_HH-mm}.xlsx");
+				var startDate = new DateTime(
+					today.Year,
+					today.Month,
+					1);
+
+				var endDate = startDate
+					.AddMonths(1)
+					.AddDays(-1);
+
+				var rows = _all
+				.Where(x =>
+				{
+					var date = x.ExitDateTimeUtc
+						.ToLocalTime()
+						.Date;
+
+					return date >= startDate &&
+						   date <= endDate;
+				})
+				.OrderBy(x => x.ExitDateTimeUtc)
+				.ThenBy(x => x.DailyNo)
+				.Select((x, index) =>
+				{
+					x.DailyNo = index + 1;
+					return x;
+				})
+				.ToList();
+
+				if (!rows.Any())
+				{
+					Notify("Bu ay için aktarılacak görev kaydı bulunamadı.", "Bilgi");
+					return;
+				}
+
+				var path = ExportRowsToExcel(
+					rows,
+					$"Görev Kayıt Defteri_{today:yyyy-MM_HH-mm}.xlsx",
+					startDate,
+					endDate);
+
 				Notify($"Aylık Excel export tamamlandı.\n{path}");
 			}
 			catch (Exception ex)
@@ -1486,7 +1536,11 @@ namespace FleetManagement.Desktop.Pages
 			return $"\"{s}\"";
 		}
 
-		private static string ExportRowsToExcel(List<VehicleMovementRow> rows, string fileName)
+		private static string ExportRowsToExcel(
+	List<VehicleMovementRow> rows,
+	string fileName,
+	DateTime? startDate,
+	DateTime? endDate)
 		{
 			var folder = @"D:\Görev Kayıt Defteri";
 			Directory.CreateDirectory(folder);
@@ -1494,62 +1548,278 @@ namespace FleetManagement.Desktop.Pages
 			var path = Path.Combine(folder, fileName);
 
 			using var wb = new XLWorkbook();
-			var ws = wb.Worksheets.Add("Araç Hareketleri");
 
-			ws.Cell(1, 1).Value = "Sıra No";
-			ws.Cell(1, 2).Value = "Sürücü";
-			ws.Cell(1, 3).Value = "2. Sürücü";
-			ws.Cell(1, 4).Value = "Plaka";
-			ws.Cell(1, 5).Value = "Çıkış Saati";
-			ws.Cell(1, 6).Value = "Dönüş Saati";
-			ws.Cell(1, 7).Value = "Araç Cinsi";
-			ws.Cell(1, 8).Value = "Durum";
-			ws.Cell(1, 9).Value = "Tarih";
-			ws.Cell(1, 10).Value = "Güzergah";
-			ws.Cell(1, 11).Value = "Araç Komutanı";
-			ws.Cell(1, 12).Value = "Başkanlık";
-			ws.Cell(1, 13).Value = "Yapılan Km";
-			ws.Cell(1, 14).Value = "Taşınan Yolcu";
-			ws.Cell(1, 15).Value = "Taşınan Yük";
-			ws.Cell(1, 16).Value = "Görev Türü";
+			var ws = wb.Worksheets.Add("Araç Sevk Raporu");
 
-			int row = 2;
-			foreach (var x in rows)
+			// =========================================================
+			// RAPOR ÖZETİ
+			// =========================================================
+
+			var totalKm = rows
+				.Where(x => x.DoneKm.HasValue)
+				.Sum(x => x.DoneKm!.Value);
+
+			var totalDuration = TimeSpan.Zero;
+
+			foreach (var row in rows)
 			{
-				ws.Cell(row, 1).Value = x.DailyNo;
-				ws.Cell(row, 2).Value = x.Driver ?? "";
-				ws.Cell(row, 3).Value = x.SecondDriver ?? "";
-				ws.Cell(row, 4).Value = x.Plate ?? "";
-				ws.Cell(row, 5).Value = x.ExitTimeText ?? "";
-				ws.Cell(row, 6).Value = x.ReturnTimeText ?? "";
-				ws.Cell(row, 7).Value = x.VehicleType ?? "";
-				ws.Cell(row, 8).Value = x.Status ?? "";
-				ws.Cell(row, 9).Value = x.DateText ?? "";
-				ws.Cell(row, 10).Value = x.Route ?? "";
-				ws.Cell(row, 11).Value = x.Commander ?? "";
-				ws.Cell(row, 12).Value = x.Departure ?? "";
-				ws.Cell(row, 13).Value = x.KmText ?? "";
-				ws.Cell(row, 14).Value = x.PassengerCount?.ToString() ?? "";
-				ws.Cell(row, 15).Value = x.LoadAmount?.ToString() ?? "";
-				ws.Cell(row, 16).Value = x.DutyType ?? "";
-				row++;
+				var end = row.ReturnDateTimeUtc ?? DateTime.UtcNow;
+
+				if (end >= row.ExitDateTimeUtc)
+				{
+					totalDuration +=
+						end - row.ExitDateTimeUtc;
+				}
 			}
 
-			var headerRange = ws.Range(1, 1, 1, 16);
-			headerRange.Style.Font.Bold = true;
-			headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-			headerRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+			var totalHours =
+				(int)totalDuration.TotalHours;
 
-			var tableRange = ws.Range(1, 1, Math.Max(row - 1, 1), 16);
-			tableRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-			tableRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
-			tableRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+			var startText =
+				startDate?.ToString("dd.MM.yyyy") ?? "—";
+
+			var endText =
+				endDate?.ToString("dd.MM.yyyy") ?? "—";
+
+			var reportTitle =
+				$"{startText} - {endText} TARİHLERİ ARASI ARAÇ SEVK RAPORU";
+
+			var summaryText =
+				$"Toplam Kayıt: {rows.Count}   |   " +
+				$"Toplam KM: {totalKm:N0} km   |   " +
+				$"Toplam Görev Süresi: {totalHours} sa {totalDuration.Minutes} dk";
+
+			// =========================================================
+			// BAŞLIK
+			// =========================================================
+
+			ws.Range(1, 1, 1, 16).Merge();
+
+			ws.Cell(1, 1).Value =
+				reportTitle;
+
+			ws.Range(1, 1, 1, 16).Style.Font.Bold = true;
+
+			ws.Range(1, 1, 1, 16).Style.Font.FontSize = 16;
+
+			ws.Range(1, 1, 1, 16).Style.Alignment.Horizontal =
+				XLAlignmentHorizontalValues.Center;
+
+			ws.Range(1, 1, 1, 16).Style.Alignment.Vertical =
+				XLAlignmentVerticalValues.Center;
+
+			ws.Row(1).Height = 28;
+
+			// =========================================================
+			// ÖZET
+			// =========================================================
+
+			ws.Range(2, 1, 2, 16).Merge();
+
+			ws.Cell(2, 1).Value =
+				summaryText;
+
+			ws.Range(2, 1, 2, 16).Style.Font.Bold = true;
+
+			ws.Range(2, 1, 2, 16).Style.Alignment.Horizontal =
+				XLAlignmentHorizontalValues.Center;
+
+			ws.Range(2, 1, 2, 16).Style.Alignment.Vertical =
+				XLAlignmentVerticalValues.Center;
+
+			ws.Row(2).Height = 22;
+
+			// =========================================================
+			// SÜTUN BAŞLIKLARI
+			// =========================================================
+
+			int headerRow = 4;
+
+			ws.Cell(headerRow, 1).Value = "Sıra No";
+			ws.Cell(headerRow, 2).Value = "Sürücü";
+			ws.Cell(headerRow, 3).Value = "2. Sürücü";
+			ws.Cell(headerRow, 4).Value = "Plaka";
+			ws.Cell(headerRow, 5).Value = "Çıkış Saati";
+			ws.Cell(headerRow, 6).Value = "Dönüş Saati";
+			ws.Cell(headerRow, 7).Value = "Araç Cinsi";
+			ws.Cell(headerRow, 8).Value = "Araç Marka";
+			ws.Cell(headerRow, 9).Value = "Durum";
+			ws.Cell(headerRow, 10).Value = "Tarih";
+			ws.Cell(headerRow, 11).Value = "Güzergah";
+			ws.Cell(headerRow, 12).Value = "Araç Komutanı";
+			ws.Cell(headerRow, 13).Value = "Başkanlık";
+			ws.Cell(headerRow, 14).Value = "Yapılan Km";
+			ws.Cell(headerRow, 15).Value = "Görev Süresi";
+			ws.Cell(headerRow, 16).Value = "Görev Türü";
+
+			var headerRange =
+				ws.Range(
+					headerRow,
+					1,
+					headerRow,
+					16);
+
+			headerRange.Style.Font.Bold = true;
+
+			headerRange.Style.Alignment.Horizontal =
+				XLAlignmentHorizontalValues.Center;
+
+			headerRange.Style.Alignment.Vertical =
+				XLAlignmentVerticalValues.Center;
+
+			headerRange.Style.Alignment.WrapText = true;
+
+			// =========================================================
+			// VERİLER
+			// =========================================================
+
+			int excelRow = headerRow + 1;
+
+			foreach (var x in rows)
+			{
+				ws.Cell(excelRow, 1).Value =
+					x.DailyNo;
+
+				ws.Cell(excelRow, 2).Value =
+					x.Driver ?? "";
+
+				ws.Cell(excelRow, 3).Value =
+					x.SecondDriver ?? "";
+
+				ws.Cell(excelRow, 4).Value =
+					x.Plate ?? "";
+
+				ws.Cell(excelRow, 5).Value =
+					x.ExitTimeText ?? "";
+
+				ws.Cell(excelRow, 6).Value =
+					x.ReturnTimeText ?? "";
+
+				ws.Cell(excelRow, 7).Value =
+					x.VehicleType ?? "";
+
+				// Araç marka
+				ws.Cell(excelRow, 8).Value =
+					x.VehicleBrand ?? "";
+
+				ws.Cell(excelRow, 9).Value =
+					x.Status ?? "";
+
+				ws.Cell(excelRow, 10).Value =
+					x.DateText ?? "";
+
+				ws.Cell(excelRow, 11).Value =
+					x.Route ?? "";
+
+				ws.Cell(excelRow, 12).Value =
+					x.Commander ?? "";
+
+				ws.Cell(excelRow, 13).Value =
+					x.Departure ?? "";
+
+				ws.Cell(excelRow, 14).Value =
+					x.DoneKm.HasValue
+						? x.DoneKm.Value
+						: "";
+
+				// Görev süresi
+				var end =
+					x.ReturnDateTimeUtc ?? DateTime.UtcNow;
+
+				var duration =
+					end >= x.ExitDateTimeUtc
+						? end - x.ExitDateTimeUtc
+						: TimeSpan.Zero;
+
+				ws.Cell(excelRow, 15).Value =
+					$"{(int)duration.TotalHours} sa {duration.Minutes} dk";
+
+				ws.Cell(excelRow, 16).Value =
+					x.DutyType ?? "";
+
+				excelRow++;
+			}
+
+			// =========================================================
+			// TABLO BİÇİMLENDİRME
+			// =========================================================
+
+			var lastRow =
+				Math.Max(
+					excelRow - 1,
+					headerRow);
+
+			var tableRange =
+				ws.Range(
+					headerRow,
+					1,
+					lastRow,
+					16);
+
+			tableRange.Style.Border.OutsideBorder =
+				XLBorderStyleValues.Thin;
+
+			tableRange.Style.Border.InsideBorder =
+				XLBorderStyleValues.Thin;
+
+			tableRange.Style.Alignment.Vertical =
+				XLAlignmentVerticalValues.Center;
+
+			// =========================================================
+			// FİLTRE
+			// =========================================================
 
 			tableRange.SetAutoFilter();
+
+			// =========================================================
+			// SÜTUN GENİŞLİKLERİ
+			// =========================================================
+
 			ws.Columns().AdjustToContents();
-			ws.SheetView.FreezeRows(1);
+
+			// Çok uzun kolonların aşırı genişlemesini engelle
+			ws.Column(2).Width = 24;   // Sürücü
+			ws.Column(3).Width = 24;   // 2. Sürücü
+			ws.Column(7).Width = 18;   // Araç Cinsi
+			ws.Column(8).Width = 18;   // Araç Marka
+			ws.Column(11).Width = 24;  // Güzergah
+			ws.Column(12).Width = 24;  // Araç Komutanı
+			ws.Column(13).Width = 24;  // Başkanlık
+			ws.Column(15).Width = 16;  // Görev Süresi
+			ws.Column(16).Width = 20;  // Görev Türü
+
+			// =========================================================
+			// SAYFA AYARLARI
+			// =========================================================
+
+			ws.PageSetup.PageOrientation =
+				XLPageOrientation.Landscape;
+
+			ws.PageSetup.PaperSize =
+				XLPaperSize.A4Paper;
+
+			// Tüm sütunlar tek sayfa genişliğine sığsın
+			ws.PageSetup.PagesWide = 1;
+
+			// Dikeyde sayfa sınırı yok
+			ws.PageSetup.PagesTall = 0;
+
+			// Kenar boşlukları
+			ws.PageSetup.Margins.Left = 0.25;
+			ws.PageSetup.Margins.Right = 0.25;
+			ws.PageSetup.Margins.Top = 0.5;
+			ws.PageSetup.Margins.Bottom = 0.5;
+
+			// Her sayfada sütun başlıkları tekrar etsin
+			ws.PageSetup.SetRowsToRepeatAtTop(
+				headerRow,
+				headerRow);
+
+			// İlk 4 satırı sabitle
+			ws.SheetView.FreezeRows(headerRow);
 
 			wb.SaveAs(path);
+
 			return path;
 		}
 
@@ -1652,7 +1922,8 @@ namespace FleetManagement.Desktop.Pages
 
         private void DriverCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            try
+			
+			try
             {
                 if (_availableDrivers == null || _availableDrivers.Count == 0)
                     return;
@@ -1703,34 +1974,169 @@ namespace FleetManagement.Desktop.Pages
 
         }
 
-        private async Task RefreshSecondDriverListAsync()
-        {
-            int? firstDriverId = null;
+		private async Task CheckMonthlyReportAsync()
+		{
+			try
+			{
+				var today = DateTime.Today;
 
-            if (DriverCombo.SelectedValue is int selectedId)
-            {
-                firstDriverId = selectedId;
-            }
+				// Geçen ay
+				var previousMonth = today.AddMonths(-1);
 
-            var secondDrivers = await _db.Drivers
-                .AsNoTracking()
-                .Where(x =>
-                    !x.IsDeleted &&
-                    x.IsActive &&
-                    x.DriverSituation == "Müsait" &&
-                    (!firstDriverId.HasValue || x.Id != firstDriverId.Value))
-                .OrderBy(x => x.FullName)
-                .ToListAsync();
+				var startDate = new DateTime(
+					previousMonth.Year,
+					previousMonth.Month,
+					1);
 
-            ComboBoxSearchHelper.BindContains(
-                SecondDriverCombo,
-                secondDrivers,
-                nameof(Driver.FullName),
-                nameof(Driver.Id),
-                x => x.FullName ?? "");
-        }
+				var endDate = startDate.AddMonths(1);
 
-    }
+				var folder = @"D:\Görev Kayıt Defteri";
+				Directory.CreateDirectory(folder);
+
+				// Örnek:
+				// Görev Kayıt Defteri_2026-08.xlsx
+				var fileName =
+					$"Görev Kayıt Defteri_{previousMonth:yyyy-MM}.xlsx";
+
+				var path = Path.Combine(folder, fileName);
+
+				// Rapor daha önce oluşturulmuşsa tekrar oluşturma
+				if (File.Exists(path))
+					return;
+
+				// Geçen aya ait TÜM sevk kayıtlarını DB'den al.
+				// Ekrandaki _all listesini kullanmıyoruz.
+				var movements = await _db.VehicleMovements
+					.AsNoTracking()
+					.Where(x =>
+						!x.IsDeleted &&
+						x.ExitDateTime >= startDate.ToUniversalTime() &&
+						x.ExitDateTime < endDate.ToUniversalTime())
+					.Include(x => x.Vehicle)
+					.Include(x => x.Driver)
+					.Include(x => x.SecondDriver)
+					.Include(x => x.VehicleCommander)
+					.OrderBy(x => x.ExitDateTime)
+					.ThenBy(x => x.DailyNo)
+					.ToListAsync();
+
+				// O ay hiç görev yoksa dosya oluşturma
+				if (movements.Count == 0)
+					return;
+
+				var rows = movements.Select(m =>
+				{
+					var exitLocal = m.ExitDateTime.ToLocalTime();
+					var returnLocal = m.ReturnDateTime?.ToLocalTime();
+
+					var parsed =
+						ParseLoadOrPassengerInfo(m.LoadOrPassengerInfo);
+
+					var status = CalcStatus(m);
+
+					int? doneKm = null;
+
+					if (m.StartKm.HasValue &&
+						m.EndKm.HasValue &&
+						m.EndKm.Value >= m.StartKm.Value)
+					{
+						doneKm = m.EndKm.Value - m.StartKm.Value;
+					}
+
+					var dateForNo =
+						m.MovementDate == default
+							? exitLocal.Date
+							: m.MovementDate.ToLocalTime().Date;
+
+					return new VehicleMovementRow
+					{
+						Id = m.Id,
+
+						MovementNo =
+							$"{dateForNo:yyyyMMdd}-{m.DailyNo:000}",
+
+						DailyNo = m.DailyNo,
+
+						Driver =
+							m.Driver?.FullName ?? m.DriverText,
+
+						SecondDriver =
+							m.SecondDriver?.FullName ?? m.SecondDriverText,
+
+						Plate =
+							m.Vehicle?.Plate ??
+							m.VehiclePlateText ??
+							"",
+
+						ExitTimeText =
+							exitLocal.ToString("HH:mm"),
+
+						ReturnTimeText =
+							returnLocal is null
+								? "—"
+								: returnLocal.Value.ToString("HH:mm"),
+
+						VehicleType =
+							m.Vehicle?.VehicleType,
+
+						Status = status,
+
+						StatusBrush =
+							GetStatusBrush(status),
+
+						DateText =
+							exitLocal.ToString("dd.MM.yyyy"),
+
+						Route = m.Route,
+
+						Commander =
+							m.VehicleCommander?.FullName ??
+							m.CommanderText,
+
+						Departure =
+							m.Purpose,
+
+						DoneKm =
+							doneKm,
+
+						PassengerCount =
+							parsed.passenger,
+
+						LoadAmount =
+							parsed.load,
+
+						DutyType =
+							m.Description,
+
+						ExitDateTimeUtc =
+							m.ExitDateTime,
+
+						ReturnDateTimeUtc =
+							m.ReturnDateTime,
+
+						IsPreviousDayOpen = false
+					};
+				}).ToList();
+
+				// Sorgulama ekranındaki Excel formatını kullan
+				ExportRowsToExcel(
+					rows,
+					fileName,
+					startDate,
+					endDate);
+			}
+			catch (Exception ex)
+			{
+				AppLogger.Error(
+					"VehicleMovements.MonthlyReport",
+					"Otomatik aylık rapor oluşturulamadı.",
+					ex);
+			}
+		}
+
+
+
+	}
 
 
 }
