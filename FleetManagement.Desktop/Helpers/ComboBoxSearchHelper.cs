@@ -119,19 +119,23 @@ namespace FleetManagement.Desktop.Helpers
 				if (_disposed)
 					return;
 
-				// Dropdown kapalıysa TextChanged büyük ihtimalle
-				// kullanıcının seçiminden kaynaklanmıştır.
-				// Bu durumda ARAMA YAPMA.
-				if (!_combo.IsDropDownOpen)
-				{
-					_view.Filter = null;
-					_view.Refresh();
+				if (_combo.Template.FindName(
+					"PART_EditableTextBox",
+					_combo) is not TextBox textBox)
 					return;
+
+				// Kullanıcının gerçekten yazdığı metni doğrudan TextBox'tan al.
+				var searchText = textBox.Text ?? "";
+				var text = searchText.Trim();
+
+				// Yazmaya başlanınca liste otomatik açılsın.
+				if (!_combo.IsDropDownOpen &&
+					_combo.IsKeyboardFocusWithin &&
+					!string.IsNullOrWhiteSpace(text))
+				{
+					_combo.IsDropDownOpen = true;
 				}
 
-				var text = (_combo.Text ?? "").Trim();
-
-				// Arama kutusu boşsa bütün liste.
 				if (string.IsNullOrWhiteSpace(text))
 				{
 					_view.Filter = null;
@@ -143,24 +147,22 @@ namespace FleetManagement.Desktop.Helpers
 						if (item is not T value)
 							return false;
 
-						var searchValue =
-							_searchSelector(value) ?? "";
+						var searchValue = _searchSelector(value) ?? "";
 
 						return searchValue.IndexOf(
 							text,
-							StringComparison.OrdinalIgnoreCase) >= 0;
+							StringComparison.CurrentCultureIgnoreCase) >= 0;
 					};
 				}
 
 				_view.Refresh();
 
-				if (_combo.Template.FindName(
-					"PART_EditableTextBox",
-					_combo) is TextBox textBox)
-				{
-					textBox.SelectionStart = textBox.Text.Length;
-					textBox.SelectionLength = 0;
-				}
+				// ComboBox filtreleme sırasında yazılan metni değiştirmesin.
+				if (textBox.Text != searchText)
+					textBox.Text = searchText;
+
+				textBox.SelectionStart = textBox.Text.Length;
+				textBox.SelectionLength = 0;
 			}
 
 			public void Dispose()

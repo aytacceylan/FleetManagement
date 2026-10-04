@@ -265,13 +265,9 @@
                             </ComboBox>
 
                                 <TextBlock Text="ARAÇ KOMUTANI" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            
                             <ComboBox x:Name="CommanderCombo"
-                                        Margin="0,6,0,0"
-                                          DisplayMemberPath="Plate"
-                                          SelectedValuePath="Id"
-                                          SelectionChanged="VehicleCombo_SelectionChanged">
-
-                            </ComboBox>
+          Margin="0,6,0,0"/>
 
                             <TextBlock Text="EMRİNE GİRDİĞİ BRL./KS." Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0" />
                             <ComboBox x:Name="DepartureCombo"

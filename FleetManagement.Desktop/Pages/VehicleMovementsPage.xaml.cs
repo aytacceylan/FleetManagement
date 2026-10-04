@@ -106,15 +106,18 @@ namespace FleetManagement.Desktop.Pages
 				nameof(Driver.Id),
 				x => x.FullName ?? "");
 
-			var commanders = await _db.VehicleCommanders.AsNoTracking()
-	.Where(x => !x.IsDeleted)
-	.OrderBy(x => x.FullName)
-	.Select(x => new { x.Id, Display = x.FullName })
-	.ToListAsync();
+			var commanders = await _db.VehicleCommanders
+				.AsNoTracking()
+				.Where(x => !x.IsDeleted)
+				.OrderBy(x => x.FullName)
+				.ToListAsync();
 
-			CommanderCombo.ItemsSource = commanders;
-			CommanderCombo.DisplayMemberPath = "Display";
-			CommanderCombo.SelectedValuePath = "Id";
+			ComboBoxSearchHelper.BindContains(
+				CommanderCombo,
+				commanders,
+				nameof(VehicleCommander.FullName),
+				nameof(VehicleCommander.Id),
+				x => x.FullName ?? "");
 
 			var routes = await _db.Routes
                 .AsNoTracking()
