@@ -76,9 +76,7 @@ namespace FleetManagement.Desktop.Pages
 			// 1. sürücü
 			var drivers = await _db.Drivers
 				.AsNoTracking()
-				.Where(x =>
-					!x.IsDeleted &&
-					x.DriverSituation == "Müsait")
+				.Where(x => !x.IsDeleted)
 				.OrderBy(x => x.FullName)
 				.ToListAsync();
 
@@ -389,10 +387,20 @@ namespace FleetManagement.Desktop.Pages
 						return;
 					}
 
-					if (_selectedId is null && IsVehicleBlockedForDispatch(selectedVehicle.VehicleSituation))
+					if (_selectedId is null)
 					{
-						Notify($"Bu araç sevke uygun değil. Araç durumu: {NormalizeVehicleSituation(selectedVehicle.VehicleSituation)}", "Uyarı");
-						return;
+						var vehicleSituation = NormalizeVehicleSituation(selectedVehicle.VehicleSituation);
+
+						// Araç şu anda görevde olabilir.
+						// Gelecekteki bir görev için planlama yapılmasına izin veriyoruz.
+						if (vehicleSituation != "Görevde" &&
+							IsVehicleBlockedForDispatch(selectedVehicle.VehicleSituation))
+						{
+							Notify(
+								$"Bu araç sevke uygun değil. Araç durumu: {vehicleSituation}",
+								"Uyarı");
+							return;
+						}
 					}
 				}
 
@@ -403,10 +411,20 @@ namespace FleetManagement.Desktop.Pages
 					Notify("Sürücü bulunamadı.", "Uyarı");
 					return;
 				}
-				if (_selectedId is null && IsDriverBlockedForDispatch(selectedDriver.DriverSituation))
+				if (_selectedId is null)
 				{
-					Notify($"Bu sürücü sevke uygun değil. Sürücü durumu: {NormalizeDriverSituation(selectedDriver.DriverSituation)}", "Uyarı");
-					return;
+					var driverSituation = NormalizeDriverSituation(selectedDriver.DriverSituation);
+
+					// Sürücü şu anda görevde olabilir.
+					// Gelecekteki bir görev için planlama yapılmasına izin veriyoruz.
+					if (driverSituation != "Sürüş Görevi" &&
+						IsDriverBlockedForDispatch(selectedDriver.DriverSituation))
+					{
+						Notify(
+							$"Bu sürücü sevke uygun değil. Sürücü durumu: {driverSituation}",
+							"Uyarı");
+						return;
+					}
 				}
 
 				if (SecondDriverCombo.SelectedValue is int secondDidValue)
@@ -425,32 +443,43 @@ namespace FleetManagement.Desktop.Pages
 						return;
 					}
 
-					if (_selectedId is null && IsDriverBlockedForDispatch(selectedSecondDriver.DriverSituation))
+					if (_selectedId is null)
 					{
-						Notify($"2. sürücü sevke uygun değil. Sürücü durumu: {NormalizeDriverSituation(selectedSecondDriver.DriverSituation)}", "Uyarı");
-						return;
+						var secondDriverSituation =
+							NormalizeDriverSituation(selectedSecondDriver.DriverSituation);
+
+						// 2. sürücü şu anda görevde olabilir.
+						// Gelecekteki bir görev için planlama yapılmasına izin veriyoruz.
+						if (secondDriverSituation != "Sürüş Görevi" &&
+							IsDriverBlockedForDispatch(selectedSecondDriver.DriverSituation))
+						{
+							Notify(
+								$"2. sürücü sevke uygun değil. Sürücü durumu: {secondDriverSituation}",
+								"Uyarı");
+							return;
+						}
 					}
 				}
 
-                if (_selectedId is null && vehicleId is not null)
-                {
-                    var hasOpenMovement = await _db.VehicleMovements
-                        .AsNoTracking()
-                        .Where(m => !m.IsDeleted &&
-                                    m.VehicleId == vehicleId)
-                        .ToListAsync();
+                //if (_selectedId is null && vehicleId is not null)
+                //{
+                //    var hasOpenMovement = await _db.VehicleMovements
+                //        .AsNoTracking()
+                //        .Where(m => !m.IsDeleted &&
+                //                    m.VehicleId == vehicleId)
+                //        .ToListAsync();
 
-                    if (hasOpenMovement.Any(MissionHelper.IsActiveMission))
-                    {
-                        MessageBox.Show(
-                            "Bu araç halen aktif bir görevde. Yeni görev tanımlanamaz.",
-                            "Uyarı",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Warning);
+                //    if (hasOpenMovement.Any(MissionHelper.IsActiveMission))
+                //    {
+                //        MessageBox.Show(
+                //            "Bu araç halen aktif bir görevde. Yeni görev tanımlanamaz.",
+                //            "Uyarı",
+                //            MessageBoxButton.OK,
+                //            MessageBoxImage.Warning);
 
-                        return;
-                    }
-                }
+                //        return;
+                //    }
+                //}
 
                 var entity = _selectedId is null
 					? new VehicleMovement { CreatedAt = DateTime.UtcNow, IsDeleted = false }
@@ -1973,6 +2002,30 @@ namespace FleetManagement.Desktop.Pages
             }
 
         }
+
+		private void CopyMission_Click(object sender, RoutedEventArgs e)
+		{
+			if (_selectedId is null)
+			{
+				Notify("Kopyalanacak bir görev seçiniz.", "Uyarı");
+				return;
+			}
+
+			// Mevcut kayıtla bağlantıyı kes.
+			// Bundan sonraki Kaydet işlemi yeni kayıt oluşturacaktır.
+			_selectedId = null;
+
+			// Yeni göreve taşınmaması gereken alanlar.
+			DailyNoBox.Clear();
+			DoneKmBox.Clear();
+
+			// Kopyalanan görev her zaman yeni bir planlama olarak başlar.
+			StatusBox.Text = "Planlandı";
+
+			Notify(
+				"Görev yeni planlama olarak kopyalandı. Tarih/saat ve diğer bilgileri kontrol ederek Kaydet'e basınız.",
+				"Görev Kopyalandı");
+		}
 
 		private async Task CheckMonthlyReportAsync()
 		{

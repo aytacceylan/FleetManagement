@@ -188,7 +188,20 @@
                             <TextBlock Text="Temizle"/>
                         </StackPanel>
                     </Button>
-                    
+
+                    <Button Grid.Column="13"
+        Width="130"
+        Click="CopyMission_Click">
+                        <StackPanel Orientation="Horizontal"
+                HorizontalAlignment="Center">
+                            <TextBlock Text="📋"
+                   FontSize="16"
+                   Margin="0,0,6,0"
+                   Foreground="DodgerBlue"/>
+                            <TextBlock Text="Görevi Kopyala"/>
+                        </StackPanel>
+                    </Button>
+
                 </Grid>
 
                 <!-- FORM CONTENT -->
