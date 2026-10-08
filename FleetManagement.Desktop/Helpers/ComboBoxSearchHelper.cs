@@ -58,7 +58,9 @@ namespace FleetManagement.Desktop.Helpers
 			private readonly EventHandler _dropDownOpened;
 			private readonly EventHandler _dropDownClosed;
 
-			private bool _disposed;
+            private bool _isFiltering;
+
+            private bool _disposed;
 
 			public ComboBoxSearchState(
 				ComboBox combo,
@@ -112,60 +114,69 @@ namespace FleetManagement.Desktop.Helpers
 				_view.Refresh();
 			}
 
-			private void OnTextChanged(
-				object sender,
-				TextChangedEventArgs e)
-			{
-				if (_disposed)
-					return;
+            private void OnTextChanged(
+    object sender,
+    TextChangedEventArgs e)
+            {
+                if (_disposed || _isFiltering)
+                    return;
 
-				if (_combo.Template.FindName(
-					"PART_EditableTextBox",
-					_combo) is not TextBox textBox)
-					return;
+                if (_combo.Template.FindName(
+                    "PART_EditableTextBox",
+                    _combo) is not TextBox textBox)
+                    return;
 
-				// Kullanıcının gerçekten yazdığı metni doğrudan TextBox'tan al.
-				var searchText = textBox.Text ?? "";
-				var text = searchText.Trim();
+                // Kullanıcının yazdığı metin
+                var searchText = textBox.Text ?? "";
+                var text = searchText.Trim();
 
-				// Yazmaya başlanınca liste otomatik açılsın.
-				if (!_combo.IsDropDownOpen &&
-					_combo.IsKeyboardFocusWithin &&
-					!string.IsNullOrWhiteSpace(text))
-				{
-					_combo.IsDropDownOpen = true;
-				}
+                // Kullanıcı yazarken dropdown otomatik açılsın.
+                if (!_combo.IsDropDownOpen &&
+                    _combo.IsKeyboardFocusWithin &&
+                    !string.IsNullOrWhiteSpace(text))
+                {
+                    _combo.IsDropDownOpen = true;
+                }
 
-				if (string.IsNullOrWhiteSpace(text))
-				{
-					_view.Filter = null;
-				}
-				else
-				{
-					_view.Filter = item =>
-					{
-						if (item is not T value)
-							return false;
+                try
+                {
+                    _isFiltering = true;
 
-						var searchValue = _searchSelector(value) ?? "";
+                    if (string.IsNullOrWhiteSpace(text))
+                    {
+                        _view.Filter = null;
+                    }
+                    else
+                    {
+                        _view.Filter = item =>
+                        {
+                            if (item is not T value)
+                                return false;
 
-						return searchValue.IndexOf(
-							text,
-							StringComparison.CurrentCultureIgnoreCase) >= 0;
-					};
-				}
+                            var searchValue = _searchSelector(value) ?? "";
 
-				_view.Refresh();
+                            return searchValue.IndexOf(
+                                text,
+                                StringComparison.CurrentCultureIgnoreCase) >= 0;
+                        };
+                    }
 
-				// ComboBox filtreleme sırasında yazılan metni değiştirmesin.
-				if (textBox.Text != searchText)
-					textBox.Text = searchText;
+                    _view.Refresh();
 
-				textBox.SelectionStart = textBox.Text.Length;
-				textBox.SelectionLength = 0;
-			}
+                    // Filtreleme sırasında WPF metni değiştirmişse geri yükle.
+                    if (textBox.Text != searchText)
+                        textBox.Text = searchText;
 
-			public void Dispose()
+                    textBox.SelectionStart = textBox.Text.Length;
+                    textBox.SelectionLength = 0;
+                }
+                finally
+                {
+                    _isFiltering = false;
+                }
+            }
+
+            public void Dispose()
 			{
 				if (_disposed)
 					return;

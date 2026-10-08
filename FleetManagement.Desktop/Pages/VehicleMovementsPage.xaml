@@ -116,8 +116,15 @@
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
 
-                    
                     <Button Grid.Column="1"
+                            Width="110" Click="Clear_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="🧹" FontSize="16" Margin="0,0,6,0" Foreground="#00FFFF"/>
+                            <TextBlock Text="Temizle"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Grid.Column="3"
                            Width="110" Click="Save_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock Text="💾" FontSize="16" Margin="0,0,6,0" Foreground="#32CD32"/>
@@ -125,39 +132,9 @@
                         </StackPanel>
                     </Button>
 
-                    <Button Grid.Column="3"
-        Width="130"
-        Click="StartMission_Click">
 
-                        <StackPanel Orientation="Horizontal">
-
-                            <TextBlock Text="▶"
-                   Margin="0,0,6,0"
-                   Foreground="LimeGreen"/>
-
-                            <TextBlock Text="Görev Başlat"/>
-
-                        </StackPanel>
-
-                    </Button>
 
                     <Button Grid.Column="5"
-        Width="130"
-        Click="FinishMission_Click">
-
-                        <StackPanel Orientation="Horizontal">
-
-                            <TextBlock Text="⏹"
-                   Margin="0,0,6,0"
-                   Foreground="DarkOrange"/>
-
-                            <TextBlock Text="Görev Bitir"/>
-
-                        </StackPanel>
-
-                    </Button>
-
-                    <Button Grid.Column="7"
         Width="130"
         Click="CancelMission_Click">
 
@@ -173,23 +150,39 @@
 
                     </Button>
 
-                    <Button Grid.Column="9"
-                            Width="110" Click="Delete_Click">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="🗑" FontSize="16" Margin="0,0,6,0" Foreground="red"/>
-                            <TextBlock Text="Sil"/>
+                    <Button Grid.Column="7"
+        Width="130"
+        Click="StartMission_Click">
+
+                        <StackPanel Orientation="Horizontal">
+
+                            <TextBlock Text="▶"
+                   Margin="0,0,6,0"
+                   Foreground="LimeGreen"/>
+
+                            <TextBlock Text="Görev Başlat"/>
+
                         </StackPanel>
+
+                    </Button>
+
+                    <Button Grid.Column="9"
+        Width="130"
+        Click="FinishMission_Click">
+
+                        <StackPanel Orientation="Horizontal">
+
+                            <TextBlock Text="⏹"
+                   Margin="0,0,6,0"
+                   Foreground="DarkOrange"/>
+
+                            <TextBlock Text="Görev Bitir"/>
+
+                        </StackPanel>
+
                     </Button>
 
                     <Button Grid.Column="11"
-                            Width="110" Click="Clear_Click">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="🧹" FontSize="16" Margin="0,0,6,0" Foreground="#00FFFF"/>
-                            <TextBlock Text="Temizle"/>
-                        </StackPanel>
-                    </Button>
-
-                    <Button Grid.Column="13"
         Width="130"
         Click="CopyMission_Click">
                         <StackPanel Orientation="Horizontal"
@@ -201,6 +194,18 @@
                             <TextBlock Text="Görevi Kopyala"/>
                         </StackPanel>
                     </Button>
+
+                    <Button Grid.Column="13"
+                            Width="110" Click="Delete_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="🗑" FontSize="16" Margin="0,0,6,0" Foreground="red"/>
+                            <TextBlock Text="Sil"/>
+                        </StackPanel>
+                    </Button>
+
+
+
+
 
                 </Grid>
 
