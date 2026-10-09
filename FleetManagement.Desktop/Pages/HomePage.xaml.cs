@@ -169,26 +169,44 @@ namespace FleetManagement.Desktop.Pages
 			MaintenanceSummaryText.Text = $"Geciken: {delayed} | Yaklaşan: {soon} | Normal: {normal}";
 		}
 
-		private async Task LoadTodaySummaryAsync()
-		{
-			var today = DateTime.Today;
+        private async Task LoadTodaySummaryAsync()
+        {
+            var today = DateTime.Today;
 
-			var todayMovements = await _db.VehicleMovements.AsNoTracking()
-				.Where(x => !x.IsDeleted)
-				.ToListAsync();
+            var movements = await _db.VehicleMovements
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted)
+                .ToListAsync();
 
-			todayMovements = todayMovements
-				.Where(x => x.ExitDateTime.ToLocalTime().Date == today)
-				.ToList();
+            var todayMovements = movements
+                .Where(x => x.ExitDateTime.ToLocalTime().Date == today)
+                .ToList();
 
-			var completed = todayMovements.Count(x => x.ReturnDateTime != null);
-			var planned = todayMovements.Count(x => x.ReturnDateTime == null && x.ExitDateTime.ToLocalTime() > DateTime.Now);
-			var ongoing = todayMovements.Count(x => x.ReturnDateTime == null && x.ExitDateTime.ToLocalTime() <= DateTime.Now);
+            var completed = todayMovements.Count(x =>
+                x.Status == "Tamamlandı");
 
-			TodaySummaryText.Text = $"Toplam: {todayMovements.Count} | Tamamlanan: {completed} | Devam: {ongoing} | Planlı: {planned}";
-		}
+            var planned = todayMovements.Count(x =>
+                x.Status == "Planlandı" ||
+                x.Status == "Görev Yaklaşıyor" ||
+                x.Status == "Görev Gecikti");
 
-		private async Task LoadMaintenanceGridAsync()
+            // Dün başlayan ve hâlâ devam eden görevler de dahil.
+            var ongoing = movements.Count(x =>
+                x.Status == "Görevde" &&
+                x.ReturnDateTime == null);
+
+            var cancelled = todayMovements.Count(x =>
+                x.Status == "İptal");
+
+            TodaySummaryText.Text =
+                $"Bugün: {todayMovements.Count} | " +
+                $"Tamamlanan: {completed} | " +
+                $"Devam: {ongoing} | " +
+                $"Planlı: {planned} | " +
+                $"İptal: {cancelled}";
+        }
+
+        private async Task LoadMaintenanceGridAsync()
 		{
 			var vehicles = await _db.Vehicles.AsNoTracking()
                 .Where(x => !x.IsDeleted && !x.IsExternal)
@@ -351,26 +369,37 @@ namespace FleetManagement.Desktop.Pages
         }
 
         private async Task LoadOngoingMovementsAsync()
-		{
-			var rows = await _db.VehicleMovements.AsNoTracking()
-				.Where(x => !x.IsDeleted && x.ReturnDateTime == null)
-				.Include(x => x.Vehicle)
-				.Include(x => x.Driver)
-				.OrderBy(x => x.ExitDateTime)
-				.Select(x => new OngoingMovementRow
-				{
-					Plate = x.Vehicle != null ? x.Vehicle.Plate : (x.VehiclePlateText ?? ""),
-					Driver = x.Driver != null ? x.Driver.FullName : x.DriverText,
-					ExitTime = x.ExitDateTime.ToLocalTime().ToString("HH:mm"),
-					Route = x.Route,
-					VehicleBrand = x.Vehicle != null ? x.Vehicle.VehicleBrand : null
-				})
-				.ToListAsync();
+        {
+            var movements = await _db.VehicleMovements
+                .AsNoTracking()
+                .Include(x => x.Vehicle)
+                .Include(x => x.Driver)
+                .Where(x =>
+                    !x.IsDeleted &&
+                    x.Status == "Görevde" &&
+                    x.ReturnDateTime == null)
+                .ToListAsync();
 
-			OngoingMovementsGrid.ItemsSource = rows;
-		}
+            var rows = movements
+                .OrderBy(x => x.ActualExitDateTime ?? x.ExitDateTime)
+                .Select(x => new OngoingMovementRow
+                {
+                    Plate = x.Vehicle?.Plate ?? x.VehiclePlateText ?? "",
+                    Driver = x.Driver?.FullName ?? x.DriverText,
 
-		private void PreparationForm_Click(object sender, RoutedEventArgs e)
+                    ExitTime = (x.ActualExitDateTime ?? x.ExitDateTime)
+                        .ToLocalTime()
+                        .ToString("dd.MM HH:mm"),
+
+                    Route = x.Route,
+                    VehicleBrand = x.Vehicle?.VehicleBrand
+                })
+                .ToList();
+
+            OngoingMovementsGrid.ItemsSource = rows;
+        }
+
+        private void PreparationForm_Click(object sender, RoutedEventArgs e)
 		{
 			try
 			{

@@ -907,7 +907,8 @@ namespace FleetManagement.Desktop.Pages
             var nowLocal = nowUtc.ToLocalTime();
 
             // Çıkış zamanı kontrolü
-            var exitLocal = movement.ExitDateTime.ToLocalTime();
+            var exitLocal = (movement.ActualExitDateTime ?? movement.ExitDateTime)
+    .ToLocalTime();
 
             if (nowLocal < exitLocal)
             {
@@ -936,21 +937,53 @@ namespace FleetManagement.Desktop.Pages
 
             // Durum
             movement.Status = "Tamamlandı";
-
             // Araç durumu
             if (movement.Vehicle != null)
             {
-                movement.Vehicle.VehicleSituation = "Müsait";
+                var hasOtherActiveMission = await _db.VehicleMovements
+                    .AnyAsync(x =>
+                        !x.IsDeleted &&
+                        x.Id != movement.Id &&
+                        x.VehicleId == movement.VehicleId &&
+                        x.Status == "Görevde");
+
+                movement.Vehicle.VehicleSituation =
+                    hasOtherActiveMission ? "Görevde" : "Müsait";
+
                 movement.Vehicle.VehicleKm = movement.EndKm.Value;
             }
 
             // 1. Sürücü durumu
             if (movement.Driver != null)
-                movement.Driver.DriverSituation = "Müsait";
+            {
+                var hasOtherActiveMission = await _db.VehicleMovements
+                    .AnyAsync(x =>
+                        !x.IsDeleted &&
+                        x.Id != movement.Id &&
+                        x.Status == "Görevde" &&
+                        (x.DriverId == movement.DriverId ||
+                         x.SecondDriverId == movement.DriverId));
+
+                movement.Driver.DriverSituation =
+                    hasOtherActiveMission ? "Sürüş Görevi" : "Müsait";
+            }
 
             // 2. Sürücü durumu
-            if (movement.SecondDriver != null)
-                movement.SecondDriver.DriverSituation = "Müsait";
+            if (movement.SecondDriver != null && movement.SecondDriverId.HasValue)
+            {
+                var secondDriverId = movement.SecondDriverId.Value;
+
+                var hasOtherActiveMission = await _db.VehicleMovements
+                    .AnyAsync(x =>
+                        !x.IsDeleted &&
+                        x.Id != movement.Id &&
+                        x.Status == "Görevde" &&
+                        (x.DriverId == secondDriverId ||
+                         x.SecondDriverId == secondDriverId));
+
+                movement.SecondDriver.DriverSituation =
+                    hasOtherActiveMission ? "Sürüş Görevi" : "Müsait";
+            }
 
             await _db.SaveChangesAsync();
 

@@ -28,11 +28,15 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
-        
+
+
     </Page.Resources>
 
     <Grid Margin="16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="239*"/>
+            <ColumnDefinition Width="136*"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="11"/>
@@ -42,7 +46,7 @@
         </Grid.RowDefinitions>
 
         <!-- ================= HEADER ================= -->
-        <Border Grid.Row="0" Style="{StaticResource FmCard}">
+        <Border Grid.Row="0" Style="{StaticResource FmCard}" Grid.ColumnSpan="2" Margin="0,0,0,11" Grid.RowSpan="2">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -76,7 +80,7 @@
         </Border>
 
         <!-- ================= FORM ================= -->
-        <Border Grid.Row="2" Style="{StaticResource FmCard}">
+        <Border Grid.Row="2" Style="{StaticResource FmCard}" Grid.ColumnSpan="2" Margin="0,0,0,11" Grid.RowSpan="2">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -226,7 +230,7 @@
 
                         <!-- 1. KOLON -->
                         <StackPanel Grid.Column="0">
-                            
+
                             <TextBlock Text="ÇIKIŞ NU." Foreground="{StaticResource BrushMuted}" Margin="0,0,0,0"/>
                             <TextBox x:Name="DailyNoBox" Margin="0,6,0,0" IsReadOnly="True"/>
 
@@ -257,7 +261,7 @@
 
                             </ComboBox>
                         </StackPanel>
-                        
+
                         <!-- 2. KOLON -->
 
                         <StackPanel Grid.Column="2">
@@ -269,8 +273,8 @@
                                      SelectedValuePath="Id">
                             </ComboBox>
 
-                                <TextBlock Text="ARAÇ KOMUTANI" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
-                            
+                            <TextBlock Text="ARAÇ KOMUTANI" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+
                             <ComboBox x:Name="CommanderCombo"
           Margin="0,6,0,0"/>
 
@@ -281,14 +285,14 @@
                                      SelectedValuePath="Id">
                             </ComboBox>
 
-                            </StackPanel>
+                        </StackPanel>
 
 
                         <!-- 3. KOLON -->
                         <StackPanel Grid.Column="4">
 
-                        <TextBlock Text="YOLCU SAYISI" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
-                        <TextBox x:Name="PassengerCountBox" Margin="0,5,0,0"/>
+                            <TextBlock Text="YOLCU SAYISI" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
+                            <TextBox x:Name="PassengerCountBox" Margin="0,5,0,0"/>
 
                             <TextBlock Text="YÜK MİKTARI" Foreground="{StaticResource BrushMuted}"/>
                             <TextBox x:Name="LoadAmountBox" Margin="0,5,0,0"/>
@@ -299,7 +303,7 @@
                                      DisplayMemberPath="Display"
                                      SelectedValuePath="Id">
                             </ComboBox>
-                          
+
                         </StackPanel>
 
                         <!-- 4. KOLON -->
@@ -311,7 +315,7 @@
 
                             <TextBlock Text="ÇIKIŞ SAATİ" Foreground="{StaticResource BrushMuted}" Margin="0,8,0,0"/>
                             <TextBox x:Name="ExitTimeBox" Margin="0,6,0,10" Text="08:00"/>
-                            
+
                             <TextBlock Text="DÖNÜŞ TARİHİ" Foreground="{StaticResource BrushMuted}"/>
                             <DatePicker x:Name="ReturnDatePicker"/>
 
@@ -348,7 +352,7 @@
         </Border>
 
         <!-- ================= LIST ================= -->
-        <Border Grid.Row="4" Style="{StaticResource FmCard}">
+        <Border Grid.Row="4" Style="{StaticResource FmCard}" Grid.ColumnSpan="2">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -372,7 +376,7 @@
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
 
-                    
+
                     <Button Grid.Column="1" Width="120" Click="ExportDaily_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock Text="📊" FontSize="16" Margin="0,0,6,0" Foreground="#FFFF00"/>

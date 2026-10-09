@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using FleetManagement.Desktop.Dtos;
 using FleetManagement.Desktop.Services;
+using FleetManagement.Domain.Entities;
 using FleetManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -101,7 +102,7 @@ namespace FleetManagement.Desktop.Pages
                 var exitLocal = m.ExitDateTime.ToLocalTime();
                 var returnLocal = m.ReturnDateTime?.ToLocalTime();
                 var parsed = ParseLoadOrPassengerInfo(m.LoadOrPassengerInfo);
-                var status = CalcStatus(m.ExitDateTime, m.ReturnDateTime);
+                var status = CalcStatus(m);
 
                 int? doneKm = null;
                 if (m.StartKm.HasValue && m.EndKm.HasValue && m.EndKm.Value >= m.StartKm.Value)
@@ -307,18 +308,24 @@ namespace FleetManagement.Desktop.Pages
                 $"Toplam görev süresi: {totalHours} sa {totalDuration.Minutes} dk";
         }
 
-        private static string CalcStatus(DateTime exitUtc, DateTime? returnUtc)
+        private static string CalcStatus(VehicleMovement m)
         {
-            if (returnUtc is not null)
+            if (m.Status == "İptal")
+                return "İptal";
+
+            if (m.Status == "Tamamlandı" || m.ReturnDateTime != null)
                 return "Tamamlandı";
 
-            var exitLocal = exitUtc.ToLocalTime();
+            if (m.Status == "Görevde")
+                return "Görevde";
+
+            var exitLocal = m.ExitDateTime.ToLocalTime();
             var now = DateTime.Now;
 
             if (exitLocal > now)
                 return "Planlandı";
 
-            return "Devam Ediyor";
+            return "Görev Gecikti";
         }
 
         private static decimal GetDurationHours(VehicleMovementRow row)
