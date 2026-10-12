@@ -2039,31 +2039,44 @@ namespace FleetManagement.Desktop.Pages
 
         }
 
-		private void CopyMission_Click(object sender, RoutedEventArgs e)
-		{
-			if (_selectedId is null)
-			{
-				Notify("Kopyalanacak bir görev seçiniz.", "Uyarı");
-				return;
-			}
+        private void CopyMission_Click(object sender, RoutedEventArgs e)
+        {
+            if (_selectedId is null)
+            {
+                Notify("Kopyalanacak bir görev seçiniz.", "Uyarı");
+                return;
+            }
 
-			// Mevcut kayıtla bağlantıyı kes.
-			// Bundan sonraki Kaydet işlemi yeni kayıt oluşturacaktır.
-			_selectedId = null;
+            // Yeni görev oluşturma moduna geç.
+            _selectedId = null;
 
-			// Yeni göreve taşınmaması gereken alanlar.
-			DailyNoBox.Clear();
-			DoneKmBox.Clear();
+            // Çıkış tarihi ve saati: sistemin mevcut yerel zamanı.
+            var now = DateTime.Now;
 
-			// Kopyalanan görev her zaman yeni bir planlama olarak başlar.
-			StatusBox.Text = "Planlandı";
+            ExitDatePicker.SelectedDate = now.Date;
+            ExitTimeBox.Text = now.ToString("HH:mm");
 
-			Notify(
-				"Görev yeni planlama olarak kopyalandı. Tarih/saat ve diğer bilgileri kontrol ederek Kaydet'e basınız.",
-				"Görev Kopyalandı");
-		}
+            // Önceki görevin dönüş bilgilerini temizle.
+            ReturnDatePicker.SelectedDate = null;
+            ReturnTimeBox.Clear();
 
-		private async Task CheckMonthlyReportAsync()
+            // Yolcu sayısı ve yapılan kilometre kopyalanmasın.
+            PassengerCountBox.Clear();
+            DoneKmBox.Clear();
+
+            // Yeni görev bilgileri.
+            DailyNoBox.Clear();
+            StatusBox.Text = "Planlandı";
+
+            UpdateReturnHighlight();
+
+            Notify(
+                "Görev kopyalandı. Çıkış tarihi ve saati güncellendi. " +
+                "Bilgileri kontrol ederek Kaydet'e basınız.",
+                "Görev Kopyalandı");
+        }
+
+        private async Task CheckMonthlyReportAsync()
 		{
 			try
 			{
