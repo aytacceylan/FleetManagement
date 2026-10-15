@@ -298,7 +298,7 @@ namespace FleetManagement.Desktop.Pages
         private async void Refresh_Click(object sender, RoutedEventArgs e)
         {
             await LoadLookupsAsync();
-            await RepairMissionStatesAsync();
+            //await RepairMissionStatesAsync();
             await LoadAsync();
 
             _selectedId = null;
@@ -333,26 +333,31 @@ namespace FleetManagement.Desktop.Pages
         }
 
         private async void Save_Click(object sender, RoutedEventArgs e)
-		{
+        {
+            await SaveMovementAsync();
+        }
+
+        private async Task<int?> SaveMovementAsync()
+        {
 			try
 			{
 				if (!TryBuildDateTime(ExitDatePicker, ExitTimeBox, out var exitDtLocal, out var err1))
 				{
 					Notify("Çıkış zamanı hatalı: " + err1, "Uyarı");
-					return;
-				}
+                    return null;
+                }
 
 				if (!TryBuildNullableDateTime(ReturnDatePicker, ReturnTimeBox, out var returnDtLocal, out var err2))
 				{
 					Notify("Dönüş zamanı hatalı: " + err2, "Uyarı");
-					return;
-				}
+                    return null;
+                }
 
 				if (returnDtLocal is not null && returnDtLocal < exitDtLocal)
 				{
 					Notify("Dönüş zamanı çıkıştan önce olamaz.", "Uyarı");
-					return;
-				}
+                    return null;
+                }
 
 				var vehicleId = VehicleCombo.SelectedValue is int vid ? vid : (int?)null;
 				var plateText = EmptyToNull(VehicleCombo.Text);
@@ -360,8 +365,8 @@ namespace FleetManagement.Desktop.Pages
 				if (vehicleId is null && string.IsNullOrWhiteSpace(plateText))
 				{
 					Notify("Plaka zorunlu. Listeden araç seçin.", "Uyarı");
-					return;
-				}
+                    return null;
+                }
 
 				if (DriverCombo.SelectedValue is not int didValue)
 				{
@@ -371,8 +376,8 @@ namespace FleetManagement.Desktop.Pages
 						$"SelectedValue: {DriverCombo.SelectedValue}",
 						"Uyarı");
 
-					return;
-				}
+                    return null;
+                }
 
 
 
@@ -387,8 +392,8 @@ namespace FleetManagement.Desktop.Pages
 					if (selectedVehicle is null)
 					{
 						Notify("Araç bulunamadı.", "Uyarı");
-						return;
-					}
+                        return null;
+                    }
 
 					if (_selectedId is null)
 					{
@@ -402,8 +407,8 @@ namespace FleetManagement.Desktop.Pages
 							Notify(
 								$"Bu araç sevke uygun değil. Araç durumu: {vehicleSituation}",
 								"Uyarı");
-							return;
-						}
+                            return null;
+                        }
 					}
 				}
 
@@ -412,8 +417,8 @@ namespace FleetManagement.Desktop.Pages
 				if (selectedDriver is null)
 				{
 					Notify("Sürücü bulunamadı.", "Uyarı");
-					return;
-				}
+                    return null;
+                }
 				if (_selectedId is null)
 				{
 					var driverSituation = NormalizeDriverSituation(selectedDriver.DriverSituation);
@@ -426,8 +431,8 @@ namespace FleetManagement.Desktop.Pages
 						Notify(
 							$"Bu sürücü sevke uygun değil. Sürücü durumu: {driverSituation}",
 							"Uyarı");
-						return;
-					}
+                        return null;
+                    }
 				}
 
 				if (SecondDriverCombo.SelectedValue is int secondDidValue)
@@ -435,16 +440,16 @@ namespace FleetManagement.Desktop.Pages
 					if (secondDidValue == didValue)
 					{
 						Notify("1. sürücü ile 2. sürücü aynı kişi olamaz.", "Uyarı");
-						return;
-					}
+                        return null;
+                    }
 
 					selectedSecondDriver = await _db.Drivers.FirstOrDefaultAsync(d => d.Id == secondDidValue && !d.IsDeleted);
 
 					if (selectedSecondDriver is null)
 					{
 						Notify("2. sürücü bulunamadı.", "Uyarı");
-						return;
-					}
+                        return null;
+                    }
 
 					if (_selectedId is null)
 					{
@@ -459,8 +464,8 @@ namespace FleetManagement.Desktop.Pages
 							Notify(
 								$"2. sürücü sevke uygun değil. Sürücü durumu: {secondDriverSituation}",
 								"Uyarı");
-							return;
-						}
+                            return null;
+                        }
 					}
 				}
 
@@ -491,8 +496,8 @@ namespace FleetManagement.Desktop.Pages
 				if (entity is null)
 				{
 					Notify("Kayıt bulunamadı.", "Uyarı");
-					return;
-				}
+                    return null;
+                }
 
 				// ESKİ değerleri sakla
 				var oldVehicleId = entity.VehicleId;
@@ -700,6 +705,7 @@ namespace FleetManagement.Desktop.Pages
 
                 // ... entity oluşturma / güncelleme işlemleri ...
                 await _db.SaveChangesAsync();
+                var savedMovementId = entity.Id;
 
                 if (isNew)
                 {
@@ -719,6 +725,7 @@ namespace FleetManagement.Desktop.Pages
                 await LoadAsync();
                 ClearForm();
                 PrepareNewFormState();
+                return savedMovementId;
             }
             catch (Exception ex)
             {
@@ -731,8 +738,13 @@ namespace FleetManagement.Desktop.Pages
 
                 Notify("Hata: kaydetme başarısız.", "Hata");
                 MessageBox.Show(ex.ToString(), "Hata (detay)");
+                return null;
             }
         }
+
+
+
+
 
 		private async void Delete_Click(object sender, RoutedEventArgs e)
 		{
@@ -797,6 +809,26 @@ namespace FleetManagement.Desktop.Pages
                 Notify("Sadece planlanan görev başlatılabilir.", "Uyarı");
                 return;
             }
+
+            // Aynı araç başka bir aktif görevdeyse başlatma.
+            if (movement.VehicleId.HasValue)
+            {
+                var vehicleBusy = await _db.VehicleMovements
+                    .AnyAsync(x =>
+                        !x.IsDeleted &&
+                        x.Id != movement.Id &&
+                        x.VehicleId == movement.VehicleId &&
+                        x.Status == "Görevde");
+
+                if (vehicleBusy)
+                {
+                    Notify(
+                        "Bu araç başka bir görevde. Önce mevcut görevi bitiriniz.",
+                        "Uyarı");
+                    return;
+                }
+            }
+
 
             var now = DateTime.UtcNow;
 
@@ -902,19 +934,57 @@ namespace FleetManagement.Desktop.Pages
                 return;
             }
 
-            // Gerçek dönüş zamanı = Görev Bitir butonuna basıldığı an
-            var nowUtc = DateTime.UtcNow;
-            var nowLocal = nowUtc.ToLocalTime();
 
-            // Çıkış zamanı kontrolü
+            // Dönüş tarihi ve saati:
+            // Formda ikisi de doluysa formdan,
+            // ikisi de boşsa sistem zamanından alınır.
+            DateTime returnLocal;
+
+            bool hasReturnDate = ReturnDatePicker.SelectedDate.HasValue;
+            bool hasReturnTime = !string.IsNullOrWhiteSpace(ReturnTimeBox.Text);
+
+            if (hasReturnDate && hasReturnTime)
+            {
+                if (!TimeSpan.TryParseExact(
+                    ReturnTimeBox.Text.Trim(),
+                    @"hh\:mm",
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    out var returnTime))
+                {
+                    Notify("Dönüş saatini SS:DD formatında giriniz. Örnek: 12:33", "Uyarı");
+                    ReturnTimeBox.Focus();
+                    return;
+                }
+
+                returnLocal = ReturnDatePicker.SelectedDate.Value.Date
+                    .Add(returnTime);
+            }
+            else if (!hasReturnDate && !hasReturnTime)
+            {
+                // Formda dönüş bilgileri yoksa sistem zamanı
+                returnLocal = DateTime.Now;
+            }
+            else
+            {
+                Notify("Dönüş tarihi ve saati birlikte girilmelidir.", "Uyarı");
+                return;
+            }
+
+            // Gerçek çıkış zamanı kontrolü
             var exitLocal = (movement.ActualExitDateTime ?? movement.ExitDateTime)
-    .ToLocalTime();
+                .ToLocalTime();
 
-            if (nowLocal < exitLocal)
+            if (returnLocal < exitLocal)
             {
                 Notify("Dönüş zamanı çıkış zamanından önce olamaz.", "Uyarı");
                 return;
             }
+
+            // PostgreSQL için UTC'ye dönüştür
+            var returnUtc = DateTime.SpecifyKind(
+                returnLocal,
+                DateTimeKind.Local).ToUniversalTime();
+
 
             // Yapılan KM -> Son KM hesaplama
             if (movement.StartKm.HasValue)
@@ -923,17 +993,12 @@ namespace FleetManagement.Desktop.Pages
             }
             else
             {
-                // Başlangıç KM yoksa yapılan KM'yi doğrudan son KM olarak kullanıyoruz.
                 movement.EndKm = doneKm;
             }
 
-            // Gerçek dönüş zamanı
-            movement.ReturnDateTime = nowUtc;
-            movement.ActualReturnDateTime = nowUtc;
-
-            // Formdaki dönüş bilgilerini de güncelle
-            ReturnDatePicker.SelectedDate = nowLocal.Date;
-            ReturnTimeBox.Text = nowLocal.ToString("HH:mm");
+            // Dönüş zamanını kaydet
+            movement.ReturnDateTime = returnUtc;
+            movement.ActualReturnDateTime = returnUtc;
 
             // Durum
             movement.Status = "Tamamlandı";
@@ -1021,6 +1086,21 @@ namespace FleetManagement.Desktop.Pages
             if (movement == null)
                 return;
 
+            if (movement.Status == "Planlandı")
+            {
+                movement.Status = "İptal";
+                movement.CancelDateTime = DateTime.UtcNow;
+
+                await _db.SaveChangesAsync();
+
+                Notify("Planlanan görev iptal edildi.");
+
+                await LoadAsync();
+                ClearForm();
+                PrepareNewFormState();
+                return;
+            }
+
             if (movement.Status == "Tamamlandı")
             {
                 Notify("Tamamlanan görev iptal edilemez.", "Uyarı");
@@ -1036,14 +1116,51 @@ namespace FleetManagement.Desktop.Pages
             movement.Status = "İptal";
             movement.CancelDateTime = DateTime.UtcNow;
 
+            // Araç başka bir aktif görevde mi?
             if (movement.Vehicle != null)
-                movement.Vehicle.VehicleSituation = "Müsait";
+            {
+                var hasOtherActiveMission = await _db.VehicleMovements
+                    .AnyAsync(x =>
+                        !x.IsDeleted &&
+                        x.Id != movement.Id &&
+                        x.VehicleId == movement.VehicleId &&
+                        x.Status == "Görevde");
 
+                movement.Vehicle.VehicleSituation =
+                    hasOtherActiveMission ? "Görevde" : "Müsait";
+            }
+
+            // 1. sürücü başka bir aktif görevde mi?
             if (movement.Driver != null)
-                movement.Driver.DriverSituation = "Müsait";
+            {
+                var hasOtherActiveMission = await _db.VehicleMovements
+                    .AnyAsync(x =>
+                        !x.IsDeleted &&
+                        x.Id != movement.Id &&
+                        x.Status == "Görevde" &&
+                        (x.DriverId == movement.DriverId ||
+                         x.SecondDriverId == movement.DriverId));
 
-            if (movement.SecondDriver != null)
-                movement.SecondDriver.DriverSituation = "Müsait";
+                movement.Driver.DriverSituation =
+                    hasOtherActiveMission ? "Sürüş Görevi" : "Müsait";
+            }
+
+            // 2. sürücü başka bir aktif görevde mi?
+            if (movement.SecondDriver != null && movement.SecondDriverId.HasValue)
+            {
+                var secondDriverId = movement.SecondDriverId.Value;
+
+                var hasOtherActiveMission = await _db.VehicleMovements
+                    .AnyAsync(x =>
+                        !x.IsDeleted &&
+                        x.Id != movement.Id &&
+                        x.Status == "Görevde" &&
+                        (x.DriverId == secondDriverId ||
+                         x.SecondDriverId == secondDriverId));
+
+                movement.SecondDriver.DriverSituation =
+                    hasOtherActiveMission ? "Sürüş Görevi" : "Müsait";
+            }
 
 
 
