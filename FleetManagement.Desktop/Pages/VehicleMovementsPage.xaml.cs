@@ -1090,13 +1090,15 @@ namespace FleetManagement.Desktop.Pages
 
 			_selectedId = _currentMovement.Id;
 
-			// Başka görevlerde halen "Görevde" olan sürücülerin ID'lerini al.
-			// Düzenlenen mevcut görev kontrol dışında bırakılıyor.
-	
+            
+
+            // Başka görevlerde halen "Görevde" olan sürücülerin ID'lerini al.
+            // Düzenlenen mevcut görev kontrol dışında bırakılıyor.
 
 
-			// 1. sürücü listesi
-			ComboBoxSearchHelper.BindContains(
+
+            // 1. sürücü listesi
+            ComboBoxSearchHelper.BindContains(
 				DriverCombo,
 				_availableDrivers,
 				nameof(Driver.FullName),
@@ -1118,7 +1120,7 @@ namespace FleetManagement.Desktop.Pages
 
 			// Formdaki mevcut değerleri seç.
 			FillForm(_currentMovement);
-		}
+        }
 
 		private void FillForm(VehicleMovement m)
         {

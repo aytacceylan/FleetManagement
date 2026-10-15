@@ -121,6 +121,12 @@ namespace FleetManagement.Desktop.Helpers
                 if (_disposed || _isFiltering)
                     return;
 
+                // Kullanıcı ComboBox üzerinde işlem yapmıyorsa
+                // programatik seçim değişikliğini arama olarak değerlendirme.
+                if (!_combo.IsKeyboardFocusWithin)
+                    return;
+
+
                 if (_combo.Template.FindName(
                     "PART_EditableTextBox",
                     _combo) is not TextBox textBox)
