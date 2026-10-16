@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Threading;
 
 namespace FleetManagement.Desktop.Helpers
 {
@@ -86,33 +87,23 @@ namespace FleetManagement.Desktop.Helpers
 				_combo.DropDownClosed += _dropDownClosed;
 			}
 
-			private void OnDropDownOpened(
-				object? sender,
-				EventArgs e)
-			{
-				if (_disposed)
-					return;
+            private void OnDropDownOpened(object? sender, EventArgs e)
+            {
+                if (_disposed)
+                    return;
 
-				// ComboBox her açıldığında eski aramayı kaldır.
-				// Böylece önceki seçilen sürücü yüzünden
-				// liste tek kişide kalmaz.
-				_view.Filter = null;
-				_view.Refresh();
-			}
+                // Burada filtreyi sıfırlamıyoruz.
+                // Kullanıcının yazdığı Contains araması korunmalı.
+            }
 
-			private void OnDropDownClosed(
-				object? sender,
-				EventArgs e)
-			{
-				if (_disposed)
-					return;
+            private void OnDropDownClosed(object? sender, EventArgs e)
+            {
+                if (_disposed)
+                    return;
 
-				// Kullanıcı bir seçim yaptıysa dropdown kapanır.
-				// Seçimin oluşturduğu TextChanged olayının
-				// listeyi kalıcı olarak filtrelemesine izin verme.
-				_view.Filter = null;
-				_view.Refresh();
-			}
+                // Liste kapanırken filtreye müdahale etmiyoruz.
+                // Yeni arama başladığında OnTextChanged filtreyi güncelleyecek.
+            }
 
             private void OnTextChanged(
     object sender,
@@ -136,13 +127,7 @@ namespace FleetManagement.Desktop.Helpers
                 var searchText = textBox.Text ?? "";
                 var text = searchText.Trim();
 
-                // Kullanıcı yazarken dropdown otomatik açılsın.
-                if (!_combo.IsDropDownOpen &&
-                    _combo.IsKeyboardFocusWithin &&
-                    !string.IsNullOrWhiteSpace(text))
-                {
-                    _combo.IsDropDownOpen = true;
-                }
+
 
                 try
                 {
@@ -169,12 +154,35 @@ namespace FleetManagement.Desktop.Helpers
 
                     _view.Refresh();
 
+                    // Filtreleme tamamlandıktan sonra açılır listeyi göster.
+                    if (!string.IsNullOrWhiteSpace(text) &&
+                        !_combo.IsDropDownOpen)
+                    {
+                        var expectedText = searchText;
+
+                        _combo.Dispatcher.BeginInvoke(
+                            new Action(() =>
+                            {
+                                if (_disposed ||
+                                    !_combo.IsKeyboardFocusWithin ||
+                                    _combo.IsDropDownOpen)
+                                    return;
+
+                                // Bu sırada seçim yapılmış veya metin değişmiş olabilir.
+                                if (_combo.Text != expectedText)
+                                    return;
+
+                                _combo.IsDropDownOpen = true;
+                            }),
+                            DispatcherPriority.ContextIdle);
+                    }
+
                     // Filtreleme sırasında WPF metni değiştirmişse geri yükle.
                     if (textBox.Text != searchText)
+                    {
                         textBox.Text = searchText;
-
-                    textBox.SelectionStart = textBox.Text.Length;
-                    textBox.SelectionLength = 0;
+                        textBox.CaretIndex = textBox.Text.Length;
+                    }
                 }
                 finally
                 {

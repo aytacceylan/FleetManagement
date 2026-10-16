@@ -279,10 +279,24 @@ namespace FleetManagement.Desktop.Pages
                 ).ToList();
             }
 
-			_all = rows;
-			MovementsGrid.ItemsSource = _all;
+            // Görev durumuna göre öncelikli sıralama
+            _all = rows
+                .OrderBy(x => x.Status switch
+                {
+                    "Görev Gecikti" => 0,
+                    "Görev Yaklaşıyor" => 1,
+                    "Planlandı" => 2,
+                    "Görevde" => 3,
+                    "Tamamlandı" => 4,
+                    _ => 5
+                })
+                .ThenByDescending(x => x.ExitDateTimeUtc)
+                .ThenByDescending(x => x.DailyNo)
+                .ToList();
 
-			MovementsGrid.SelectedItem = null;
+            MovementsGrid.ItemsSource = _all;
+
+            MovementsGrid.SelectedItem = null;
 
 			UpdateCount(_all.Count);
 		}
@@ -337,7 +351,7 @@ namespace FleetManagement.Desktop.Pages
             await SaveMovementAsync();
         }
 
-        private async Task<int?> SaveMovementAsync()
+        private async Task<int?> SaveMovementAsync(bool refreshForm = true,bool startMission = false)
         {
 			try
 			{
@@ -362,13 +376,13 @@ namespace FleetManagement.Desktop.Pages
 				var vehicleId = VehicleCombo.SelectedValue is int vid ? vid : (int?)null;
 				var plateText = EmptyToNull(VehicleCombo.Text);
 
-				if (vehicleId is null && string.IsNullOrWhiteSpace(plateText))
-				{
-					Notify("Plaka zorunlu. Listeden araç seçin.", "Uyarı");
+                if (vehicleId is null)
+                {
+                    Notify("Lütfen listeden geçerli bir araç seçiniz.", "Uyarı");
                     return null;
                 }
 
-				if (DriverCombo.SelectedValue is not int didValue)
+                if (DriverCombo.SelectedValue is not int didValue)
 				{
 					Notify(
 						$"Sürücü seçimi okunamadı.\n" +
@@ -488,6 +502,46 @@ namespace FleetManagement.Desktop.Pages
                 //        return;
                 //    }
                 //}
+
+                // Görev Başlat için kayıt oluşturmadan önce
+                // araç ve sürücü çakışmalarını kontrol et.
+                if (startMission)
+                {
+                    int? secondDriverId =
+                        SecondDriverCombo.SelectedValue is int selectedSecondDriverId
+                            ? selectedSecondDriverId
+                            : null;
+
+                    var vehicleBusy = await _db.VehicleMovements.AnyAsync(x =>
+                        !x.IsDeleted &&
+                        x.Status == "Görevde" &&
+                        x.VehicleId == vehicleId &&
+                        x.Id != _selectedId);
+
+                    if (vehicleBusy)
+                    {
+                        Notify("Bu araç başka bir aktif görevde.", "Uyarı");
+                        return null;
+                    }
+
+                    var driverBusy = await _db.VehicleMovements.AnyAsync(x =>
+                        !x.IsDeleted &&
+                        x.Status == "Görevde" &&
+                        x.Id != _selectedId &&
+                        (
+                            x.DriverId == didValue ||
+                            x.SecondDriverId == didValue ||
+                            (secondDriverId.HasValue &&
+                                (x.DriverId == secondDriverId ||
+                                 x.SecondDriverId == secondDriverId))
+                        ));
+
+                    if (driverBusy)
+                    {
+                        Notify("Seçilen sürücülerden biri başka bir aktif görevde.", "Uyarı");
+                        return null;
+                    }
+                }
 
                 var entity = _selectedId is null
 					? new VehicleMovement { CreatedAt = DateTime.UtcNow, IsDeleted = false }
@@ -718,13 +772,20 @@ namespace FleetManagement.Desktop.Pages
                         $"Sevk kaydı güncellendi. Id: {entity.Id}, Plaka: {entity.Vehicle?.Plate ?? entity.VehiclePlateText}");
                 }
 
-                Notify(isNew
-                    ? $"Kaydedildi: #{entity.Id}"
-                    : $"Güncellendi: #{entity.Id}");
+                if (!startMission)
+                {
+                    Notify(isNew
+                        ? $"Kaydedildi: #{entity.Id}"
+                        : $"Güncellendi: #{entity.Id}");
+                }
 
-                await LoadAsync();
-                ClearForm();
-                PrepareNewFormState();
+                if (refreshForm)
+                {
+                    await LoadAsync();
+                    ClearForm();
+                    PrepareNewFormState();
+                }
+
                 return savedMovementId;
             }
             catch (Exception ex)
@@ -756,9 +817,7 @@ namespace FleetManagement.Desktop.Pages
 					return;
 				}
 
-				var confirm = MessageBox.Show("Seçili hareket silinsin mi?", "Onay", MessageBoxButton.YesNo);
-				if (confirm != MessageBoxResult.Yes)
-					return;
+
 
 				var entity = await _db.VehicleMovements.FirstOrDefaultAsync(x => x.Id == _selectedId.Value);
 				if (entity is null)
@@ -767,7 +826,20 @@ namespace FleetManagement.Desktop.Pages
 					return;
 				}
 
-				entity.IsDeleted = true;
+                // Aktif görev doğrudan silinemez.
+                if (entity.Status == "Görevde")
+                {
+                    Notify(
+                        "Görevde olan kayıt silinemez. Önce görevi bitirin veya iptal edin.",
+                        "Uyarı");
+                    return;
+                }
+
+                var confirm = MessageBox.Show("Seçili hareket silinsin mi?", "Onay", MessageBoxButton.YesNo);
+                if (confirm != MessageBoxResult.Yes)
+                    return;
+
+                entity.IsDeleted = true;
 				await _db.SaveChangesAsync();
                 // ✅ BAŞARILI LOG
                 AppLogger.Info("VehicleMovement.Delete", $"Sevk kaydı silindi. Id: {_selectedId.Value}");
@@ -789,17 +861,42 @@ namespace FleetManagement.Desktop.Pages
 
         private async void StartMission_Click(object sender, RoutedEventArgs e)
         {
-            if (_selectedId == null)
+            int? movementId = _selectedId;
+
+            if (movementId == null)
             {
-                Notify("Lütfen bir görev seçiniz.", "Uyarı");
-                return;
+                bool dateEmpty = ExitDatePicker.SelectedDate == null;
+                bool timeEmpty = string.IsNullOrWhiteSpace(ExitTimeBox.Text);
+
+                if (dateEmpty && timeEmpty)
+                {
+                    var nowLocal = DateTime.Now;
+
+                    ExitDatePicker.SelectedDate = nowLocal.Date;
+                    ExitTimeBox.Text = nowLocal.ToString("HH:mm");
+                }
+                else if (dateEmpty || timeEmpty)
+                {
+                    Notify(
+                        "Çıkış tarihi ve saati birlikte girilmelidir.",
+                        "Uyarı");
+                    return;
+                }
+
+                // Yeni görevi kaydet, ancak formu henüz temizleme.
+                movementId = await SaveMovementAsync(
+    refreshForm: false,
+    startMission: true);
+
+                if (movementId == null)
+                    return;
             }
 
             var movement = await _db.VehicleMovements
                 .Include(x => x.Vehicle)
                 .Include(x => x.Driver)
                 .Include(x => x.SecondDriver)
-                .FirstOrDefaultAsync(x => x.Id == _selectedId);
+				.FirstOrDefaultAsync(x => x.Id == movementId.Value);
 
             if (movement == null)
                 return;
@@ -808,6 +905,25 @@ namespace FleetManagement.Desktop.Pages
             {
                 Notify("Sadece planlanan görev başlatılabilir.", "Uyarı");
                 return;
+            }
+
+            // Aynı araç başka bir aktif görevdeyse başlatma.
+            if (movement.VehicleId.HasValue)
+            {
+                var vehicleBusy = await _db.VehicleMovements
+                    .AnyAsync(x =>
+                        !x.IsDeleted &&
+                        x.Id != movement.Id &&
+                        x.VehicleId == movement.VehicleId &&
+                        x.Status == "Görevde");
+
+                if (vehicleBusy)
+                {
+                    Notify(
+                        "Bu araç başka bir görevde. Önce mevcut görevi bitiriniz.",
+                        "Uyarı");
+                    return;
+                }
             }
 
             // Aynı araç başka bir aktif görevdeyse başlatma.
@@ -858,7 +974,7 @@ namespace FleetManagement.Desktop.Pages
                             x.MovementDate < endUtc)
                         .MaxAsync(x => (int?)x.DailyNo) ?? 0) + 1;
 
-                movement.MovementDate = now;
+                movement.MovementDate = startUtc;
                 movement.DailyNo = nextDailyNo;
             }
 
@@ -989,6 +1105,12 @@ namespace FleetManagement.Desktop.Pages
             // Yapılan KM -> Son KM hesaplama
             if (movement.StartKm.HasValue)
             {
+                if (doneKm > int.MaxValue - movement.StartKm.Value)
+                {
+                    Notify("Yapılan kilometre değeri çok büyük.", "Uyarı");
+                    return;
+                }
+
                 movement.EndKm = movement.StartKm.Value + doneKm;
             }
             else
@@ -1064,8 +1186,11 @@ namespace FleetManagement.Desktop.Pages
 
             await LoadAsync();
 
-            ClearForm();
+            MovementsGrid.SelectedItem = null;
+            _selectedId = null;
+            _currentMovement = null;
 
+            ClearForm();
             PrepareNewFormState();
         }
 
@@ -1110,6 +1235,14 @@ namespace FleetManagement.Desktop.Pages
             if (movement.Status == "İptal")
             {
                 Notify("Görev zaten iptal edilmiş.", "Uyarı");
+                return;
+            }
+
+            if (movement.Status != "Görevde")
+            {
+                Notify(
+                    $"Bu durumdaki görev iptal edilemez: {movement.Status}",
+                    "Uyarı");
                 return;
             }
 
@@ -1187,6 +1320,7 @@ namespace FleetManagement.Desktop.Pages
 
             ClearForm();
             PrepareNewFormState();
+            return;
         }
 
 
