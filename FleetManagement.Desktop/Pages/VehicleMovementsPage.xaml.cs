@@ -1742,7 +1742,7 @@ namespace FleetManagement.Desktop.Pages
 
 				var path = ExportRowsToExcel(
 					rows,
-					$"Görev Kayıt Defteri_{today:yyyy-MM-dd_HH-mm}.xlsx",
+                    $"Görev Kayıt Defteri_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.xlsx",
 					today,
 					today);
 
@@ -1780,16 +1780,11 @@ namespace FleetManagement.Desktop.Pages
 					return date >= startDate &&
 						   date <= endDate;
 				})
-				.OrderBy(x => x.ExitDateTimeUtc)
+                .OrderBy(x => x.ExitDateTimeUtc)
 				.ThenBy(x => x.DailyNo)
-				.Select((x, index) =>
-				{
-					x.DailyNo = index + 1;
-					return x;
-				})
 				.ToList();
 
-				if (!rows.Any())
+                if (!rows.Any())
 				{
 					Notify("Bu ay için aktarılacak görev kaydı bulunamadı.", "Bilgi");
 					return;
@@ -1797,7 +1792,7 @@ namespace FleetManagement.Desktop.Pages
 
 				var path = ExportRowsToExcel(
 					rows,
-					$"Görev Kayıt Defteri_{today:yyyy-MM_HH-mm}.xlsx",
+                    $"Görev Kayıt Defteri_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.xlsx",
 					startDate,
 					endDate);
 
